@@ -1,0 +1,68 @@
+export interface Teacher {
+  id: string;
+  name: string;
+  avatar: string;
+  tags: string[];
+  rating: number;
+  description: string;
+}
+
+export interface DanceClass {
+  id: string;
+  title: string;
+  genre: 'hiphop' | 'jazz' | 'urban' | 'contemporary' | 'house' | 'kpop' | 'heels';
+  difficulty: number; // 1 to 5 stars
+  teacher: Teacher;
+  timeStart: string; // e.g., "13:00"
+  timeEnd: string; // e.g., "14:00"
+  date: string; // "YYYY-MM-DD"
+  classroom: string; // e.g., "A教室", "B教室", "C教室"
+  minPeople: number;
+  bookedCount: number;
+  maxCount: number;
+  openBookingTime?: string; // string or undefined if open
+  type: 'group' | 'private' | 'series'; // 团课, 私教, 班课
+}
+
+export interface User {
+  name: string;
+  phone: string;
+  avatar: string;
+  remainingPasses: number;
+  experiencePoints: number;
+  totalClassesJoined: number;
+  favoriteStyle: string;
+  streakDays: number;
+}
+
+export interface Booking {
+  id: string;
+  classId: string;
+  userId: string;
+  status: 'booked' | 'waiting' | 'cancelled' | 'attended';
+  timestamp: string;
+  queueNumber?: number;
+}
+
+export interface PaymentCard {
+  id: string;
+  title: string;
+  price: number;
+  originalPrice?: number;
+  passes: number; // 1, 10, 30 etc. - or -1 for unlimited
+  validDays: number; // e.g., 30 days, 90 days, 365 days
+  description: string;
+  badge?: string;
+}
+
+export interface PurchaseRecord {
+  id: string;
+  cardId: string;
+  cardName: string;
+  price: number;
+  passesAdded: number;
+  date: string;
+}
+
+export type AppTheme = 'vibrant-light' | 'cool-mint' | 'midnight-cyber';
+
