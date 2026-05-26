@@ -172,9 +172,22 @@ export const AuthScreen: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h2 className="text-xl font-bold">Verify Code</h2>
-                    <p className="text-xs text-zinc-400 mt-1">Sent to +86 {phone}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs text-zinc-400">Sent to +86 {phone}</p>
+                      {countdown > 0 ? (
+                        <p className="text-xs text-zinc-500 font-medium">Resend in {countdown}s</p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleSendCode}
+                          className="text-xs text-white font-bold hover:underline cursor-pointer"
+                        >
+                          Resend Code
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
