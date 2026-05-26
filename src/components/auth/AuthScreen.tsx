@@ -1,8 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../../lib/supabase';
 import { OTPInput } from './OTPInput';
 import { Phone, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
+
+const AUTH_ERRORS: Record<string, { en: string; zh: string }> = {
+  'invalid_credentials': {
+    en: 'Invalid or expired code. Please try again.',
+    zh: '验证码无效或已过期，请重试。'
+  },
+  'too_many_requests': {
+    en: 'Too many requests. Please wait before trying again.',
+    zh: '请求过多，请稍后再试。'
+  },
+  'otp_expired': {
+    en: 'OTP has expired. Please request a new one.',
+    zh: '验证码已过期，请重新获取。'
+  },
+  'user_not_found': {
+    en: 'User not found.',
+    zh: '未找到用户。'
+  },
+  'default': {
+    en: 'An error occurred. Please try again.',
+    zh: '发生错误，请重试。'
+  }
+};
 
 export const AuthScreen: React.FC = () => {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -10,6 +33,7 @@ export const AuthScreen: React.FC = () => {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(0);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
