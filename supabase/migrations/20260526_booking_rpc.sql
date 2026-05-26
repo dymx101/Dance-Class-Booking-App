@@ -42,13 +42,13 @@ BEGIN
 
     -- Check if spot is already taken
     IF p_spot_number IS NOT NULL AND EXISTS (
-        SELECT 1 FROM public.bookings WHERE "classId" = p_instance_id AND "spotNumber" = p_spot_number AND status = 'booked'
+        SELECT 1 FROM public.bookings WHERE classid = p_instance_id AND spotnumber = p_spot_number AND status = 'booked'
     ) THEN
         RETURN jsonb_build_object('success', false, 'error', 'Spot already taken');
     END IF;
 
     -- Check if user exists and get passes
-    SELECT "remainingPasses" INTO v_passes
+    SELECT remainingpasses INTO v_passes
     FROM public.users
     WHERE id = v_user_id
     FOR UPDATE;
@@ -62,7 +62,7 @@ BEGIN
     END IF;
 
     -- Lock the class instance
-    SELECT id, "maxCount", date, "timeStart" INTO v_class_record
+    SELECT id, maxcount, date, timestart INTO v_class_record
     FROM public.class_instances
     WHERE id = p_instance_id
     FOR UPDATE;
@@ -72,7 +72,7 @@ BEGIN
     END IF;
 
     -- Check if class has already started or passed
-    v_class_timestamp := v_class_record.date + v_class_record."timeStart";
+    v_class_timestamp := v_class_record.date + v_class_record.timestart;
     IF v_class_timestamp <= CURRENT_TIMESTAMP THEN
         RETURN jsonb_build_object('success', false, 'error', 'Class has already started or passed');
     END IF;
@@ -80,7 +80,7 @@ BEGIN
     -- Check if already booked or waiting
     SELECT status INTO v_existing_status
     FROM public.bookings
-    WHERE "classId" = p_instance_id AND "userId" = v_user_id
+    WHERE classid = p_instance_id AND userid = v_user_id
     AND status IN ('booked', 'waiting');
 
     IF FOUND THEN
@@ -93,15 +93,15 @@ BEGIN
            count(*) FILTER (WHERE status = 'waiting') as waitlist_count
     INTO v_booked_count, v_queue_number
     FROM public.bookings
-    WHERE "classId" = p_instance_id;
+    WHERE classid = p_instance_id;
 
-    IF v_queue_number > 0 OR v_booked_count >= v_class_record."maxCount" THEN
+    IF v_queue_number > 0 OR v_booked_count >= v_class_record.maxcount THEN
         v_status := 'waiting';
         
         -- Get max queue number
-        SELECT COALESCE(MAX("queueNumber"), 0) + 1 INTO v_queue_number
+        SELECT COALESCE(MAX(queuenumber), 0) + 1 INTO v_queue_number
         FROM public.bookings
-        WHERE "classId" = p_instance_id AND status = 'waiting';
+        WHERE classid = p_instance_id AND status = 'waiting';
     ELSE
         v_status := 'booked';
         v_queue_number := NULL;
@@ -109,11 +109,11 @@ BEGIN
 
     -- Deduct pass (freeze pass)
     UPDATE public.users
-    SET "remainingPasses" = "remainingPasses" - 1
+    SET remainingpasses = remainingpasses - 1
     WHERE id = v_user_id;
 
     -- Create booking
-    INSERT INTO public.bookings ("classId", "userId", status, "queueNumber", "spotNumber")
+    INSERT INTO public.bookings (classid, userid, status, queuenumber, spotnumber)
     VALUES (p_instance_id, v_user_id, v_status, v_queue_number, CASE WHEN v_status = 'booked' THEN p_spot_number ELSE NULL END)
     RETURNING id INTO v_booking_id;
 
@@ -147,8 +147,8 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
     END IF;
 
-    -- 1. Identify classId without locking first to establish lock order
-    SELECT "classId", "userId" INTO v_booking_record
+    -- 1. Identify classid without locking first to establish lock order
+    SELECT classid, userid INTO v_booking_record
     FROM public.bookings
     WHERE id = p_booking_id;
 
@@ -156,7 +156,7 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Booking not found');
     END IF;
 
-    IF v_booking_record."userId" != v_user_id THEN
+    IF v_booking_record.userid != v_user_id THEN
         RETURN jsonb_build_object('success', false, 'error', 'Not authorized');
     END IF;
 
@@ -164,9 +164,9 @@ BEGIN
     PERFORM 1 FROM public.users WHERE id = v_user_id FOR UPDATE;
 
     -- 3. Lock Class Instance record (matching book_class order)
-    SELECT id, date, "timeStart" INTO v_class_record
+    SELECT id, date, timestart INTO v_class_record
     FROM public.class_instances
-    WHERE id = v_booking_record."classId"
+    WHERE id = v_booking_record.classid
     FOR UPDATE;
 
     IF NOT FOUND THEN
@@ -174,7 +174,7 @@ BEGIN
     END IF;
 
     -- 4. Lock the Booking record for update
-    SELECT id, "classId", "userId", status INTO v_booking_record
+    SELECT id, classid, userid, status, spotnumber INTO v_booking_record
     FROM public.bookings
     WHERE id = p_booking_id
     FOR UPDATE;
@@ -189,7 +189,7 @@ BEGIN
     END IF;
 
     -- Combine date and time
-    v_class_timestamp := v_class_record.date + v_class_record."timeStart";
+    v_class_timestamp := v_class_record.date + v_class_record.timestart;
     v_now := CURRENT_TIMESTAMP;
 
     -- Handle cancellation
@@ -198,7 +198,7 @@ BEGIN
         DELETE FROM public.bookings WHERE id = p_booking_id;
         
         -- Refund pass
-        UPDATE public.users SET "remainingPasses" = "remainingPasses" + 1 WHERE id = v_user_id;
+        UPDATE public.users SET remainingpasses = remainingpasses + 1 WHERE id = v_user_id;
         v_refunded := true;
         
     ELSE
@@ -206,7 +206,7 @@ BEGIN
         IF v_now <= (v_class_timestamp - INTERVAL '1 hour') THEN
             -- Early cancellation: delete + refund
             DELETE FROM public.bookings WHERE id = p_booking_id;
-            UPDATE public.users SET "remainingPasses" = "remainingPasses" + 1 WHERE id = v_user_id;
+            UPDATE public.users SET remainingpasses = remainingpasses + 1 WHERE id = v_user_id;
             v_refunded := true;
         ELSE
             -- Late cancellation: mark 'no_show', no refund
@@ -215,16 +215,17 @@ BEGIN
         END IF;
 
         -- ALWAYS promote someone from waitlist when a 'booked' spot is vacated
-        SELECT id, "userId" INTO v_promoted_booking_id, v_promoted_user_id
+        SELECT id, userid INTO v_promoted_booking_id, v_promoted_user_id
         FROM public.bookings
-        WHERE "classId" = v_booking_record."classId" AND status = 'waiting'
-        ORDER BY "queueNumber" ASC
+        WHERE classid = v_booking_record.classid AND status = 'waiting'
+        ORDER BY queuenumber ASC
         LIMIT 1
         FOR UPDATE;
 
         IF FOUND THEN
+            -- Promote and assign the spot vacated by the canceller
             UPDATE public.bookings 
-            SET status = 'booked', "queueNumber" = NULL 
+            SET status = 'booked', queuenumber = NULL, spotnumber = v_booking_record.spotnumber
             WHERE id = v_promoted_booking_id;
         END IF;
     END IF;
