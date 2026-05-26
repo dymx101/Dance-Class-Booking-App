@@ -12,6 +12,7 @@ import { Home, CalendarDays, ShoppingBag, User, Wifi, Battery, Signal, Bell, XCi
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './contexts/AuthContext';
 import { AuthScreen } from './components/auth/AuthScreen';
+import { supabase } from './lib/supabase';
 
 interface ToastMsg {
   id: string;
@@ -85,12 +86,97 @@ export default function App() {
   // Action feedback feedback alerts state
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
 
+  // Fetch classes, user bookings, and user passes from Supabase
+  const fetchClassesAndBookings = async () => {
+    if (!user) return;
+    try {
+      // 1. Fetch class instances
+      const { data: classesData, error: classesError } = await supabase
+        .from('class_instances')
+        .select('*, teacher:teachers(*)')
+        .order('date', { ascending: true })
+        .order('timeStart', { ascending: true });
+
+      if (classesError) throw classesError;
+
+      // 2. Fetch user's active bookings
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('userId', user.id)
+        .in('status', ['booked', 'waiting']);
+
+      if (bookingsError) throw bookingsError;
+
+      // 3. Fetch user's remaining passes
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('remainingPasses')
+        .eq('id', user.id)
+        .single();
+
+      if (!userError && userData) {
+        setUserPasses(userData.remainingPasses);
+      }
+
+      // 4. Fetch bookings count for each class instance to calculate bookedCount
+      const { data: allBookingsData, error: allBookingsError } = await supabase
+        .from('bookings')
+        .select('classId, status');
+
+      const bookedCounts: Record<string, number> = {};
+      if (!allBookingsError && allBookingsData) {
+        allBookingsData.forEach((b) => {
+          if (b.status === 'booked') {
+            bookedCounts[b.classId] = (bookedCounts[b.classId] || 0) + 1;
+          }
+        });
+      }
+
+      // Format timeStart and timeEnd from 'HH:MM:SS' to 'HH:MM'
+      const formattedClasses = (classesData || []).map((cls) => {
+        const countFromDB = bookedCounts[cls.id] || 0;
+        return {
+          ...cls,
+          timeStart: cls.timeStart ? cls.timeStart.substring(0, 5) : '',
+          timeEnd: cls.timeEnd ? cls.timeEnd.substring(0, 5) : '',
+          bookedCount: countFromDB
+        };
+      });
+
+      // Extract booked and waiting classIds
+      const bookedIds = (bookingsData || [])
+        .filter((b) => b.status === 'booked')
+        .map((b) => b.classId);
+
+      const waitlistIds = (bookingsData || [])
+        .filter((b) => b.status === 'waiting')
+        .map((b) => b.classId);
+
+      setBookedClassIds(bookedIds);
+      setWaitlistClassIds(waitlistIds);
+      setClasses(formattedClasses);
+    } catch (err) {
+      console.error('Error fetching Supabase classes and bookings:', err);
+    }
+  };
+
   // Sync state with profile
   useEffect(() => {
     if (profile) {
       setUserPasses(profile.remainingPasses);
     }
   }, [profile]);
+
+  // Trigger fetchClassesAndBookings on user login
+  useEffect(() => {
+    if (user) {
+      fetchClassesAndBookings();
+    } else {
+      setBookedClassIds([]);
+      setWaitlistClassIds([]);
+    }
+  }, [user]);
 
   // Local storage synchronization triggered upon core state alterations
   useEffect(() => {
@@ -172,6 +258,7 @@ export default function App() {
             waitlistClassIds={waitlistClassIds}
             setWaitlistClassIds={setWaitlistClassIds}
             addToast={addToast}
+            onRefresh={fetchClassesAndBookings}
           />
         );
       case 'store':

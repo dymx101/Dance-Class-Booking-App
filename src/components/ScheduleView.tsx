@@ -3,6 +3,14 @@ import { DanceClass, Teacher } from '../types';
 import { TEACHERS } from '../data';
 import { Calendar, Filter, ChevronLeft, ChevronRight, CheckCircle2, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+
+const BOOKING_ERRORS: Record<string, string> = {
+  'insufficient_passes': '课次余额不足 (Insufficient passes)',
+  'late_cancellation': '已超过取消时间，课次不予退回 (Late cancellation, no refund)',
+  'default': '操作失败，请重试 (Action failed, please try again)'
+};
 
 interface ScheduleViewProps {
   theme?: string;
@@ -15,6 +23,7 @@ interface ScheduleViewProps {
   waitlistClassIds: string[];
   setWaitlistClassIds: React.Dispatch<React.SetStateAction<string[]>>;
   addToast: (msg: string, type: 'success' | 'info' | 'error') => void;
+  onRefresh?: () => Promise<void>;
 }
 
 const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -29,7 +38,8 @@ export default function ScheduleView({
   setBookedClassIds,
   waitlistClassIds,
   setWaitlistClassIds,
-  addToast
+  addToast,
+  onRefresh
 }: ScheduleViewProps) {
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
@@ -70,6 +80,9 @@ export default function ScheduleView({
 
   // Current mode: 'day' (日课表) or 'week' (周课表)
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
+
+  const { user } = useAuth();
+  const [mutatingClassId, setMutatingClassId] = useState<string | null>(null);
 
   // Currently selected date for Daily view (Initialized to today: 2026-05-25)
   const [selectedDateStr, setSelectedDateStr] = useState<string>('2026-05-25');
@@ -171,65 +184,234 @@ export default function ScheduleView({
   }
 
   // Handle Booking
-  const handleBookingToggle = (clsId: string) => {
+  const handleBookingToggle = async (clsId: string) => {
+    if (!user) {
+      addToast('请先登录系统！', 'error');
+      return;
+    }
+    
     const cls = classes.find(c => c.id === clsId);
     if (!cls) return;
 
+    if (mutatingClassId) return;
+
     const isAlreadyBooked = bookedClassIds.includes(clsId);
 
-    if (isAlreadyBooked) {
-      // Refund/Cancel Booking
-      setBookedClassIds(prev => prev.filter(id => id !== clsId));
-      setUserPasses(prev => prev + 1);
-      setClasses(prev => prev.map(c => {
-        if (c.id === clsId) {
-          return { ...c, bookedCount: Math.max(0, c.bookedCount - 1) };
-        }
-        return c;
-      }));
-      addToast(`已成功取消 《${cls.title}》 的预约，1课次已被退回！`, 'info');
-    } else {
-      // Try to Book
-      if (cls.bookedCount >= cls.maxCount) {
-        addToast('抱歉，该课程名额已满。您可以选择"排队"进行预约。', 'error');
-        return;
-      }
+    setMutatingClassId(clsId);
 
-      if (userPasses < 1) {
-        addToast('课次余额不足，请前往商城充值购买！', 'error');
-        return;
-      }
+    try {
+      if (isAlreadyBooked) {
+        // 1. Unbook / Cancellation
+        const { data: bookingData, error: findError } = await supabase
+          .from('bookings')
+          .select('id, status')
+          .eq('classId', clsId)
+          .eq('userId', user.id)
+          .in('status', ['booked', 'waiting'])
+          .single();
 
-      setBookedClassIds(prev => [...prev, clsId]);
-      setUserPasses(prev => prev - 1);
-      setClasses(prev => prev.map(c => {
-        if (c.id === clsId) {
-          return { ...c, bookedCount: c.bookedCount + 1 };
+        if (findError || !bookingData) {
+          addToast('未找到您的预约记录！', 'error');
+          setMutatingClassId(null);
+          return;
         }
-        return c;
-      }));
-      addToast(`预约成功！《${cls.title}》将在室开课，记得准时参加。`, 'success');
+
+        const { data: rpcData, error: rpcError } = await supabase.rpc('cancel_booking', {
+          p_booking_id: bookingData.id
+        });
+
+        if (rpcError) {
+          const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
+          addToast(errorMsg, 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+        if (result && result.success) {
+          // Remove from local states
+          setBookedClassIds(prev => prev.filter(id => id !== clsId));
+          setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
+
+          if (result.refunded) {
+            setUserPasses(prev => prev + 1);
+            addToast(`已成功取消 《${cls.title}》 的预约，1课次已被退回！`, 'info');
+          } else {
+            addToast(BOOKING_ERRORS['late_cancellation'], 'error');
+          }
+
+          // Fetch fresh server state to guarantee synchrony
+          if (onRefresh) {
+            await onRefresh();
+          }
+        } else {
+          const errCode = result?.error || 'default';
+          addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
+        }
+      } else {
+        // 2. Try to Book
+        if (cls.bookedCount >= cls.maxCount) {
+          addToast('抱歉，该课程名额已满。您可以选择"排队"进行预约。', 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        if (userPasses < 1) {
+          addToast(BOOKING_ERRORS['insufficient_passes'], 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const { data: rpcData, error: rpcError } = await supabase.rpc('book_class', {
+          p_instance_id: clsId
+        });
+
+        if (rpcError) {
+          const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
+          addToast(errorMsg, 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+        if (result && result.success) {
+          if (result.status === 'booked') {
+            setBookedClassIds(prev => [...prev, clsId]);
+            setUserPasses(prev => Math.max(0, prev - 1));
+            addToast(`预约成功！《${cls.title}》将在室开课，记得准时参加。`, 'success');
+          } else if (result.status === 'waiting') {
+            setWaitlistClassIds(prev => [...prev, clsId]);
+            setUserPasses(prev => Math.max(0, prev - 1));
+            addToast(`您已经加入《${cls.title}》 候补排队。若有位置将自动转入并短信通知您！`, 'success');
+          }
+
+          if (onRefresh) {
+            await onRefresh();
+          }
+        } else {
+          const errCode = result?.error || 'default';
+          addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
+        }
+      }
+    } catch (err: any) {
+      console.error('Booking toggle unexpected error:', err);
+      addToast(BOOKING_ERRORS['default'], 'error');
+    } finally {
+      setMutatingClassId(null);
     }
   };
 
   // Handle Waitlist Queue Toggle
-  const handleWaitlistToggle = (clsId: string) => {
+  const handleWaitlistToggle = async (clsId: string) => {
+    if (!user) {
+      addToast('请先登录系统！', 'error');
+      return;
+    }
+
     const cls = classes.find(c => c.id === clsId);
     if (!cls) return;
 
+    if (mutatingClassId) return;
+
     const isWaiting = waitlistClassIds.includes(clsId);
 
-    if (isWaiting) {
-      setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
-      addToast(`已取消 《${cls.title}》 的排队候补！`, 'info');
-    } else {
-      if (userPasses < 1) {
-        addToast('排队也需要冻结1个课次，请先在商城充值。', 'error');
-        return;
-      }
+    setMutatingClassId(clsId);
 
-      setWaitlistClassIds(prev => [...prev, clsId]);
-      addToast(`您已经加入《${cls.title}》 候补排队。若有位置将自动转入并短信通知您！`, 'success');
+    try {
+      if (isWaiting) {
+        // 1. Leave Waitlist (cancel booking)
+        const { data: bookingData, error: findError } = await supabase
+          .from('bookings')
+          .select('id, status')
+          .eq('classId', clsId)
+          .eq('userId', user.id)
+          .in('status', ['booked', 'waiting'])
+          .single();
+
+        if (findError || !bookingData) {
+          addToast('未找到您的排队候补记录！', 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const { data: rpcData, error: rpcError } = await supabase.rpc('cancel_booking', {
+          p_booking_id: bookingData.id
+        });
+
+        if (rpcError) {
+          const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
+          addToast(errorMsg, 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+        if (result && result.success) {
+          setBookedClassIds(prev => prev.filter(id => id !== clsId));
+          setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
+
+          if (result.refunded) {
+            setUserPasses(prev => prev + 1);
+            addToast(`已取消 《${cls.title}》 的排队候补，已返还1课次！`, 'info');
+          } else {
+            addToast(BOOKING_ERRORS['late_cancellation'], 'error');
+          }
+
+          if (onRefresh) {
+            await onRefresh();
+          }
+        } else {
+          const errCode = result?.error || 'default';
+          addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
+        }
+      } else {
+        // 2. Join Waitlist
+        if (userPasses < 1) {
+          addToast('排队也需要冻结1个课次，请先在商城充值。', 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const { data: rpcData, error: rpcError } = await supabase.rpc('book_class', {
+          p_instance_id: clsId
+        });
+
+        if (rpcError) {
+          const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
+          addToast(errorMsg, 'error');
+          setMutatingClassId(null);
+          return;
+        }
+
+        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+        if (result && result.success) {
+          if (result.status === 'booked') {
+            setBookedClassIds(prev => [...prev, clsId]);
+            setUserPasses(prev => Math.max(0, prev - 1));
+            addToast(`预约成功！《${cls.title}》已腾出位置，您已成功上车。`, 'success');
+          } else if (result.status === 'waiting') {
+            setWaitlistClassIds(prev => [...prev, clsId]);
+            setUserPasses(prev => Math.max(0, prev - 1));
+            addToast(`您已经加入《${cls.title}》 候补排队。若有位置将自动转入并短信通知您！`, 'success');
+          }
+
+          if (onRefresh) {
+            await onRefresh();
+          }
+        } else {
+          const errCode = result?.error || 'default';
+          addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
+        }
+      }
+    } catch (err: any) {
+      console.error('Waitlist toggle unexpected error:', err);
+      addToast(BOOKING_ERRORS['default'], 'error');
+    } finally {
+      setMutatingClassId(null);
     }
   };
 
@@ -602,22 +784,34 @@ export default function ScheduleView({
                           </div>
                         ) : isBooked ? (
                           <button
+                            disabled={mutatingClassId !== null}
                             onClick={() => handleBookingToggle(cls.id)}
-                            className={`border active:scale-95 text-xs px-3.5 py-2 rounded-full font-black transition flex items-center space-x-1 cursor-pointer ${
+                            className={`border active:scale-95 text-xs px-3.5 py-2 rounded-full font-black transition flex items-center space-x-1 ${
+                              mutatingClassId !== null ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                            } ${
                               isMint 
                                 ? 'bg-teal-500/10 hover:bg-teal-500/25 border-teal-500/20 text-teal-600' 
                                 : 'bg-rose-500/10 hover:bg-rose-500/25 border-rose-500/20 text-rose-500 text-rose-400'
                             }`}
                           >
-                            <CheckCircle2 className={`w-3.5 h-3.5 ${isMint ? 'text-teal-600' : 'text-rose-455 text-rose-400'}`} />
-                            <span>退约</span>
+                            {mutatingClassId === cls.id ? (
+                              <span>处理中...</span>
+                            ) : (
+                              <>
+                                <CheckCircle2 className={`w-3.5 h-3.5 ${isMint ? 'text-teal-600' : 'text-rose-455 text-rose-400'}`} />
+                                <span>退约</span>
+                              </>
+                            )}
                           </button>
                         ) : (
                           <div>
                             {isFull ? (
                               <button
+                                disabled={mutatingClassId !== null}
                                 onClick={() => handleWaitlistToggle(cls.id)}
-                                className={`text-[11px] px-4 py-2 rounded-full font-bold transition duration-250 active:scale-95 flex items-center space-x-1 cursor-pointer ${
+                                className={`text-[11px] px-4 py-2 rounded-full font-bold transition duration-250 active:scale-95 flex items-center space-x-1 ${
+                                  mutatingClassId !== null ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                } ${
                                   isWaiting
                                     ? isMint 
                                       ? 'bg-teal-500/10 border border-teal-500/20 text-teal-600' 
@@ -625,18 +819,21 @@ export default function ScheduleView({
                                     : defaultButtonClass
                                 }`}
                               >
-                                {isWaiting ? '候补中' : '排队'}
+                                {mutatingClassId === cls.id ? '处理中...' : isWaiting ? '候补中' : '排队'}
                               </button>
                             ) : (
                               <button
+                                disabled={mutatingClassId !== null}
                                 onClick={() => handleBookingToggle(cls.id)}
-                                className={`active:scale-95 text-xs px-5 py-2 rounded-full font-black transition shadow-lg cursor-pointer hover:scale-103 ${
+                                className={`active:scale-95 text-xs px-5 py-2 rounded-full font-black transition shadow-lg hover:scale-103 ${
+                                  mutatingClassId !== null ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                } ${
                                   isDark 
                                     ? 'bg-white hover:bg-zinc-100 text-[#0c0d14]' 
                                     : 'bg-slate-900 hover:bg-black text-white'
                                 }`}
                               >
-                                预约
+                                {mutatingClassId === cls.id ? '处理中...' : '预约'}
                               </button>
                             )}
                           </div>
