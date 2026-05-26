@@ -35,6 +35,12 @@ export const AuthScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
 
+  const getErrorMessage = (err: any) => {
+    const code = err.code || err.message?.toLowerCase().replace(/ /g, '_');
+    const mapping = AUTH_ERRORS[code] || AUTH_ERRORS['default'];
+    return `${mapping.en} / ${mapping.zh}`;
+  };
+
   useEffect(() => {
     let timer: number;
     if (countdown > 0) {
@@ -62,7 +68,7 @@ export const AuthScreen: React.FC = () => {
       setStep('otp');
       setCountdown(60);
     } catch (err: any) {
-      setError(err.message || 'Failed to send SMS code');
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -86,7 +92,7 @@ export const AuthScreen: React.FC = () => {
       if (error) throw error;
       // App.tsx will handle the session change automatically via AuthContext
     } catch (err: any) {
-      setError(err.message || 'Invalid or expired code');
+      setError(getErrorMessage(err));
       setLoading(false);
     }
   };
