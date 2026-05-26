@@ -35,6 +35,16 @@ export const AuthScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
 
+  useEffect(() => {
+    let timer: number;
+    if (countdown > 0) {
+      timer = window.setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [countdown]);
+
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) {
@@ -50,6 +60,7 @@ export const AuthScreen: React.FC = () => {
       });
       if (error) throw error;
       setStep('otp');
+      setCountdown(60);
     } catch (err: any) {
       setError(err.message || 'Failed to send SMS code');
     } finally {
