@@ -24,7 +24,7 @@ BEGIN
 
   -- 3. Update user passes
   UPDATE public.users 
-  SET "remainingPasses" = "remainingPasses" + v_card.passes 
+  SET "remainingPasses" = "remainingPasses" + (CASE WHEN v_card.passes = -1 THEN 9999 ELSE v_card.passes END)
   WHERE id = p_user_id;
   
   -- 4. Record the purchase
@@ -41,7 +41,7 @@ BEGIN
     p_card_id, 
     v_card.title, 
     v_card.price, 
-    v_card.passes, 
+    (CASE WHEN v_card.passes = -1 THEN 9999 ELSE v_card.passes END), 
     p_stripe_payment_id
   );
 
