@@ -85,6 +85,13 @@ export default function App() {
   // Action feedback feedback alerts state
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
 
+  // Sync state with profile
+  useEffect(() => {
+    if (profile) {
+      setUserPasses(profile.remainingPasses);
+    }
+  }, [profile]);
+
   // Local storage synchronization triggered upon core state alterations
   useEffect(() => {
     localStorage.setItem('plana_userPasses', String(userPasses));
@@ -197,7 +204,13 @@ export default function App() {
               await signOut();
               addToast('Logged out successfully', 'info');
             }}
-            onToggleAdmin={() => setIsAdminMode(true)}
+            onToggleAdmin={() => {
+              if (profile?.name === 'Admin' || user?.email?.includes('admin')) {
+                setIsAdminMode(true);
+              } else {
+                addToast('无管理员权限 (Unauthorized: Admin access required)', 'error');
+              }
+            }}
           />
         );
       default:

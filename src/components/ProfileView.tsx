@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DanceClass, PurchaseRecord } from '../types';
 import { Award, Clock, History, Ban, User, Layers, ShieldCheck, Ticket, BarChart3, HelpCircle, Flame } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProfileViewProps {
   theme?: string;
@@ -36,8 +37,14 @@ export default function ProfileView({
   onLogout,
   onToggleAdmin
 }: ProfileViewProps) {
+  const { profile, user } = useAuth();
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
+
+  // Compute real user data
+  const displayName = profile?.name || user?.phone?.replace(/^\+86/, '') || '新同学';
+  const accountInfo = user?.phone || user?.email || '未绑定账户';
+  const currentPasses = profile?.remainingPasses ?? userPasses;
 
   // Compute theme dependent layout classes
   const bgClass = isDark ? 'bg-[#0c0d14]' : isMint ? 'bg-[#F0F2FA]' : 'bg-[#FAF8F5]';
@@ -132,19 +139,19 @@ export default function ProfileView({
 
         <div className="relative z-10 flex items-center space-x-4">
           <img
-            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"
+            src={profile?.avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"}
             alt="User Avatar"
             className={`w-13 h-13 rounded-full object-cover border-2 ${isMint ? 'border-teal-400' : 'border-rose-500'}`}
             referrerPolicy="no-referrer"
           />
           <div>
             <div className="flex items-center space-x-2 flex-wrap">
-              <span className="font-extrabold text-white text-sm block">PLANA_51421</span>
+              <span className="font-extrabold text-white text-sm block">{displayName}</span>
               <span className={`text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded border leading-none ${
-                isMint ? 'bg-teal-500/20 border-teal-400 text-teal-300' : 'bg-rose-500/20 border-rose-500/50 text-rose-305 text-rose-300'
+                isMint ? 'bg-teal-500/20 border-teal-400 text-teal-300' : 'bg-rose-500/20 border-rose-500/50 text-rose-300'
               }`}>LEAGUE LV.2</span>
             </div>
-            <span className="text-[9px] text-zinc-400 font-mono block mt-1 tracking-tight">绑定账户: mihw001@gmail.com</span>
+            <span className="text-[9px] text-zinc-400 font-mono block mt-1 tracking-tight">绑定账户: {accountInfo}</span>
           </div>
         </div>
 
@@ -153,7 +160,7 @@ export default function ProfileView({
           <div>
             <span className="text-[9px] text-zinc-400 block font-bold font-sans">可用课充点</span>
             <span className={`text-base font-extrabold block mt-0.5 ${isMint ? 'text-teal-400' : 'text-rose-400'}`}>
-              {userPasses} 次
+              {currentPasses} 次
             </span>
           </div>
           <div>
