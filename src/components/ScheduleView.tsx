@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { DanceClass, Teacher } from '../types';
 import { TEACHERS } from '../data';
-import { Calendar, Filter, ChevronLeft, ChevronRight, CheckCircle2, Layers } from 'lucide-react';
+import { Calendar, Filter, ChevronLeft, ChevronRight, CheckCircle2, Layers, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import SpotSelector from './SpotSelector';
 
 const BOOKING_ERRORS: Record<string, string> = {
   'insufficient_passes': '课次余额不足 (Insufficient passes)',
@@ -24,6 +25,8 @@ interface ScheduleViewProps {
   setWaitlistClassIds: React.Dispatch<React.SetStateAction<string[]>>;
   addToast: (msg: string, type: 'success' | 'info' | 'error') => void;
   onRefresh?: () => Promise<void>;
+  bookedSpots?: Record<string, string>;
+  setBookedSpots?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 
 const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -39,7 +42,9 @@ export default function ScheduleView({
   waitlistClassIds,
   setWaitlistClassIds,
   addToast,
-  onRefresh
+  onRefresh,
+  bookedSpots = {},
+  setBookedSpots
 }: ScheduleViewProps) {
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
@@ -96,6 +101,10 @@ export default function ScheduleView({
   // States for Modals
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Confirmation Modal & Spot selector states
+  const [selectedClassForBooking, setSelectedClassForBooking] = useState<DanceClass | null>(null);
+  const [selectedSpot, setSelectedSpot] = useState<string | null>(null);
 
   // Filter conditions
   const [filterRoom, setFilterRoom] = useState<string>('全部教室');
@@ -197,10 +206,9 @@ export default function ScheduleView({
 
     const isAlreadyBooked = bookedClassIds.includes(clsId);
 
-    setMutatingClassId(clsId);
-
     try {
       if (isAlreadyBooked) {
+        setMutatingClassId(clsId);
         // 1. Unbook / Cancellation
         const { data: bookingData, error: findError } = await supabase
           .from('bookings')
@@ -234,6 +242,29 @@ export default function ScheduleView({
           setBookedClassIds(prev => prev.filter(id => id !== clsId));
           setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
 
+          // Also remove spot from c.reservedSpots list locally
+          setClasses(prev => prev.map(c => {
+            if (c.id === clsId) {
+              const spot = bookedSpots[clsId];
+              const newReserved = c.reservedSpots ? c.reservedSpots.filter(s => s !== spot) : [];
+              return {
+                ...c,
+                bookedCount: Math.max(0, c.bookedCount - 1),
+                reservedSpots: newReserved
+              };
+            }
+            return c;
+          }));
+
+          // Clear spot
+          if (setBookedSpots) {
+            setBookedSpots(prev => {
+              const copy = { ...prev };
+              delete copy[clsId];
+              return copy;
+            });
+          }
+
           if (result.refunded) {
             setUserPasses(prev => prev + 1);
             addToast(`已成功取消 《${cls.title}》 的预约，1课次已被退回！`, 'info');
@@ -250,53 +281,100 @@ export default function ScheduleView({
           addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
         }
       } else {
-        // 2. Try to Book
+        // 2. Intercept unbooked class - Open Confirmation & Spot selector instead of booking immediately
         if (cls.bookedCount >= cls.maxCount) {
           addToast('抱歉，该课程名额已满。您可以选择"排队"进行预约。', 'error');
-          setMutatingClassId(null);
           return;
         }
 
         if (userPasses < 1) {
           addToast(BOOKING_ERRORS['insufficient_passes'], 'error');
-          setMutatingClassId(null);
           return;
         }
 
-        const { data: rpcData, error: rpcError } = await supabase.rpc('book_class', {
-          p_instance_id: clsId
-        });
-
-        if (rpcError) {
-          const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
-          addToast(errorMsg, 'error');
-          setMutatingClassId(null);
-          return;
-        }
-
-        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-
-        if (result && result.success) {
-          if (result.status === 'booked') {
-            setBookedClassIds(prev => [...prev, clsId]);
-            setUserPasses(prev => Math.max(0, prev - 1));
-            addToast(`预约成功！《${cls.title}》将在室开课，记得准时参加。`, 'success');
-          } else if (result.status === 'waiting') {
-            setWaitlistClassIds(prev => [...prev, clsId]);
-            setUserPasses(prev => Math.max(0, prev - 1));
-            addToast(`您已经加入《${cls.title}》 候补排队。若有位置将自动转入并短信通知您！`, 'success');
-          }
-
-          if (onRefresh) {
-            await onRefresh();
-          }
-        } else {
-          const errCode = result?.error || 'default';
-          addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
-        }
+        setSelectedClassForBooking(cls);
+        setSelectedSpot(null);
       }
     } catch (err: any) {
       console.error('Booking toggle unexpected error:', err);
+      addToast(BOOKING_ERRORS['default'], 'error');
+    } finally {
+      setMutatingClassId(null);
+    }
+  };
+
+  // Handle Confirm Booking with Spot
+  const handleConfirmBookingWithSpot = async () => {
+    if (!selectedClassForBooking || !selectedSpot) {
+      addToast('请选择一个位置以继续预约！', 'error');
+      return;
+    }
+
+    const cls = selectedClassForBooking;
+    const clsId = cls.id;
+
+    if (mutatingClassId) return;
+    setMutatingClassId(clsId);
+
+    try {
+      const { data: rpcData, error: rpcError } = await supabase.rpc('book_class', {
+        p_instance_id: clsId
+      });
+
+      if (rpcError) {
+        const errorMsg = BOOKING_ERRORS[rpcError.message] || rpcError.message || BOOKING_ERRORS['default'];
+        addToast(errorMsg, 'error');
+        setMutatingClassId(null);
+        return;
+      }
+
+      const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+      if (result && result.success) {
+        // Save the chosen spot in global React / localStorage states
+        if (setBookedSpots) {
+          setBookedSpots(prev => ({
+            ...prev,
+            [clsId]: selectedSpot
+          }));
+        }
+
+        // Add to c.reservedSpots list locally
+        setClasses(prev => prev.map(c => {
+          if (c.id === clsId) {
+            const reserved = c.reservedSpots || [];
+            return {
+              ...c,
+              bookedCount: c.bookedCount + 1,
+              reservedSpots: [...reserved, selectedSpot]
+            };
+          }
+          return c;
+        }));
+
+        if (result.status === 'booked') {
+          setBookedClassIds(prev => [...prev, clsId]);
+          setUserPasses(prev => Math.max(0, prev - 1));
+          addToast(`预约成功！已为您锁定 ${selectedSpot} 号位，准时开课见！`, 'success');
+        } else if (result.status === 'waiting') {
+          setWaitlistClassIds(prev => [...prev, clsId]);
+          setUserPasses(prev => Math.max(0, prev - 1));
+          addToast(`已加入候补，位置已被冻结。`, 'success');
+        }
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        // Close modal
+        setSelectedClassForBooking(null);
+        setSelectedSpot(null);
+      } else {
+        const errCode = result?.error || 'default';
+        addToast(BOOKING_ERRORS[errCode] || BOOKING_ERRORS['default'], 'error');
+      }
+    } catch (err) {
+      console.error('Confirm booking unexpected error:', err);
       addToast(BOOKING_ERRORS['default'], 'error');
     } finally {
       setMutatingClassId(null);
@@ -1292,6 +1370,163 @@ export default function ScheduleView({
                 </div>
               </motion.div>
             </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ==================== SCREEN DIALOG 3: BOOKING CONFIRMATION & SPOT SELECTOR MODAL  ==================== */}
+      <AnimatePresence>
+        {selectedClassForBooking && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                if (mutatingClassId === null) {
+                  setSelectedClassForBooking(null);
+                  setSelectedSpot(null);
+                }
+              }}
+              className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            ></motion.div>
+
+            {/* Modal Body Container */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 30 }}
+              className={`rounded-[32px] w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl relative z-10 border text-white overflow-hidden ${
+                isDark ? 'bg-[#13141f] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-800'
+              }`}
+            >
+              {/* Header: Class Overview */}
+              <div className={`p-5 border-b flex items-center justify-between shrink-0 ${
+                isDark ? 'bg-[#181926] border-white/5' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <div className="flex items-center space-x-2">
+                  <Sparkles className={`w-4 h-4 ${highlightText} animate-pulse`} />
+                  <span className={`text-xs font-black tracking-widest uppercase ${textSecondary}`}>
+                    自主选座预约 (Classroom Spot Booking)
+                  </span>
+                </div>
+                <button
+                  disabled={mutatingClassId !== null}
+                  onClick={() => {
+                    setSelectedClassForBooking(null);
+                    setSelectedSpot(null);
+                  }}
+                  className={`p-1.5 rounded-full transition-all border ${
+                    isDark
+                      ? 'bg-white/5 hover:bg-white/10 border-white/5 text-zinc-400 hover:text-white'
+                      : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-500 hover:text-slate-850'
+                  }`}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Scrollable Content: Spot selector grid & details */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                {/* Class details card */}
+                <div className={`p-4.5 rounded-2xl border flex items-center justify-between ${
+                  isDark ? 'bg-white/5 border-white/5' : 'bg-slate-100/50 border-slate-200'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${badgeClass}`}>
+                        {selectedClassForBooking.type === 'group' ? '精品大课' : selectedClassForBooking.type === 'private' ? '私教课' : '特别班课'}
+                      </span>
+                      <h3 className={`text-sm font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {selectedClassForBooking.title}
+                      </h3>
+                    </div>
+                    <p className={`text-[10px] font-bold font-mono ${highlightText}`}>
+                      {selectedClassForBooking.date} • {selectedClassForBooking.timeStart} ~ {selectedClassForBooking.timeEnd}
+                    </p>
+                    <p className={`text-[9px] font-bold ${textSecondary}`}>
+                      导师: {selectedClassForBooking.teacher.name} • 课室: {selectedClassForBooking.classroom}
+                    </p>
+                  </div>
+                  
+                  {/* Teacher Avatar preview */}
+                  <img
+                    src={selectedClassForBooking.teacher.avatar}
+                    alt={selectedClassForBooking.teacher.name}
+                    className={`w-12 h-12 rounded-full object-cover border-2 shadow-sm ${
+                      isMint ? 'border-teal-500/30' : 'border-rose-500/30'
+                    }`}
+                  />
+                </div>
+
+                {/* Spot selector */}
+                <SpotSelector
+                  classId={selectedClassForBooking.id}
+                  reservedSpots={selectedClassForBooking.reservedSpots || []}
+                  selectedSpot={selectedSpot}
+                  onSelectSpot={(spot) => {
+                    setSelectedSpot(spot);
+                  }}
+                  theme={theme}
+                />
+              </div>
+
+              {/* Bottom Action Footer with Pass count warning & confirm buttons */}
+              <div className={`p-5 border-t shrink-0 ${
+                isDark ? 'border-white/5 bg-[#181926]' : 'border-slate-200 bg-slate-50'
+              }`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-1.5">
+                    <span className={`text-[10px] font-bold ${textSecondary}`}>扣减费用:</span>
+                    <span className={`text-xs font-black ${highlightText}`}>1 课次点数</span>
+                  </div>
+                  <div className="text-[10px] font-bold font-sans">
+                    <span className={isDark ? 'text-zinc-500' : 'text-slate-400'}>钱包剩余: </span>
+                    <span className={isDark ? 'text-white' : 'text-slate-800'}>{userPasses}次</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3.5">
+                  <button
+                    disabled={mutatingClassId !== null}
+                    onClick={() => {
+                      setSelectedClassForBooking(null);
+                      setSelectedSpot(null);
+                    }}
+                    className={`w-full py-3.5 text-xs font-bold rounded-full border transition cursor-pointer flex items-center justify-center ${
+                      isDark 
+                        ? 'bg-white/5 hover:bg-white/10 text-zinc-300 border-white/5' 
+                        : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    取消返回
+                  </button>
+                  <button
+                    disabled={mutatingClassId !== null || !selectedSpot}
+                    onClick={handleConfirmBookingWithSpot}
+                    className={`w-full py-3.5 text-white text-xs font-black rounded-full shadow-lg transition flex items-center justify-center space-x-1.5 ${
+                      !selectedSpot 
+                        ? 'bg-zinc-800 border-zinc-800 text-zinc-500 cursor-not-allowed opacity-40 shadow-none' 
+                        : ctaBtnColor
+                    }`}
+                  >
+                    {mutatingClassId !== null ? (
+                      <span>正在锁定...</span>
+                    ) : (
+                      <>
+                        <span>确认选位预约</span>
+                        {selectedSpot && (
+                          <span className="bg-white/20 text-[9px] px-1.5 py-0.5 rounded leading-none">
+                            {selectedSpot}号位
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>

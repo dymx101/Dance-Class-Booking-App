@@ -22,6 +22,7 @@ export interface DanceClass {
   maxCount: number;
   openBookingTime?: string; // string or undefined if open
   type: 'group' | 'private' | 'series'; // 团课, 私教, 班课
+  reservedSpots?: string[];
 }
 
 export interface User {

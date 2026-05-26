@@ -83,6 +83,11 @@ export default function App() {
     return generateClasses();
   });
 
+  const [bookedSpots, setBookedSpots] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('plana_bookedSpots');
+    return saved ? JSON.parse(saved) : { 'template_02_jazz_g1_2026-05-25': 'A3' };
+  });
+
   // Action feedback feedback alerts state
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
 
@@ -199,6 +204,10 @@ export default function App() {
     localStorage.setItem('plana_classes_db', JSON.stringify(classes));
   }, [classes]);
 
+  useEffect(() => {
+    localStorage.setItem('plana_bookedSpots', JSON.stringify(bookedSpots));
+  }, [bookedSpots]);
+
   // Dispatch Toast notice
   const addToast = (msg: string, type: 'success' | 'info' | 'error' = 'success') => {
     const newToast: ToastMsg = {
@@ -259,6 +268,8 @@ export default function App() {
             setWaitlistClassIds={setWaitlistClassIds}
             addToast={addToast}
             onRefresh={fetchClassesAndBookings}
+            bookedSpots={bookedSpots}
+            setBookedSpots={setBookedSpots}
           />
         );
       case 'store':
@@ -287,6 +298,8 @@ export default function App() {
             setClasses={setClasses}
             purchaseHistory={purchaseHistory}
             addToast={addToast}
+            bookedSpots={bookedSpots}
+            setBookedSpots={setBookedSpots}
             onLogout={async () => {
               await signOut();
               addToast('Logged out successfully', 'info');

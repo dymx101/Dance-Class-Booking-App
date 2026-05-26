@@ -2,16 +2,8 @@
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
-  -- Simple logic for the prototype: check if email contains 'admin' 
-  -- or if the user profile name is 'Admin'
-  RETURN (
-    SELECT EXISTS (
-      SELECT 1 FROM public.users
-      WHERE id = auth.uid() AND (name = 'Admin' OR name ILIKE '%管理员%')
-    ) OR (
-      auth.jwt() ->> 'email' LIKE '%admin%'
-    )
-  );
+  -- Use JWT app_metadata for secure role check
+  RETURN (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin';
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -38,10 +30,10 @@ CREATE POLICY "Admins Manage Payment Cards" ON payment_cards
 CREATE POLICY "Admins Read All Profiles" ON users 
     FOR SELECT USING (public.is_admin());
 
--- 8. Bookings table: User cancellation + Admin view all
-CREATE POLICY "Users Update Own Bookings" ON bookings 
-    FOR UPDATE USING (auth.uid() = userId) 
-    WITH CHECK (auth.uid() = userId);
+-- 8. Bookings table: User READ-ONLY + Admin FULL CONTROL
+-- Drop direct modification policies for users
+DROP POLICY IF EXISTS "Users Insert Own Bookings" ON bookings;
+DROP POLICY IF EXISTS "Users Update Own Bookings" ON bookings;
 
 CREATE POLICY "Admins Manage All Bookings" ON bookings 
     FOR ALL USING (public.is_admin());

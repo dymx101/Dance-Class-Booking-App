@@ -305,6 +305,17 @@ export const generateClasses = (): DanceClass[] => {
         bookedCount = Math.floor(Math.random() * (tmpl.maxCount - 1));
       }
 
+      // Generate randomized pre-populated reservedSpots based on bookedCount
+      const allSpots = [];
+      const rows = ['A', 'B', 'C', 'D', 'E'];
+      for (const row of rows) {
+        for (let col = 1; col <= 6; col++) {
+          allSpots.push(`${row}${col}`);
+        }
+      }
+      const shuffledSpots = [...allSpots].sort(() => 0.5 - Math.random());
+      const reservedSpots = shuffledSpots.slice(0, bookedCount);
+
       // Future bookings on May 26/27 onwards might display opening time rules in the screenshots, e.g., "05月24日 00:00可约"
       let openBookingTime: string | undefined = undefined;
       if (dateStr > '2026-05-27') {
@@ -316,7 +327,8 @@ export const generateClasses = (): DanceClass[] => {
         id: `${tmpl.id}_${dateStr}`,
         bookedCount,
         openBookingTime,
-        date: dateStr
+        date: dateStr,
+        reservedSpots
       });
     });
   });

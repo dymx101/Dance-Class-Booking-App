@@ -22,6 +22,7 @@ CREATE OR REPLACE FUNCTION public.book_class(p_instance_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_user_id UUID;
@@ -32,6 +33,7 @@ DECLARE
     v_queue_number INT;
     v_booking_id UUID;
     v_existing_status TEXT;
+    v_class_timestamp TIMESTAMPTZ;
 BEGIN
     v_user_id := auth.uid();
     IF v_user_id IS NULL THEN
@@ -62,6 +64,12 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Class not found');
     END IF;
 
+    -- Check if class has already started or passed
+    v_class_timestamp := v_class_record.date + v_class_record."timeStart";
+    IF v_class_timestamp <= CURRENT_TIMESTAMP THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Class has already started or passed');
+    END IF;
+
     -- Check if already booked or waiting
     SELECT status INTO v_existing_status
     FROM public.bookings
@@ -73,7 +81,8 @@ BEGIN
     END IF;
 
     -- Check capacity and waitlist
-    SELECT count(*) FILTER (WHERE status = 'booked') as booked_count,
+    -- Capacity check includes 'attended' status
+    SELECT count(*) FILTER (WHERE status IN ('booked', 'attended')) as booked_count,
            count(*) FILTER (WHERE status = 'waiting') as waitlist_count
     INTO v_booked_count, v_queue_number
     FROM public.bookings
@@ -114,6 +123,7 @@ CREATE OR REPLACE FUNCTION public.cancel_booking(p_booking_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_user_id UUID;
@@ -161,6 +171,10 @@ BEGIN
     FROM public.bookings
     WHERE id = p_booking_id
     FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Booking not found');
+    END IF;
 
     -- Verify status again after lock
     IF v_booking_record.status NOT IN ('booked', 'waiting') THEN

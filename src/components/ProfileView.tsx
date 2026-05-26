@@ -17,6 +17,8 @@ interface ProfileViewProps {
   setClasses: React.Dispatch<React.SetStateAction<DanceClass[]>>;
   purchaseHistory: PurchaseRecord[];
   addToast: (msg: string, type: 'success' | 'info' | 'error') => void;
+  bookedSpots?: Record<string, string>;
+  setBookedSpots?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onLogout?: () => void;
   onToggleAdmin?: () => void;
 }
@@ -34,6 +36,8 @@ export default function ProfileView({
   setClasses,
   purchaseHistory,
   addToast,
+  bookedSpots = {},
+  setBookedSpots,
   onLogout,
   onToggleAdmin
 }: ProfileViewProps) {
@@ -73,11 +77,25 @@ export default function ProfileView({
     setClasses((prev) =>
       prev.map((c) => {
         if (c.id === clsId) {
-          return { ...c, bookedCount: Math.max(0, c.bookedCount - 1) };
+          // If class has reservedSpots, free it
+          const spot = bookedSpots[clsId];
+          const newReserved = c.reservedSpots ? c.reservedSpots.filter(s => s !== spot) : [];
+          return { 
+            ...c, 
+            bookedCount: Math.max(0, c.bookedCount - 1),
+            reservedSpots: newReserved
+          };
         }
         return c;
       })
     );
+    if (setBookedSpots) {
+      setBookedSpots((prev) => {
+        const copy = { ...prev };
+        delete copy[clsId];
+        return copy;
+      });
+    }
     addToast(`已成功取消 《${title}》 的大课预约，1课点退回钱包。`, 'info');
   };
 
@@ -366,6 +384,17 @@ export default function ProfileView({
                     <p className={`text-[9px] mt-1 font-bold ${textSecondary}`}>
                       导师: {cls.teacher.name} • {cls.classroom}
                     </p>
+                    {bookedSpots && bookedSpots[cls.id] && (
+                      <div className="mt-2.5">
+                        <span className={`inline-block text-[9px] font-extrabold px-2 py-0.7 rounded-md leading-none ${
+                          isMint
+                            ? 'bg-teal-500/10 text-teal-600 border border-teal-500/20'
+                            : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                        }`}>
+                          📍 已选位置: {bookedSpots[cls.id]}号位
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <button
