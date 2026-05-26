@@ -12,7 +12,7 @@ DECLARE
   v_card RECORD;
 BEGIN
   -- 1. Check for idempotency (already fulfilled)
-  IF EXISTS (SELECT 1 FROM public.purchase_records WHERE "stripePaymentId" = p_stripe_payment_id) THEN
+  IF EXISTS (SELECT 1 FROM public.purchase_records WHERE stripepaymentid = p_stripe_payment_id) THEN
     RETURN jsonb_build_object('success', true, 'message', 'Already fulfilled');
   END IF;
 
@@ -24,17 +24,17 @@ BEGIN
 
   -- 3. Update user passes
   UPDATE public.users 
-  SET "remainingPasses" = "remainingPasses" + (CASE WHEN v_card.passes = -1 THEN 9999 ELSE v_card.passes END)
+  SET remainingpasses = remainingpasses + (CASE WHEN v_card.passes = -1 THEN 9999 ELSE v_card.passes END)
   WHERE id = p_user_id;
   
   -- 4. Record the purchase
   INSERT INTO public.purchase_records (
-    "userId", 
-    "cardId", 
-    "cardName", 
-    "price", 
-    "passesAdded", 
-    "stripePaymentId"
+    userid, 
+    cardid, 
+    cardname, 
+    price, 
+    passesadded, 
+    stripepaymentid
   )
   VALUES (
     p_user_id, 
