@@ -25,6 +25,7 @@ export interface DanceClass {
 }
 
 export interface User {
+  id: string;
   name: string;
   phone: string;
   avatar: string;
@@ -62,6 +63,23 @@ export interface PurchaseRecord {
   price: number;
   passesAdded: number;
   date: string;
+}
+
+export interface ClassTemplate {
+  id: string;
+  title: string;
+  genre: 'hiphop' | 'jazz' | 'urban' | 'contemporary' | 'house' | 'kpop' | 'heels';
+  dayOfWeek: number; // 0-6
+  timeStart: string; // "HH:MM"
+  timeEnd: string; // "HH:MM"
+  teacherId: string;
+  teacher?: Teacher;
+  difficulty: number;
+  classroom: string;
+  minPeople: number;
+  maxCount: number;
+  type: 'group' | 'private' | 'series';
+  isActive: boolean;
 }
 
 export type AppTheme = 'vibrant-light' | 'cool-mint' | 'midnight-cyber';
