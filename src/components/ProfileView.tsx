@@ -17,6 +17,7 @@ interface ProfileViewProps {
   purchaseHistory: PurchaseRecord[];
   addToast: (msg: string, type: 'success' | 'info' | 'error') => void;
   onLogout?: () => void;
+  onToggleAdmin?: () => void;
 }
 
 export default function ProfileView({
@@ -32,7 +33,8 @@ export default function ProfileView({
   setClasses,
   purchaseHistory,
   addToast,
-  onLogout
+  onLogout,
+  onToggleAdmin
 }: ProfileViewProps) {
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
@@ -89,9 +91,23 @@ export default function ProfileView({
     <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="profile-view-container">
       {/* Upper header */}
       <div className={`flex items-center justify-between pb-3 border-b ${headerBorder} mb-3`}>
-        <div>
-          <h2 className={`text-sm font-black uppercase tracking-wider ${textWhite}`}>会员中心</h2>
-          <p className="text-[8px] text-zinc-500 font-bold tracking-widest mt-1">PLANA SPECIAL STUDENT</p>
+        <div className="flex items-center space-x-4">
+          <div>
+            <h2 className={`text-sm font-black uppercase tracking-wider ${textWhite}`}>会员中心</h2>
+            <p className="text-[8px] text-zinc-500 font-bold tracking-widest mt-1">PLANA SPECIAL STUDENT</p>
+          </div>
+          {onToggleAdmin && (
+            <button
+              onClick={onToggleAdmin}
+              className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border ${
+                isMint 
+                  ? 'bg-teal-500/10 border-teal-500/20 text-teal-600 hover:bg-teal-500/20' 
+                  : 'bg-rose-500/10 border-rose-500/20 text-rose-600 hover:bg-rose-500/20'
+              }`}
+            >
+              进入后台
+            </button>
+          )}
         </div>
         <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm border ${
           isMint 

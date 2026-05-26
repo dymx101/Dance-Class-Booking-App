@@ -5,6 +5,8 @@ import HomeView from './components/HomeView';
 import ScheduleView from './components/ScheduleView';
 import StoreView from './components/StoreView';
 import ProfileView from './components/ProfileView';
+import AdminLayout from './components/admin/AdminLayout';
+import TeacherManager from './components/admin/TeacherManager';
 import { Home, CalendarDays, ShoppingBag, User, Wifi, Battery, Signal, Bell, XCircle, Info, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -23,6 +25,10 @@ export default function App() {
 
   // Tab control states: 'home' | 'schedule' | 'store' | 'profile'
   const [activeTab, setActiveTab] = useState<'home' | 'schedule' | 'store' | 'profile'>('home');
+
+  // Admin panel states
+  const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+  const [adminTab, setAdminTab] = useState<'schedule' | 'teachers'>('schedule');
 
   // WeChat login interactive sub-states
   const [agreementChecked, setAgreementChecked] = useState<boolean>(false);
@@ -186,12 +192,29 @@ export default function App() {
               localStorage.removeItem('plana_authorized');
               addToast('已安全退出微信授权登录！', 'info');
             }}
+            onToggleAdmin={() => setIsAdminMode(true)}
           />
         );
       default:
         return null;
     }
   };
+
+  if (isAdminMode) {
+    return (
+      <AdminLayout 
+        activeTab={adminTab} 
+        setActiveTab={setAdminTab} 
+        onExit={() => setIsAdminMode(false)}
+      >
+        {adminTab === 'teachers' ? (
+          <TeacherManager />
+        ) : (
+          <div className="p-8 text-center text-slate-400 font-bold">Schedule Management coming soon...</div>
+        )}
+      </AdminLayout>
+    );
+  }
 
   const renderWeChatLoginScreen = () => {
     return (
