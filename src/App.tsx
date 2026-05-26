@@ -124,16 +124,21 @@ export default function App() {
         setUserPasses(userData.remainingPasses);
       }
 
-      // 4. Fetch bookings count for each class instance to calculate bookedCount
+      // 4. Fetch bookings count for each class instance to calculate bookedCount and reservedSpots
       const { data: allBookingsData, error: allBookingsError } = await supabase
         .from('bookings')
-        .select('classId, status');
+        .select('classId, status, spotNumber');
 
       const bookedCounts: Record<string, number> = {};
+      const reservedSpots: Record<string, string[]> = {};
       if (!allBookingsError && allBookingsData) {
         allBookingsData.forEach((b) => {
           if (b.status === 'booked') {
             bookedCounts[b.classId] = (bookedCounts[b.classId] || 0) + 1;
+            if (b.spotNumber) {
+              if (!reservedSpots[b.classId]) reservedSpots[b.classId] = [];
+              reservedSpots[b.classId].push(b.spotNumber);
+            }
           }
         });
       }
@@ -145,11 +150,12 @@ export default function App() {
           ...cls,
           timeStart: cls.timeStart ? cls.timeStart.substring(0, 5) : '',
           timeEnd: cls.timeEnd ? cls.timeEnd.substring(0, 5) : '',
-          bookedCount: countFromDB
+          bookedCount: countFromDB,
+          reservedSpots: reservedSpots[cls.id] || []
         };
       });
 
-      // Extract booked and waiting classIds
+      // Extract booked and waiting classIds and spots
       const bookedIds = (bookingsData || [])
         .filter((b) => b.status === 'booked')
         .map((b) => b.classId);
@@ -158,8 +164,16 @@ export default function App() {
         .filter((b) => b.status === 'waiting')
         .map((b) => b.classId);
 
+      const spots: Record<string, string> = {};
+      (bookingsData || []).forEach(b => {
+        if (b.status === 'booked' && b.spotNumber) {
+          spots[b.classId] = b.spotNumber;
+        }
+      });
+
       setBookedClassIds(bookedIds);
       setWaitlistClassIds(waitlistIds);
+      setBookedSpots(spots);
       setClasses(formattedClasses);
     } catch (err) {
       console.error('Error fetching Supabase classes and bookings:', err);
@@ -259,17 +273,12 @@ export default function App() {
           <ScheduleView
             theme={currentTheme}
             classes={classes}
-            setClasses={setClasses}
             userPasses={userPasses}
-            setUserPasses={setUserPasses}
             bookedClassIds={bookedClassIds}
-            setBookedClassIds={setBookedClassIds}
             waitlistClassIds={waitlistClassIds}
-            setWaitlistClassIds={setWaitlistClassIds}
             addToast={addToast}
             onRefresh={fetchClassesAndBookings}
             bookedSpots={bookedSpots}
-            setBookedSpots={setBookedSpots}
           />
         );
       case 'store':

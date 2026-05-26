@@ -18,7 +18,7 @@ END $$;
 
 
 -- Atomic Booking Function
-CREATE OR REPLACE FUNCTION public.book_class(p_instance_id UUID)
+CREATE OR REPLACE FUNCTION public.book_class(p_instance_id UUID, p_spot_number TEXT DEFAULT NULL)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -38,6 +38,13 @@ BEGIN
     v_user_id := auth.uid();
     IF v_user_id IS NULL THEN
         RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
+    END IF;
+
+    -- Check if spot is already taken
+    IF p_spot_number IS NOT NULL AND EXISTS (
+        SELECT 1 FROM public.bookings WHERE "classId" = p_instance_id AND "spotNumber" = p_spot_number AND status = 'booked'
+    ) THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Spot already taken');
     END IF;
 
     -- Check if user exists and get passes
@@ -106,8 +113,8 @@ BEGIN
     WHERE id = v_user_id;
 
     -- Create booking
-    INSERT INTO public.bookings ("classId", "userId", status, "queueNumber")
-    VALUES (p_instance_id, v_user_id, v_status, v_queue_number)
+    INSERT INTO public.bookings ("classId", "userId", status, "queueNumber", "spotNumber")
+    VALUES (p_instance_id, v_user_id, v_status, v_queue_number, CASE WHEN v_status = 'booked' THEN p_spot_number ELSE NULL END)
     RETURNING id INTO v_booking_id;
 
     RETURN jsonb_build_object('success', true, 'status', v_status, 'booking_id', v_booking_id);

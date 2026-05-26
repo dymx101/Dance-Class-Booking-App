@@ -8,25 +8,24 @@ import { useAuth } from '../contexts/AuthContext';
 import SpotSelector from './SpotSelector';
 
 const BOOKING_ERRORS: Record<string, string> = {
+  'Insufficient passes': '课次余额不足 (Insufficient passes)',
   'insufficient_passes': '课次余额不足 (Insufficient passes)',
+  'Late cancellation': '已超过取消时间，课次不予退回 (Late cancellation, no refund)',
   'late_cancellation': '已超过取消时间，课次不予退回 (Late cancellation, no refund)',
+  'Class has already started or passed': '课程已开始或已结束 (Class has started/passed)',
+  'Already booked or waiting': '您已预约或在候补名单中 (Already booked/waiting)',
   'default': '操作失败，请重试 (Action failed, please try again)'
 };
 
 interface ScheduleViewProps {
   theme?: string;
   classes: DanceClass[];
-  setClasses: React.Dispatch<React.SetStateAction<DanceClass[]>>;
   userPasses: number;
-  setUserPasses: React.Dispatch<React.SetStateAction<number>>;
   bookedClassIds: string[];
-  setBookedClassIds: React.Dispatch<React.SetStateAction<string[]>>;
   waitlistClassIds: string[];
-  setWaitlistClassIds: React.Dispatch<React.SetStateAction<string[]>>;
   addToast: (msg: string, type: 'success' | 'info' | 'error') => void;
   onRefresh?: () => Promise<void>;
   bookedSpots?: Record<string, string>;
-  setBookedSpots?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 
 const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -34,17 +33,12 @@ const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', 
 export default function ScheduleView({
   theme = 'vibrant-light',
   classes,
-  setClasses,
   userPasses,
-  setUserPasses,
   bookedClassIds,
-  setBookedClassIds,
   waitlistClassIds,
-  setWaitlistClassIds,
   addToast,
   onRefresh,
-  bookedSpots = {},
-  setBookedSpots
+  bookedSpots = {}
 }: ScheduleViewProps) {
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
@@ -238,35 +232,7 @@ export default function ScheduleView({
         const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
 
         if (result && result.success) {
-          // Remove from local states
-          setBookedClassIds(prev => prev.filter(id => id !== clsId));
-          setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
-
-          // Also remove spot from c.reservedSpots list locally
-          setClasses(prev => prev.map(c => {
-            if (c.id === clsId) {
-              const spot = bookedSpots[clsId];
-              const newReserved = c.reservedSpots ? c.reservedSpots.filter(s => s !== spot) : [];
-              return {
-                ...c,
-                bookedCount: Math.max(0, c.bookedCount - 1),
-                reservedSpots: newReserved
-              };
-            }
-            return c;
-          }));
-
-          // Clear spot
-          if (setBookedSpots) {
-            setBookedSpots(prev => {
-              const copy = { ...prev };
-              delete copy[clsId];
-              return copy;
-            });
-          }
-
           if (result.refunded) {
-            setUserPasses(prev => prev + 1);
             addToast(`已成功取消 《${cls.title}》 的预约，1课次已被退回！`, 'info');
           } else {
             addToast(BOOKING_ERRORS['late_cancellation'], 'error');
@@ -318,7 +284,8 @@ export default function ScheduleView({
 
     try {
       const { data: rpcData, error: rpcError } = await supabase.rpc('book_class', {
-        p_instance_id: clsId
+        p_instance_id: clsId,
+        p_spot_number: selectedSpot
       });
 
       if (rpcError) {
@@ -331,34 +298,9 @@ export default function ScheduleView({
       const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
 
       if (result && result.success) {
-        // Save the chosen spot in global React / localStorage states
-        if (setBookedSpots) {
-          setBookedSpots(prev => ({
-            ...prev,
-            [clsId]: selectedSpot
-          }));
-        }
-
-        // Add to c.reservedSpots list locally
-        setClasses(prev => prev.map(c => {
-          if (c.id === clsId) {
-            const reserved = c.reservedSpots || [];
-            return {
-              ...c,
-              bookedCount: c.bookedCount + 1,
-              reservedSpots: [...reserved, selectedSpot]
-            };
-          }
-          return c;
-        }));
-
         if (result.status === 'booked') {
-          setBookedClassIds(prev => [...prev, clsId]);
-          setUserPasses(prev => Math.max(0, prev - 1));
           addToast(`预约成功！已为您锁定 ${selectedSpot} 号位，准时开课见！`, 'success');
         } else if (result.status === 'waiting') {
-          setWaitlistClassIds(prev => [...prev, clsId]);
-          setUserPasses(prev => Math.max(0, prev - 1));
           addToast(`已加入候补，位置已被冻结。`, 'success');
         }
 
@@ -428,11 +370,7 @@ export default function ScheduleView({
         const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
 
         if (result && result.success) {
-          setBookedClassIds(prev => prev.filter(id => id !== clsId));
-          setWaitlistClassIds(prev => prev.filter(id => id !== clsId));
-
           if (result.refunded) {
-            setUserPasses(prev => prev + 1);
             addToast(`已取消 《${cls.title}》 的排队候补，已返还1课次！`, 'info');
           } else {
             addToast(BOOKING_ERRORS['late_cancellation'], 'error');
@@ -468,12 +406,8 @@ export default function ScheduleView({
 
         if (result && result.success) {
           if (result.status === 'booked') {
-            setBookedClassIds(prev => [...prev, clsId]);
-            setUserPasses(prev => Math.max(0, prev - 1));
             addToast(`预约成功！《${cls.title}》已腾出位置，您已成功上车。`, 'success');
           } else if (result.status === 'waiting') {
-            setWaitlistClassIds(prev => [...prev, clsId]);
-            setUserPasses(prev => Math.max(0, prev - 1));
             addToast(`您已经加入《${cls.title}》 候补排队。若有位置将自动转入并短信通知您！`, 'success');
           }
 
