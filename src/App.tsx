@@ -66,7 +66,8 @@ export default function App() {
         cardName: '10次团课周卡 (10 Classes Pack)',
         price: 399,
         passesAdded: 10,
-        date: '2026-05-23'
+        date: '2026-05-23',
+        stripePaymentId: 'pi_mock_123456789'
       }
     ];
   });
@@ -194,6 +195,29 @@ export default function App() {
     } else {
       setBookedClassIds([]);
       setWaitlistClassIds([]);
+    }
+  }, [user]);
+
+  // Handle Stripe success redirect
+  useEffect(() => {
+    if (!user) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+
+    if (sessionId) {
+      // Switch to profile tab
+      setActiveTab('profile');
+
+      // Show success toast
+      addToast('支付成功！您的课点已更新。(Payment successful! Passes updated.)', 'success');
+
+      // Refresh user data (passes)
+      fetchClassesAndBookings();
+
+      // Clean up URL
+      const newUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, newUrl);
     }
   }, [user]);
 

@@ -3,6 +3,8 @@ import { PAYMENT_CARDS } from '../data';
 import { PaymentCard, PurchaseRecord } from '../types';
 import { Sparkles, ShieldCheck, Ticket } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface StoreViewProps {
   theme?: string;
@@ -21,6 +23,7 @@ export default function StoreView({
   setPurchaseHistory,
   addToast
 }: StoreViewProps) {
+  const { user } = useAuth();
   const isDark = theme === 'midnight-cyber';
   const isMint = theme === 'cool-mint';
 
@@ -55,13 +58,33 @@ export default function StoreView({
   const [selectedCard, setSelectedCard] = useState<PaymentCard | null>(null);
 
   // Simulated Coupon Discount State
-  const [selectedCouponCode, setSelectedCouponCode] = useState<'NEW' | 'FEST' | 'NONE'>('NEW');
+  const [selectedCouponCode, setSelectedCouponCode] = useState<'NEW' | 'FEST' | 'NONE'>('NONE');
 
   // Selected Pay Method: 'wechat' | 'alipay' | 'visa'
   const [payMethod, setPayMethod] = useState<'wechat' | 'alipay' | 'visa'>('wechat');
 
   // Loading simulation state
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  // Real cards from DB
+  const [dbCards, setDbCards] = useState<PaymentCard[]>([]);
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      const { data, error } = await supabase
+        .from('payment_cards')
+        .select('*')
+        .order('price', { ascending: true });
+      
+      if (error) {
+        console.error('Error fetching cards:', error);
+        setDbCards(PAYMENT_CARDS);
+      } else if (data) {
+        setDbCards(data as PaymentCard[]);
+      }
+    };
+    fetchCards();
+  }, []);
 
   // Return formatted price subtracting coupon discount
   const getDiscountedPriceAndLabel = (card: PaymentCard) => {
@@ -81,37 +104,30 @@ export default function StoreView({
   };
 
   // Complete Simulated Purchase Flow
-  const handlePaymentConfirm = (card: PaymentCard) => {
+  const handlePaymentConfirm = async (card: PaymentCard) => {
+    if (!user) {
+      addToast('请先登录后再进行充值 (Please sign in to continue)', 'error');
+      return;
+    }
+
     setIsProcessing(true);
 
-    // Simulate network delay 1.5s
-    setTimeout(() => {
-      const { finalPrice } = getDiscountedPriceAndLabel(card);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { card_id: card.id }
+      });
 
-      // Create new purchase item
-      const newRecord: PurchaseRecord = {
-        id: `rec_${Date.now()}`,
-        cardId: card.id,
-        cardName: card.title,
-        price: finalPrice,
-        passesAdded: card.passes,
-        date: new Date().toISOString().split('T')[0]
-      };
-
-      // Apply upgrades
-      if (card.passes === -1) {
-        // Unlimited count, let's treat this as adding 50 generic passes for mock simulation display
-        setUserPasses((prev) => prev + 50);
-        addToast(`【无限尊享卡】支付成功！已为您兑换50次通卡充值点，可在无限期内任意预约上课。`, 'success');
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
-        setUserPasses((prev) => prev + card.passes);
-        addToast(`【${card.title}】充值成功！已存入您的账户。增加 ${card.passes} 课点。`, 'success');
+        throw new Error('未获取到支付跳转链接 (Failed to get checkout URL)');
       }
-
-      setPurchaseHistory((prev) => [newRecord, ...prev]);
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      addToast(`支付发起失败: ${err.message || '未知错误'}`, 'error');
       setIsProcessing(false);
-      setSelectedCard(null); // Close Modal
-    }, 1500);
+    }
   };
 
   return (
@@ -155,7 +171,7 @@ export default function StoreView({
           自修团课次卡/会员通卡 / Memberships Package
         </h3>
 
-        {PAYMENT_CARDS.map((card) => {
+        {(dbCards.length > 0 ? dbCards : PAYMENT_CARDS).map((card) => {
           const discountLabel = card.originalPrice
             ? `省 ¥${card.originalPrice - card.price}`
             : null;
@@ -285,7 +301,7 @@ export default function StoreView({
                     在线可用卡券选择 (Coupons)
                   </label>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2 opacity-50 pointer-events-none grayscale">
                     <button
                       onClick={() => setSelectedCouponCode('NEW')}
                       className={`p-2 rounded-xl border text-[10px] font-bold flex flex-col items-center justify-center transition-all cursor-pointer ${
@@ -332,6 +348,12 @@ export default function StoreView({
                       <span>不用券</span>
                       <span className={`text-[7px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>(原价结算)</span>
                     </button>
+                  </div>
+                  
+                  <div className="text-center mt-2">
+                    <span className={`text-[10px] font-black tracking-widest uppercase ${highlightText} animate-pulse`}>
+                      卡券功能开发中 (Coming Soon)
+                    </span>
                   </div>
 
                   {/* Pricing breakdown summary */}
