@@ -1,6 +1,25 @@
 import { supabase } from './lib/supabase';
 
 /**
+ * RLS AUDIT SUMMARY (2026-05-26)
+ * 
+ * Table: users
+ * - Select: auth.uid() = id (SECURE)
+ * - Update: auth.uid() = id (SECURE)
+ * - Insert: Handled by SECURITY DEFINER trigger (SECURE)
+ * 
+ * Table: bookings
+ * - Select: auth.uid() = userId (SECURE)
+ * - Insert: auth.uid() = userId (SECURE)
+ * 
+ * Table: purchase_records
+ * - Select: auth.uid() = userId (SECURE)
+ * 
+ * Public Tables (Read-only for public):
+ * - teachers, class_templates, class_instances, payment_cards (SECURE)
+ */
+
+/**
  * CONCEPTUAL TEST SCRIPT
  * This script demonstrates how to verify if a user exists in the public.users table.
  * In a real environment, this would be run after a user signs up.
