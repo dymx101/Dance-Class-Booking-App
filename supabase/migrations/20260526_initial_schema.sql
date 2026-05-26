@@ -5,10 +5,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
-    avatar_url TEXT,
+    avatar TEXT, -- Matches Teacher.avatar
     tags TEXT[] DEFAULT '{}',
-    bio TEXT,
     rating DECIMAL DEFAULT 5.0,
+    description TEXT, -- Matches Teacher.description
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -17,12 +17,12 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT,
     phone TEXT UNIQUE,
-    avatar_url TEXT,
-    remaining_passes INT DEFAULT 0,
-    experience_points INT DEFAULT 0,
-    total_classes_joined INT DEFAULT 0,
-    favorite_style TEXT,
-    streak_days INT DEFAULT 0,
+    avatar TEXT, -- Matches User.avatar
+    remainingPasses INT DEFAULT 0, -- Matches User.remainingPasses
+    experiencePoints INT DEFAULT 0, -- Matches User.experiencePoints
+    totalClassesJoined INT DEFAULT 0, -- Matches User.totalClassesJoined
+    favoriteStyle TEXT, -- Matches User.favoriteStyle
+    streakDays INT DEFAULT 0, -- Matches User.streakDays
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -31,34 +31,34 @@ CREATE TABLE IF NOT EXISTS class_templates (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     genre TEXT NOT NULL,
-    day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
+    dayOfWeek INTEGER NOT NULL CHECK (dayOfWeek BETWEEN 0 AND 6),
+    timeStart TIME NOT NULL, -- Matches DanceClass.timeStart
+    timeEnd TIME NOT NULL, -- Matches DanceClass.timeEnd
+    teacherId UUID REFERENCES teachers(id) ON DELETE CASCADE,
     difficulty INT DEFAULT 3,
     classroom TEXT,
-    min_people INT DEFAULT 1,
-    max_count INT DEFAULT 20,
-    class_type TEXT DEFAULT 'group',
-    is_active BOOLEAN DEFAULT true,
+    minPeople INT DEFAULT 1,
+    maxCount INT DEFAULT 20,
+    type TEXT DEFAULT 'group', -- Matches DanceClass.type
+    isActive BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 4. Class instances table
 CREATE TABLE IF NOT EXISTS class_instances (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    template_id UUID REFERENCES class_templates(id) ON DELETE SET NULL,
+    templateId UUID REFERENCES class_templates(id) ON DELETE SET NULL,
     date DATE NOT NULL,
-    teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
+    teacherId UUID REFERENCES teachers(id) ON DELETE CASCADE,
+    timeStart TIME NOT NULL, -- Matches DanceClass.timeStart
+    timeEnd TIME NOT NULL, -- Matches DanceClass.timeEnd
     title TEXT NOT NULL,
     genre TEXT NOT NULL,
     classroom TEXT,
     difficulty INT DEFAULT 3,
-    max_count INT DEFAULT 20,
-    min_people INT DEFAULT 1,
-    class_type TEXT DEFAULT 'group',
+    maxCount INT DEFAULT 20,
+    minPeople INT DEFAULT 1,
+    type TEXT DEFAULT 'group', -- Matches DanceClass.type
     status TEXT DEFAULT 'scheduled',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -66,10 +66,11 @@ CREATE TABLE IF NOT EXISTS class_instances (
 -- 5. Bookings table
 CREATE TABLE IF NOT EXISTS bookings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    class_id UUID REFERENCES class_instances(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    classId UUID REFERENCES class_instances(id) ON DELETE CASCADE, -- Matches Booking.classId
+    userId UUID REFERENCES users(id) ON DELETE CASCADE, -- Matches Booking.userId
     status TEXT DEFAULT 'booked' CHECK (status IN ('booked', 'waiting', 'cancelled', 'attended')),
-    queue_number INT,
+    queueNumber INT, -- Matches Booking.queueNumber
+    timestamp TIMESTAMPTZ DEFAULT NOW(), -- Matches Booking.timestamp
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -78,9 +79,9 @@ CREATE TABLE IF NOT EXISTS payment_cards (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     price INT NOT NULL,
-    original_price INT,
+    originalPrice INT, -- Matches PaymentCard.originalPrice
     passes INT NOT NULL, -- -1 for unlimited
-    valid_days INT NOT NULL,
+    validDays INT NOT NULL, -- Matches PaymentCard.validDays
     description TEXT,
     badge TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -89,23 +90,24 @@ CREATE TABLE IF NOT EXISTS payment_cards (
 -- 7. Purchase records table
 CREATE TABLE IF NOT EXISTS purchase_records (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    card_id UUID REFERENCES payment_cards(id) ON DELETE SET NULL,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    card_name TEXT NOT NULL,
+    cardId UUID REFERENCES payment_cards(id) ON DELETE SET NULL, -- Matches PurchaseRecord.cardId
+    userId UUID REFERENCES users(id) ON DELETE CASCADE,
+    cardName TEXT NOT NULL, -- Matches PurchaseRecord.cardName
     price INT NOT NULL,
-    passes_added INT NOT NULL,
+    passesAdded INT NOT NULL, -- Matches PurchaseRecord.passesAdded
+    date TIMESTAMPTZ DEFAULT NOW(), -- Matches PurchaseRecord.date
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Performance: Indexes
-CREATE INDEX IF NOT EXISTS idx_class_templates_teacher_id ON class_templates(teacher_id);
-CREATE INDEX IF NOT EXISTS idx_class_instances_template_id ON class_instances(template_id);
-CREATE INDEX IF NOT EXISTS idx_class_instances_teacher_id ON class_instances(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_class_templates_teacherId ON class_templates(teacherId);
+CREATE INDEX IF NOT EXISTS idx_class_instances_templateId ON class_instances(templateId);
+CREATE INDEX IF NOT EXISTS idx_class_instances_teacherId ON class_instances(teacherId);
 CREATE INDEX IF NOT EXISTS idx_class_instances_date ON class_instances(date);
-CREATE INDEX IF NOT EXISTS idx_bookings_class_id ON bookings(class_id);
-CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON bookings(user_id);
-CREATE INDEX IF NOT EXISTS idx_purchase_records_card_id ON purchase_records(card_id);
-CREATE INDEX IF NOT EXISTS idx_purchase_records_user_id ON purchase_records(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_classId ON bookings(classId);
+CREATE INDEX IF NOT EXISTS idx_bookings_userId ON bookings(userId);
+CREATE INDEX IF NOT EXISTS idx_purchase_records_cardId ON purchase_records(cardId);
+CREATE INDEX IF NOT EXISTS idx_purchase_records_userId ON purchase_records(userId);
 
 -- Security: Enable RLS
 ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
@@ -127,7 +129,7 @@ CREATE POLICY "Public Read Payment Cards" ON payment_cards FOR SELECT USING (tru
 CREATE POLICY "Users Read Own Profile" ON users FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users Update Own Profile" ON users FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Users Read Own Bookings" ON bookings FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users Insert Own Bookings" ON bookings FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users Read Own Bookings" ON bookings FOR SELECT USING (auth.uid() = userId);
+CREATE POLICY "Users Insert Own Bookings" ON bookings FOR INSERT WITH CHECK (auth.uid() = userId);
 
-CREATE POLICY "Users Read Own Purchase Records" ON purchase_records FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users Read Own Purchase Records" ON purchase_records FOR SELECT USING (auth.uid() = userId);

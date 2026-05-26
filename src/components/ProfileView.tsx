@@ -152,6 +152,7 @@ export default function ProfileView({
               }`}>LEAGUE LV.2</span>
             </div>
             <span className="text-[9px] text-zinc-400 font-mono block mt-1 tracking-tight">绑定账户: {accountInfo}</span>
+            <span className="text-[9px] text-zinc-500 font-mono block mt-0.5 tracking-tighter opacity-70">UID: {profile?.id || user?.id || 'Loading...'}</span>
           </div>
         </div>
 

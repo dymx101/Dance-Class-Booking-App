@@ -26,6 +26,7 @@ export default function ScheduleManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<ClassTemplate | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<Omit<ClassTemplate, 'id'>>({
@@ -177,6 +178,90 @@ export default function ScheduleManager() {
     }
   };
 
+  const syncInstances = async () => {
+    try {
+      setSyncLoading(true);
+      setError(null);
+
+      // 1. Calculate range: Today to +14 days
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 13);
+      endDate.setHours(23, 59, 59, 999);
+
+      const startDateStr = getLocalDateString(startDate);
+      const endDateStr = getLocalDateString(endDate);
+
+      // 2. Fetch active templates
+      const activeTemplates = templates.filter(t => t.isActive);
+      if (activeTemplates.length === 0) {
+        throw new Error("No active templates found to sync.");
+      }
+
+      // 3. Fetch existing instances in range
+      const { data: existingInstances, error: fetchError } = await supabase
+        .from('class_instances')
+        .select('templateId, date')
+        .gte('date', startDateStr)
+        .lte('date', endDateStr);
+
+      if (fetchError) throw fetchError;
+
+      // 4. Generate missing instances
+      const toCreate: any[] = [];
+      const existingMap = new Set(existingInstances?.map(inst => `${inst.templateId}_${inst.date}`));
+
+      for (let i = 0; i < 14; i++) {
+        const targetDate = new Date(startDate);
+        targetDate.setDate(startDate.getDate() + i);
+        const targetDateStr = getLocalDateString(targetDate);
+        const dayOfWeek = targetDate.getDay();
+
+        const dayTemplates = activeTemplates.filter(t => t.dayOfWeek === dayOfWeek);
+        
+        for (const template of dayTemplates) {
+          if (!existingMap.has(`${template.id}_${targetDateStr}`)) {
+            toCreate.push({
+              templateId: template.id,
+              date: targetDateStr,
+              teacherId: template.teacherId,
+              timeStart: template.timeStart,
+              timeEnd: template.timeEnd,
+              title: template.title,
+              genre: template.genre,
+              classroom: template.classroom,
+              difficulty: template.difficulty,
+              maxCount: template.maxCount,
+              minPeople: template.minPeople,
+              type: template.type,
+              status: 'scheduled'
+            });
+          }
+        }
+      }
+
+      if (toCreate.length === 0) {
+        alert("Schedule is already up to date.");
+        return;
+      }
+
+      // 5. Bulk insert
+      const { error: insertError } = await supabase
+        .from('class_instances')
+        .insert(toCreate);
+
+      if (insertError) throw insertError;
+
+      alert(`Successfully synced ${toCreate.length} new sessions to the live schedule!`);
+      setIsPreviewOpen(false);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   const groupedTemplates = Array.from({ length: 7 }, (_, i) => {
     return templates.filter(t => t.dayOfWeek === i);
   });
@@ -185,7 +270,7 @@ export default function ScheduleManager() {
     const today = new Date();
     const preview = [];
     
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 14; i++) {
       const currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
       const dayOfWeek = currentDate.getDay();
@@ -216,6 +301,18 @@ export default function ScheduleManager() {
           <p className="text-slate-400 text-sm font-bold uppercase tracking-wider mt-1">Weekly Recurring Schedule Management</p>
         </div>
         <div className="flex space-x-3">
+          <button 
+            onClick={() => syncInstances()}
+            disabled={syncLoading}
+            className="flex items-center justify-center space-x-2 px-6 py-3 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-sm hover:border-rose-200 hover:text-rose-500 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+          >
+            {syncLoading ? (
+              <div className="w-5 h-5 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <CalendarDays className="w-5 h-5" />
+            )}
+            <span>{syncLoading ? 'Syncing...' : 'Sync to Live'}</span>
+          </button>
           <button 
             onClick={() => setIsPreviewOpen(true)}
             className="flex items-center justify-center space-x-2 px-6 py-3 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-sm hover:border-rose-200 hover:text-rose-500 transition-all shadow-sm active:scale-95"
@@ -562,7 +659,7 @@ export default function ScheduleManager() {
                 <div>
                   <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
                     <Eye className="w-6 h-6 mr-3 text-rose-500" />
-                    发布预览 Preview (Next 7 Days)
+                    发布预览 Preview (Next 14 Days)
                   </h2>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                     Verify generated instances before synchronization
@@ -631,13 +728,11 @@ export default function ScheduleManager() {
                     关闭预览
                   </button>
                   <button 
-                    onClick={() => {
-                      alert('发布功能将在下一步（Step 5: Hybrid Sync Logic）中实现。');
-                      setIsPreviewOpen(false);
-                    }}
-                    className="px-8 py-3 bg-rose-500 text-white rounded-2xl font-black text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 active:scale-95"
+                    onClick={() => syncInstances()}
+                    disabled={syncLoading}
+                    className="px-8 py-3 bg-rose-500 text-white rounded-2xl font-black text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 active:scale-95 disabled:opacity-50"
                   >
-                    立即发布排课
+                    {syncLoading ? '正在同步...' : '立即发布排课'}
                   </button>
                 </div>
               </div>

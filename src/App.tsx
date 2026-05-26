@@ -20,7 +20,7 @@ interface ToastMsg {
 }
 
 export default function App() {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, profile, signOut, loading: authLoading } = useAuth();
 
   // Tab control states: 'home' | 'schedule' | 'store' | 'profile'
   const [activeTab, setActiveTab] = useState<'home' | 'schedule' | 'store' | 'profile'>('home');
@@ -219,6 +219,14 @@ export default function App() {
   };
 
   if (isAdminMode) {
+    // Protected admin route check
+    const isAuthorized = profile?.name === 'Admin' || user?.email?.includes('admin');
+    
+    if (!isAuthorized) {
+      setIsAdminMode(false);
+      return null;
+    }
+
     return (
       <AdminLayout 
         activeTab={adminTab} 
