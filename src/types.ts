@@ -96,3 +96,29 @@ export interface Notification {
   createdat: string;
 }
 
+export interface RevenueStat {
+  week: string;
+  total_revenue: number;
+  card_count: number;
+}
+
+export interface TeacherPerformance {
+  teacher_id: string;
+  teacher_name: string;
+  total_bookings: number;
+  total_waitlist: number;
+  avg_fill_rate: number;
+}
+
+export interface HeatmapData {
+  dayofweek: number;
+  timestart: string;
+  fill_rate: number;
+}
+
+export interface MemberStat {
+  week: string;
+  new_signups: number;
+  active_users: number;
+}
+
