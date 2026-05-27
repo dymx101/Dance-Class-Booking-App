@@ -1,0 +1,13 @@
+{
+  "name": "dance-class-booking-app",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "web:dev": "npm run dev -w @dance-app/web",
+    "web:build": "npm run build -w @dance-app/web",
+    "lint": "npm run lint -w @dance-app/web"
+  }
+}
