@@ -8,6 +8,7 @@ import ProfileView from './components/ProfileView';
 import AdminLayout from './components/admin/AdminLayout';
 import TeacherManager from './components/admin/TeacherManager';
 import ScheduleManager from './components/admin/ScheduleManager';
+import AnalyticsDashboard from './components/admin/AnalyticsDashboard';
 import LiveToast from './components/notifications/LiveToast';
 import NotificationCenter from './components/notifications/NotificationCenter';
 import { Home, CalendarDays, ShoppingBag, User, Wifi, Battery, Signal, Bell, XCircle, Info, CheckCircle2 } from 'lucide-react';
@@ -32,7 +33,7 @@ export default function App() {
 
   // Admin panel states
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
-  const [adminTab, setAdminTab] = useState<'schedule' | 'teachers'>('schedule');
+  const [adminTab, setAdminTab] = useState<'schedule' | 'teachers' | 'analytics'>('analytics');
 
   // Notification center state
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
@@ -415,7 +416,9 @@ export default function App() {
         setActiveTab={setAdminTab} 
         onExit={() => setIsAdminMode(false)}
       >
-        {adminTab === 'teachers' ? (
+        {adminTab === 'analytics' ? (
+          <AnalyticsDashboard />
+        ) : adminTab === 'teachers' ? (
           <TeacherManager />
         ) : (
           <ScheduleManager />
