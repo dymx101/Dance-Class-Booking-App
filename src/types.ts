@@ -64,6 +64,7 @@ export interface PurchaseRecord {
   price: number;
   passesAdded: number;
   date: string;
+  stripePaymentId?: string;
 }
 
 export interface ClassTemplate {
@@ -84,4 +85,14 @@ export interface ClassTemplate {
 }
 
 export type AppTheme = 'vibrant-light' | 'cool-mint' | 'midnight-cyber';
+
+export interface Notification {
+  id: string;
+  userid: string;
+  type: 'waitlist_promoted' | 'booking_confirmed' | 'purchase_successful' | 'class_cancelled';
+  title: string;
+  message: string;
+  isread: boolean;
+  createdat: string;
+}
 
