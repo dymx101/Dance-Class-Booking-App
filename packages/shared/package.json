@@ -1,14 +1,19 @@
 {
-  "name": "@plana/shared",
+  "name": "@dance-app/shared",
   "version": "1.0.0",
   "private": true,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
     "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2"
   }
 }
