@@ -125,7 +125,26 @@ export default function App() {
         setUserPasses(userData.remainingPasses);
       }
 
-      // 4. Fetch bookings count for each class instance to calculate bookedCount and reservedSpots
+      // 4. Fetch user's purchase records
+      const { data: purchaseData, error: purchaseError } = await supabase
+        .from('purchase_records')
+        .select('*')
+        .eq('userid', user.id)
+        .order('date', { ascending: false });
+
+      if (!purchaseError && purchaseData) {
+        setPurchaseHistory(purchaseData.map(rec => ({
+          id: rec.id,
+          cardId: rec.cardid,
+          cardName: rec.cardname,
+          price: rec.price,
+          passesAdded: rec.passesadded,
+          date: rec.date ? rec.date.split('T')[0] : new Date().toISOString().split('T')[0],
+          stripePaymentId: rec.stripepaymentid
+        })));
+      }
+
+      // 5. Fetch bookings count for each class instance to calculate bookedCount and reservedSpots
       const { data: allBookingsData, error: allBookingsError } = await supabase
         .from('bookings')
         .select('classId, status, spotNumber');
@@ -197,6 +216,15 @@ export default function App() {
       setWaitlistClassIds([]);
     }
   }, [user]);
+
+  // Listen for real-time booking changes from NotificationContext
+  useEffect(() => {
+    const handleBookingsChanged = () => {
+      fetchClassesAndBookings();
+    };
+    window.addEventListener('supabase:bookings_changed', handleBookingsChanged);
+    return () => window.removeEventListener('supabase:bookings_changed', handleBookingsChanged);
+  }, []);
 
   // Handle Stripe success redirect
   useEffect(() => {
