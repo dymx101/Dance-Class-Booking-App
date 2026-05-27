@@ -1,0 +1,140 @@
+{
+  "running": true,
+  "startedAt": "2026-05-25T17:22:39.726Z",
+  "workers": {
+    "map": {
+      "runCount": 133,
+      "successCount": 133,
+      "failureCount": 0,
+      "averageDurationMs": 5.654135338345865,
+      "isRunning": false,
+      "nextRun": "2026-05-27T09:27:48.571Z",
+      "lastStartedAt": "2026-05-27T09:12:48.574Z",
+      "lastRun": "2026-05-27T09:12:48.579Z"
+    },
+    "audit": {
+      "runCount": 179,
+      "successCount": 178,
+      "failureCount": 1,
+      "averageDurationMs": 74510.19101123596,
+      "isRunning": false,
+      "nextRun": "2026-05-27T09:22:48.467Z",
+      "lastStartedAt": "2026-05-27T09:12:48.553Z",
+      "lastRun": "2026-05-27T09:12:48.573Z"
+    },
+    "optimize": {
+      "runCount": 127,
+      "successCount": 127,
+      "failureCount": 0,
+      "averageDurationMs": 107093.92913385824,
+      "isRunning": true,
+      "nextRun": "2026-05-27T09:27:48.570Z",
+      "lastStartedAt": "2026-05-27T09:12:48.554Z",
+      "lastRun": "2026-05-27T06:50:01.420Z"
+    },
+    "consolidate": {
+      "runCount": 68,
+      "successCount": 68,
+      "failureCount": 0,
+      "averageDurationMs": 4.441176470588236,
+      "isRunning": false,
+      "nextRun": "2026-05-27T09:42:48.580Z",
+      "lastStartedAt": "2026-05-27T08:11:47.603Z",
+      "lastRun": "2026-05-27T08:11:47.604Z"
+    },
+    "testgaps": {
+      "runCount": 94,
+      "successCount": 94,
+      "failureCount": 0,
+      "averageDurationMs": 209781.41489361698,
+      "isRunning": true,
+      "nextRun": "2026-05-27T09:32:48.579Z",
+      "lastStartedAt": "2026-05-27T09:12:48.575Z",
+      "lastRun": "2026-05-27T09:12:48.570Z"
+    },
+    "predict": {
+      "runCount": 0,
+      "successCount": 0,
+      "failureCount": 0,
+      "averageDurationMs": 0,
+      "isRunning": false
+    },
+    "document": {
+      "runCount": 0,
+      "successCount": 0,
+      "failureCount": 0,
+      "averageDurationMs": 0,
+      "isRunning": false
+    }
+  },
+  "config": {
+    "autoStart": false,
+    "logDir": "/Users/wtf/antigravity/Dance-Class-Booking-App/.claude-flow/logs",
+    "stateFile": "/Users/wtf/antigravity/Dance-Class-Booking-App/.claude-flow/daemon-state.json",
+    "maxConcurrent": 2,
+    "workerTimeoutMs": 960000,
+    "resourceThresholds": {
+      "maxCpuLoad": 6.4,
+      "minFreeMemoryPercent": 5
+    },
+    "workers": [
+      {
+        "type": "map",
+        "intervalMs": 900000,
+        "offsetMs": 0,
+        "priority": "normal",
+        "description": "Codebase mapping",
+        "enabled": true
+      },
+      {
+        "type": "audit",
+        "intervalMs": 600000,
+        "offsetMs": 120000,
+        "priority": "critical",
+        "description": "Security analysis",
+        "enabled": true
+      },
+      {
+        "type": "optimize",
+        "intervalMs": 900000,
+        "offsetMs": 240000,
+        "priority": "high",
+        "description": "Performance optimization",
+        "enabled": true
+      },
+      {
+        "type": "consolidate",
+        "intervalMs": 1800000,
+        "offsetMs": 360000,
+        "priority": "low",
+        "description": "Memory consolidation",
+        "enabled": true
+      },
+      {
+        "type": "testgaps",
+        "intervalMs": 1200000,
+        "offsetMs": 480000,
+        "priority": "normal",
+        "description": "Test coverage analysis",
+        "enabled": true
+      },
+      {
+        "type": "predict",
+        "intervalMs": 600000,
+        "offsetMs": 0,
+        "priority": "low",
+        "description": "Predictive preloading",
+        "enabled": false
+      },
+      {
+        "type": "document",
+        "intervalMs": 3600000,
+        "offsetMs": 0,
+        "priority": "low",
+        "description": "Auto-documentation",
+        "enabled": false
+      }
+    ]
+  },
+  "savedAt": "2026-05-27T09:12:48.586Z"
+}

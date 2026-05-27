@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "User Synchronization & Database Prep",
+    "status": "todo",
+    "description": "Create Postgres trigger to sync auth.users with public.users."
+  },
+  {
+    "id": 2,
+    "title": "Auth State Management & Context",
+    "status": "todo",
+    "description": "Implement AuthContext and wrap the App component."
+  },
+  {
+    "id": 3,
+    "title": "Phone Auth UI (Entry & OTP)",
+    "status": "todo",
+    "description": "Build AuthScreen and OTPInput components with Supabase logic."
+  },
+  {
+    "id": 4,
+    "title": "Profile Integration & Final Polish",
+    "status": "todo",
+    "description": "Connect ProfileView to real auth data and guard routes."
+  }
+]

@@ -1,0 +1,66 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Stripe Integration Architecture</h1>
+      <p class="text-slate-400 mt-2">Securely handling payments and pass fulfillment using Stripe Checkout.</p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Approach 1 -->
+      <div class="p-6 bg-slate-800 rounded-xl border-2 border-blue-500 shadow-lg shadow-blue-500/20">
+        <div class="flex justify-between items-start">
+          <h2 class="text-xl font-bold text-blue-300 mb-2">1. Supabase Edge Functions + Webhooks</h2>
+          <span class="px-2 py-1 bg-blue-500 text-xs font-bold rounded uppercase">Recommended</span>
+        </div>
+        <p class="text-slate-300 mb-4">A server-side approach using Deno-based Edge Functions to create sessions and handle fulfillment.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-emerald-400">✓ Secure secret keys (never exposed to client)</div>
+          <div class="text-emerald-400">✓ Reliable fulfillment via Webhooks</div>
+          <div class="text-emerald-400">✓ Automatic pass updates in Postgres</div>
+          <div class="text-rose-400">✗ Requires setting up Edge Functions</div>
+        </div>
+      </div>
+
+      <!-- Approach 2 -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h2 class="text-xl font-bold text-blue-300 mb-2">2. Hybrid Direct + Webhook</h2>
+        <p class="text-slate-300 mb-4">Client redirects directly using Stripe.js, but updates are still handled via a server-side webhook for security.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-emerald-400">✓ Slightly simpler frontend code</div>
+          <div class="text-emerald-400">✓ Still secure for fulfillment</div>
+          <div class="text-rose-400">✗ Session creation is less flexible</div>
+          <div class="text-rose-400">✗ Harder to implement custom discounts</div>
+        </div>
+      </div>
+
+      <!-- Logic Diagram -->
+      <div class="mt-12 p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h3 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+          The Secure Fulfillment Loop
+        </h3>
+        
+        <div class="flex items-center justify-between gap-4 text-center">
+          <div class="flex-1 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+            <span class="text-[10px] font-black block text-zinc-500 uppercase">Step 1</span>
+            <span class="text-xs font-bold">User clicks "Pay"</span>
+            <p class="text-[8px] text-zinc-500">Edge Function creates Session</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+            <span class="text-[10px] font-black block text-zinc-500 uppercase">Step 2</span>
+            <span class="text-xs font-bold">Stripe Checkout</span>
+            <p class="text-[8px] text-zinc-500">User pays securely</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+            <span class="text-[10px] font-black block text-blue-400 uppercase">Step 3</span>
+            <span class="text-xs font-bold">Webhook Fulfilled</span>
+            <p class="text-[8px] text-blue-400">Passes added to User in DB</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

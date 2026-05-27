@@ -1,0 +1,61 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 2: Webhook Fulfillment</h1>
+      <p class="text-slate-400 mt-2">Reliably delivering passes after successful payment.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Edge Function: stripe-webhook -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-rose-400">stripe-webhook Edge Function</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-rose-500"></div>
+          <p class="text-rose-300">// Critical Security Steps:</p>
+          <ol class="list-decimal list-inside space-y-2 text-slate-300 mt-2">
+            <li>Verify <code class="bg-zinc-900 px-1 rounded text-blue-300">Stripe-Signature</code> header.</li>
+            <li>Listen for <code class="bg-zinc-900 px-1 rounded text-orange-300">checkout.session.completed</code>.</li>
+            <li>Extract <code class="bg-zinc-900 px-1 rounded text-emerald-300">metadata</code> (userId, cardId).</li>
+            <li>Database Fulfillment (Atomic):
+              <br/>&nbsp;&nbsp; - Update <code class="bg-zinc-900 px-1 rounded text-blue-300">users.remainingPasses</code>.
+              <br/>&nbsp;&nbsp; - Insert <code class="bg-zinc-900 px-1 rounded text-blue-300">purchase_records</code>.
+            </li>
+            <li>Return <code class="bg-zinc-900 px-1 rounded text-emerald-300">200 OK</code> to Stripe.</li>
+          </ol>
+        </div>
+        <p class="text-xs text-slate-400 italic">Webhooks ensure users get their passes even if they close their browser tab before the redirect completes.</p>
+      </div>
+
+      <!-- Logic & Safety -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-blue-400">Integrity Measures</h2>
+        <div class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">Idempotency</span>
+                <span class="text-sm text-slate-400">We will use the Stripe <code class="bg-slate-700 px-1 rounded text-blue-200">payment_intent_id</code> as a unique constraint to prevent adding passes twice for the same payment.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">Service Role Access</span>
+                <span class="text-sm text-slate-400">The Edge Function uses the Supabase <code class="bg-slate-700 px-1 rounded text-blue-200">service_role</code> key to bypass RLS, ensuring fulfillment is guaranteed.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-rose-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">Error Handling</span>
+                <span class="text-sm text-slate-400">If fulfillment fails (e.g. DB down), we return a 5xx error. Stripe will automatically retry the webhook until it succeeds.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

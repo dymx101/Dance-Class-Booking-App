@@ -14,13 +14,23 @@ serve(async (req) => {
   }
 
   try {
-    const { card_id } = await req.json();
+    const { card_id, payment_method } = await req.json();
 
     if (!card_id) {
       return new Response(JSON.stringify({ error: "card_id is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Determine payment method types based on selection
+    let paymentMethodTypes: string[] = ["card", "wechat_pay", "alipay"];
+    if (payment_method === "wechat") {
+      paymentMethodTypes = ["wechat_pay"];
+    } else if (payment_method === "alipay") {
+      paymentMethodTypes = ["alipay"];
+    } else if (payment_method === "visa") {
+      paymentMethodTypes = ["card"];
     }
 
     // Get Auth Header
@@ -81,7 +91,7 @@ serve(async (req) => {
     // Create Checkout Session
     const origin = req.headers.get("origin");
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "wechat_pay", "alipay"],
+      payment_method_types: paymentMethodTypes,
       payment_method_options: {
         wechat_pay: { client: "web" },
       },

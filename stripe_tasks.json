@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Database Idempotency & Schema Update",
+    "status": "todo",
+    "description": "Add stripePaymentId column to purchase_records with UNIQUE constraint."
+  },
+  {
+    "id": 2,
+    "title": "Create Checkout Session Edge Function",
+    "status": "todo",
+    "description": "Implement Deno function to create Stripe Checkout sessions."
+  },
+  {
+    "id": 3,
+    "title": "Stripe Webhook Fulfillment Edge Function",
+    "status": "todo",
+    "description": "Implement Deno function to handle Stripe webhooks and fulfill passes."
+  },
+  {
+    "id": 4,
+    "title": "Frontend Integration (StoreView)",
+    "status": "todo",
+    "description": "Connect StoreView 'Pay' button to the checkout edge function."
+  },
+  {
+    "id": 5,
+    "title": "Security & Verification",
+    "status": "todo",
+    "description": "Add Stripe key placeholders to environment files."
+  }
+]

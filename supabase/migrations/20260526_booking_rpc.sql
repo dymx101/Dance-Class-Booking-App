@@ -227,6 +227,8 @@ BEGIN
             UPDATE public.bookings 
             SET status = 'booked', queuenumber = NULL, spotnumber = v_booking_record.spotnumber
             WHERE id = v_promoted_booking_id;
+
+            -- Notification is now handled by on_booking_promoted trigger
         END IF;
     END IF;
 

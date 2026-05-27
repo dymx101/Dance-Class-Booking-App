@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-05-27T09:12:48.575Z",
+  "projectRoot": "/Users/wtf/antigravity/Dance-Class-Booking-App",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1779873168575
+}

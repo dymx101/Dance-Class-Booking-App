@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Notifications Schema & Automation",
+    "status": "todo",
+    "description": "Create notifications table and promotion trigger."
+  },
+  {
+    "id": 2,
+    "title": "Notification State & Realtime Context",
+    "status": "todo",
+    "description": "Implement NotificationProvider with realtime subscriptions."
+  },
+  {
+    "id": 3,
+    "title": "Live Toast & Unread UI",
+    "status": "todo",
+    "description": "Build NotificationCenter and LiveToast components."
+  },
+  {
+    "id": 4,
+    "title": "Global Schedule Sync (Live Spots)",
+    "status": "todo",
+    "description": "Implement live synchronization of bookedCount."
+  }
+]

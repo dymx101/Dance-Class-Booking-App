@@ -1,0 +1,6 @@
+[
+  { "id": 1, "task": "Install Supabase client", "status": "completed" },
+  { "id": 2, "task": "Add Supabase credentials to .env and .env.example", "status": "completed" },
+  { "id": 3, "task": "Create src/lib/supabase.ts", "status": "completed" },
+  { "id": 4, "task": "Commit changes", "status": "completed" }
+]

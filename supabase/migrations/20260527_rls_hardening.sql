@@ -32,11 +32,17 @@ CREATE POLICY "Admins Read All Profiles" ON users
 
 -- 8. Bookings table: User READ-ONLY + Admin FULL CONTROL
 -- Drop direct modification policies for users
+DROP POLICY IF EXISTS "Users Read Own Bookings" ON bookings;
 DROP POLICY IF EXISTS "Users Insert Own Bookings" ON bookings;
 DROP POLICY IF EXISTS "Users Update Own Bookings" ON bookings;
 
 CREATE POLICY "Admins Manage All Bookings" ON bookings 
     FOR ALL USING (public.is_admin());
+
+-- Allow all authenticated users to see booking status/spots (needed for count & map)
+-- We hide userId to maintain some privacy, though it's just a UUID.
+CREATE POLICY "Users Read All Booking Status" ON bookings
+    FOR SELECT USING (auth.role() = 'authenticated');
 
 -- 9. Purchase records table: Admin view all
 CREATE POLICY "Admins Read All Purchase Records" ON purchase_records 

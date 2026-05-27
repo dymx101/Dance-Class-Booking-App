@@ -1,0 +1,51 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Mono-repo Architecture</h1>
+      <p class="text-slate-400 mt-2">Structuring the project for multi-platform growth (Web + WeChat).</p>
+    </header>
+
+    <div class="space-y-8">
+      <!-- Directory Structure -->
+      <div class="p-6 bg-slate-800 rounded-2xl border border-slate-700 shadow-xl">
+        <h2 class="text-xl font-bold text-slate-100 mb-6">Proposed File Structure</h2>
+        <div class="font-mono text-xs space-y-2 text-slate-300 bg-black/30 p-4 rounded-xl border border-white/5">
+          <div class="flex items-center gap-2"><span class="text-blue-400">apps/</span></div>
+          <div class="flex items-center gap-2 pl-4"><span class="text-emerald-400">web/</span> <span class="text-slate-500">(Existing Vite App)</span></div>
+          <div class="flex items-center gap-2 pl-4"><span class="text-[#07C160]">miniprogram/</span> <span class="text-slate-500">(New Taro App)</span></div>
+          <div class="flex items-center gap-2 mt-4"><span class="text-blue-400">packages/</span></div>
+          <div class="flex items-center gap-2 pl-4"><span class="text-orange-400">shared/</span> <span class="text-slate-500">(Supabase Client, Types, Utils)</span></div>
+          <div class="flex items-center gap-2 pl-4"><span class="text-rose-400">ui/</span> <span class="text-slate-500">(Tailwind Config, Common Design Tokens)</span></div>
+        </div>
+      </div>
+
+      <!-- Logic: Sharing the "Brain" -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+          <h3 class="font-bold text-blue-300 mb-2">The "Brain" (Shared Logic)</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            All your current hard work on **Supabase RPCs, Auth state, and Booking logic** will move to <code>packages/shared</code>. Both the Web and Mini Program will use the <i>exact same code</i> for these features.
+          </p>
+        </div>
+        <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+          <h3 class="font-bold text-[#07C160] mb-2">Mini Program "Body"</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            The Mini Program will have its own UI components using Taro's <code>&lt;View&gt;</code> and <code>&lt;Text&gt;</code>, but it will behave identically to the Web app because they share the same backend logic.
+          </p>
+        </div>
+      </div>
+
+      <!-- Testing strategy without AppID -->
+      <div class="mt-8 p-6 bg-[#07C160]/10 border-2 border-[#07C160]/30 rounded-2xl">
+        <h3 class="text-lg font-bold text-[#07C160] mb-2 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          No AppID? No Problem.
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          We will use the <strong>WeChat DevTools "Test Mode"</strong>. It allows us to build and simulate the entire Mini Program experience using a temporary "Guest" ID. You only need the official AppID when you're ready to submit to the App Store.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

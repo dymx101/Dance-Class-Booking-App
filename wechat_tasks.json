@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Mono-repo Workspace Initialization",
+    "status": "todo",
+    "description": "Configure npm workspaces and restructure directories into apps/ and packages/."
+  },
+  {
+    "id": 2,
+    "title": "Shared Logic Extraction",
+    "status": "todo",
+    "description": "Extract Supabase client and types into @plana/shared package."
+  },
+  {
+    "id": 3,
+    "title": "Bootstrap Taro Mini Program",
+    "status": "todo",
+    "description": "Create apps/miniprogram and link shared logic."
+  },
+  {
+    "id": 4,
+    "title": "UI/UX Parity (Home & Schedule)",
+    "status": "todo",
+    "description": "Implement core views in Taro using MP-native components."
+  },
+  {
+    "id": 5,
+    "title": "WeChat Silent Login Integration",
+    "status": "todo",
+    "description": "Implement OpenID exchange for silent authentication."
+  }
+]

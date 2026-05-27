@@ -1,0 +1,67 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Booking Architecture</h1>
+      <p class="text-slate-400 mt-2">Designing a robust system for atomic transactions and automatic waitlists.</p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Approach 1 -->
+      <div class="p-6 bg-slate-800 rounded-xl border-2 border-blue-500 shadow-lg shadow-blue-500/20">
+        <div class="flex justify-between items-start">
+          <h2 class="text-xl font-bold text-blue-300 mb-2">1. Atomic Database RPC (SQL)</h2>
+          <span class="px-2 py-1 bg-blue-500 text-xs font-bold rounded uppercase">Recommended</span>
+        </div>
+        <p class="text-slate-300 mb-4">We create a <code class="bg-slate-700 px-1 rounded text-blue-300">book_class()</code> Postgres function. It executes the entire booking (Check Passes → Check Capacity → Insert Booking → Deduct Pass) in one single atomic transaction.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-emerald-400">✓ Zero Race Conditions (No double-booking)</div>
+          <div class="text-emerald-400">✓ Maximum Performance</div>
+          <div class="text-emerald-400">✓ Perfect Data Integrity</div>
+          <div class="text-rose-400">✗ Harder to debug than JS</div>
+        </div>
+      </div>
+
+      <!-- Approach 2 -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h2 class="text-xl font-bold text-blue-300 mb-2">2. Supabase Edge Functions (TS)</h2>
+        <p class="text-slate-300 mb-4">A TypeScript function handles the booking. It uses the Supabase service role to perform multiple queries.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-emerald-400">✓ Easy to write (TypeScript)</div>
+          <div class="text-emerald-400">✓ Great for 3rd-party integrations</div>
+          <div class="text-rose-400">✗ Slower (Multiple DB roundtrips)</div>
+          <div class="text-rose-400">✗ Risk of race conditions if not careful</div>
+        </div>
+      </div>
+
+      <!-- Logic Diagram -->
+      <div class="mt-12 p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h3 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          The "Auto-Promotion" Trigger
+        </h3>
+        
+        <div class="flex items-center justify-between gap-4 text-center">
+          <div class="flex-1 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+            <span class="text-[10px] font-black block text-zinc-500 uppercase">Step 1</span>
+            <span class="text-xs font-bold">Booking Cancelled</span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+            <span class="text-[10px] font-black block text-zinc-500 uppercase">Step 2</span>
+            <span class="text-xs font-bold">DB Trigger Fires</span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-rose-900/30 border border-rose-500/30 rounded-lg">
+            <span class="text-[10px] font-black block text-rose-400 uppercase text-[8px]">Step 3</span>
+            <span class="text-xs font-bold">First in Waitlist promoted</span>
+          </div>
+        </div>
+        
+        <p class="mt-6 text-[11px] text-zinc-500 leading-relaxed italic">
+          * Note: If the student cancels within 1 hour of class start, the cancel function will return "No Refund" and skip the waitlist promotion entirely (since the spot is still "paid for").
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

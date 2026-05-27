@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Atomic Booking & Cancellation Functions",
+    "status": "todo",
+    "description": "Create Postgres RPC functions for book_class and cancel_booking."
+  },
+  {
+    "id": 2,
+    "title": "Waitlist Promotion Trigger",
+    "status": "todo",
+    "description": "Create automatic waitlist promotion trigger."
+  },
+  {
+    "id": 3,
+    "title": "Frontend RPC Integration",
+    "status": "todo",
+    "description": "Refactor ScheduleView to use Supabase RPC functions."
+  },
+  {
+    "id": 4,
+    "title": "Error Handling & UX Polish",
+    "status": "todo",
+    "description": "Add bilingual error mapping and loading states."
+  }
+]

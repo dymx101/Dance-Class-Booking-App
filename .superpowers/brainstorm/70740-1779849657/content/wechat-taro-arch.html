@@ -1,0 +1,33 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-[#07C160]">Taro Migration Architecture</h1>
+      <p class="text-slate-400 mt-2">Transitioning to a native multi-end React framework.</p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h2 class="text-xl font-bold text-slate-100 mb-4">Codebase Structure Options</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Multi-end Single Source -->
+          <div class="p-4 bg-zinc-900 rounded-lg border border-zinc-700 hover:border-[#07C160]/50 transition-colors cursor-pointer">
+            <h3 class="font-bold text-emerald-400 text-sm mb-1">Single-Source (Taro Web + MP)</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Migrate the entire app to Taro. One codebase generates both the Web (H5) version and the WeChat Mini Program. Best for long-term maintenance.</p>
+          </div>
+
+          <!-- Mono-repo -->
+          <div class="p-4 bg-zinc-900 rounded-lg border border-zinc-700 hover:border-blue-500/50 transition-colors cursor-pointer">
+            <h3 class="font-bold text-blue-400 text-sm mb-1">Mono-repo (Shared Logic)</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Keep the React/Vite app for Web. Create a new Taro app for WeChat. Share "Business Logic" (Supabase client, Types, Services) in a shared folder.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-[#07C160]/10 border border-[#07C160]/30 p-4 rounded-lg">
+        <p class="text-[#07C160] text-sm italic"><strong>Migration Note:</strong> Standard HTML tags like <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> must be replaced with Taro-specific components like <code>&lt;View&gt;</code> and <code>&lt;Text&gt;</code> for Mini Program compatibility.</p>
+      </div>
+    </div>
+  </div>
+</div>

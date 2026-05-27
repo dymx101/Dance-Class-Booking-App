@@ -1,0 +1,65 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 1: Atomic Booking Functions</h1>
+      <p class="text-slate-400 mt-2">Server-side logic for data integrity and business rules.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Function 1: book_class -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-emerald-400">1. book_class()</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-emerald-500"></div>
+          <p class="text-emerald-300">-- Atomic Steps:</p>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300 mt-2">
+            <li>Check if user has > 0 passes.</li>
+            <li>Check if instance is NOT full.</li>
+            <li>Deduct 1 pass from <code class="bg-zinc-900 px-1 rounded text-rose-300">users</code>.</li>
+            <li>Insert record into <code class="bg-zinc-900 px-1 rounded text-rose-300">bookings</code>.</li>
+            <li>Return 'success' or specific 'error_code'.</li>
+          </ol>
+        </div>
+        <p class="text-xs text-slate-400 italic">Prevents race conditions where two users book the last spot at the exact same millisecond.</p>
+      </div>
+
+      <!-- Function 2: cancel_booking -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-rose-400">2. cancel_booking()</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-rose-500"></div>
+          <p class="text-rose-300">-- Strict Rules:</p>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300 mt-2">
+            <li>Verify booking belongs to user.</li>
+            <li>Check <code class="bg-zinc-900 px-1 rounded text-rose-300">class_instances.start_time</code>.</li>
+            <li>IF > 1 hour away: 
+              <br/>&nbsp;&nbsp; - Delete booking.
+              <br/>&nbsp;&nbsp; - Add 1 pass back to user.
+            </li>
+            <li>ELSE:
+              <br/>&nbsp;&nbsp; - Mark booking as 'no_show'.
+              <br/>&nbsp;&nbsp; - KEEP user's pass.
+            </li>
+          </ol>
+        </div>
+        <p class="text-xs text-slate-400 italic">Enforces the studio policy of "No refunds for late cancellations."</p>
+      </div>
+
+      <!-- Auto-Waitlist -->
+      <div class="md:col-span-2 mt-4">
+        <div class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-xl flex items-center gap-6">
+          <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-blue-300">The "Successor" Trigger</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              When a booking is deleted (cancelled on time), a trigger automatically finds the user with the lowest <code class="bg-slate-700 px-1 rounded text-blue-200">queue_number</code> in the waitlist for that class and calls <code class="bg-slate-700 px-1 rounded text-blue-200">book_class()</code> for them.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

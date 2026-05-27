@@ -1,0 +1,61 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 1: Stripe Session Creation</h1>
+      <p class="text-slate-400 mt-2">Initiating secure checkout from the dance studio store.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Edge Function: create-checkout -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-emerald-400">create-checkout Edge Function</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-emerald-500"></div>
+          <p class="text-emerald-300">// Deno / TypeScript steps:</p>
+          <ol class="list-decimal list-inside space-y-2 text-slate-300 mt-2">
+            <li>Validate user session (JWT).</li>
+            <li>Fetch <code class="bg-zinc-900 px-1 rounded text-blue-300">card_id</code> details from DB.</li>
+            <li>Initialize Stripe with <code class="bg-zinc-900 px-1 rounded text-rose-300">STRIPE_SECRET_KEY</code>.</li>
+            <li>Create Checkout Session with:
+              <br/>&nbsp;&nbsp; - <code class="bg-zinc-900 px-1 rounded text-orange-300">metadata</code>: { userId, cardId }
+              <br/>&nbsp;&nbsp; - <code class="bg-zinc-900 px-1 rounded text-orange-300">success_url</code>: (App Profile Page)
+              <br/>&nbsp;&nbsp; - <code class="bg-zinc-900 px-1 rounded text-orange-300">cancel_url</code>: (App Store Page)
+            </li>
+            <li>Return <code class="bg-zinc-900 px-1 rounded text-emerald-300">session.url</code> to Frontend.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Frontend UI Integration -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-blue-400">Frontend Workflow</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700">
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">StoreView Update</span>
+                <span class="text-sm text-slate-400">The "Confirm Payment" button now calls <code class="bg-slate-700 px-1 rounded text-blue-200">supabase.functions.invoke('create-checkout')</code>.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">Redirect Logic</span>
+                <span class="text-sm text-slate-400">On receiving the URL, the app performs a <code class="bg-slate-700 px-1 rounded text-blue-200">window.location.href</code> redirect to Stripe.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">Currency Handling</span>
+                <span class="text-sm text-slate-400 text-rose-300 italic">Recommendation: Use USD for global accounts, or matching currency for regional ones. Stripe handles the localized UI (WeChat/Alipay) automatically.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

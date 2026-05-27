@@ -1,0 +1,95 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 2: Notification UI & Live Alerts</h1>
+      <p class="text-slate-400 mt-2">Visualizing the member's real-time communication experience.</p>
+    </header>
+
+    <div class="flex flex-col md:flex-row gap-12 items-start">
+      <!-- 1. Live Toast Mockup -->
+      <div class="w-full md:w-80 space-y-6">
+        <h2 class="text-xl font-bold text-blue-300">1. Live "Heads-up" Toast</h2>
+        <div class="relative bg-black rounded-[3rem] p-4 border-8 border-slate-800 shadow-2xl overflow-hidden h-[400px]">
+          <div class="h-full bg-slate-950 p-4 pt-10">
+             <!-- Simulated App Content -->
+             <div class="opacity-20 pointer-events-none">
+                <div class="h-4 w-2/3 bg-slate-700 rounded mb-4"></div>
+                <div class="h-24 bg-slate-800 rounded-2xl mb-4"></div>
+                <div class="h-24 bg-slate-800 rounded-2xl"></div>
+             </div>
+
+             <!-- The Toast -->
+             <div class="absolute top-12 left-6 right-6 z-50">
+               <div class="bg-blue-600 rounded-2xl p-4 shadow-2xl shadow-blue-500/40 border border-blue-400 flex items-start gap-3 animate-bounce">
+                 <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                 </div>
+                 <div class="flex-1">
+                   <h4 class="text-[10px] font-black uppercase tracking-wider text-blue-100">Waitlist Update</h4>
+                   <p class="text-xs font-bold leading-tight">你已成功排上《Jazz 进阶》！</p>
+                   <p class="text-[9px] text-blue-200 mt-1">系统已自动为你扣除1课次。</p>
+                 </div>
+               </div>
+             </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 italic text-center">High-priority alerts slide in from the top using Framer Motion.</p>
+      </div>
+
+      <!-- 2. Notification Center Mockup -->
+      <div class="flex-1 space-y-6">
+        <h2 class="text-xl font-bold text-blue-300">2. Notification Center (History)</h2>
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+          <div class="p-4 border-b border-slate-700 bg-slate-900/50 flex justify-between items-center">
+            <h3 class="font-bold text-slate-100">通知中心</h3>
+            <button class="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest">全部已读</button>
+          </div>
+          
+          <!-- Notification List -->
+          <div class="divide-y divide-slate-700">
+            <!-- Unread Item -->
+            <div class="p-4 flex items-start gap-4 bg-blue-500/5 border-l-4 border-blue-500">
+               <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               </div>
+               <div class="flex-1">
+                 <div class="flex justify-between items-start">
+                   <h4 class="text-sm font-bold text-slate-100">预约成功候补</h4>
+                   <span class="text-[9px] font-bold text-slate-500 font-mono">2 分钟前</span>
+                 </div>
+                 <p class="text-xs text-slate-400 mt-1 leading-relaxed">系统已为您自动约上 05-26 19:30 的 《Lyrical Jazz》 课程，请准时参加。</p>
+               </div>
+            </div>
+
+            <!-- Read Item -->
+            <div class="p-4 flex items-start gap-4 opacity-60">
+               <div class="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center text-slate-400">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h12l1 12H4L5 9z" /></svg>
+               </div>
+               <div class="flex-1">
+                 <div class="flex justify-between items-start">
+                   <h4 class="text-sm font-bold text-slate-300">充值成功</h4>
+                   <span class="text-[9px] font-bold text-slate-600 font-mono">1 小时前</span>
+                 </div>
+                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">您的 【10次课卡】 已到账，有效期至 2026-08-26。</p>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logic Components -->
+        <div class="grid grid-cols-2 gap-6 mt-8">
+           <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+             <h4 class="text-sm font-bold text-blue-400 mb-2">NotificationContext</h4>
+             <p class="text-[11px] text-slate-400 leading-relaxed">Manages the realtime subscription and state for unread counts across all views.</p>
+           </div>
+           <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+             <h4 class="text-sm font-bold text-blue-400 mb-2">GlobalScheduleListener</h4>
+             <p class="text-[11px] text-slate-400 leading-relaxed">Syncs the <code>bookedCount</code> on class cards live so users see immediate updates.</p>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

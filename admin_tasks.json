@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Supabase Initialization & Client Setup",
+    "status": "in-progress",
+    "description": "Install @supabase/supabase-js, configure .env, and create the client singleton."
+  },
+  {
+    "id": 2,
+    "title": "Database Schema Setup",
+    "status": "todo",
+    "description": "Create migration file for teachers, templates, and instances."
+  },
+  {
+    "id": 3,
+    "title": "Teacher Management UI",
+    "status": "todo",
+    "description": "Implement AdminLayout and Teacher CRUD interface."
+  },
+  {
+    "id": 4,
+    "title": "Schedule Template Management",
+    "status": "todo",
+    "description": "Implement template editor and publishing preview."
+  },
+  {
+    "id": 5,
+    "title": "Publishing Engine Logic",
+    "status": "todo",
+    "description": "Implement logic to generate instances from templates."
+  }
+]

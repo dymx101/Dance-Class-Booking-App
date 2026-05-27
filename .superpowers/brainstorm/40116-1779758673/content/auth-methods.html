@@ -1,0 +1,53 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Authentication Methods</h1>
+      <p class="text-slate-400 mt-2">Which login options should we provide for the dance studio members?</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Email/Password -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 transition-colors cursor-pointer group">
+        <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-100 mb-2">Email & Password</h2>
+        <p class="text-slate-400 text-sm">Traditional and reliable. Good for desktop users.</p>
+        <div class="mt-4 flex gap-2">
+          <span class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-bold rounded">STANDARD</span>
+        </div>
+      </div>
+
+      <!-- Magic Links -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500/50 transition-colors cursor-pointer group">
+        <div class="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-100 mb-2">Magic Links</h2>
+        <p class="text-slate-400 text-sm">Passwordless. User clicks a link in their email to log in.</p>
+        <div class="mt-4 flex gap-2">
+          <span class="px-2 py-0.5 bg-emerald-900/30 text-emerald-400 text-[10px] font-bold rounded">SECURE</span>
+          <span class="px-2 py-0.5 bg-emerald-900/30 text-emerald-400 text-[10px] font-bold rounded">EASY UX</span>
+        </div>
+      </div>
+
+      <!-- Social Login -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500/50 transition-colors cursor-pointer group">
+        <div class="w-10 h-10 bg-orange-500/20 text-orange-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-100 mb-2">Social (OAuth)</h2>
+        <p class="text-slate-400 text-sm">Login with Google, GitHub, or Apple. Fast 1-click access.</p>
+        <div class="mt-4 flex gap-2">
+          <span class="px-2 py-0.5 bg-orange-900/30 text-orange-400 text-[10px] font-bold rounded">FASTEST</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+      <h3 class="text-xl font-bold text-blue-400 mb-2">Technical Note</h3>
+      <p class="text-slate-300">Supabase Auth integrates seamlessly with our current Postgres schema. When a user signs up, Supabase handles the session and provides a unique UUID that we map to our <code class="bg-slate-700 px-1 rounded">users</code> table.</p>
+    </div>
+  </div>
+</div>

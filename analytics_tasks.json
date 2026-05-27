@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Database Aggregation Views",
+    "status": "todo",
+    "description": "Create Postgres views for revenue, teacher performance, heatmap, and growth."
+  },
+  {
+    "id": 2,
+    "title": "Analytics Data Service & Types",
+    "status": "todo",
+    "description": "Define TypeScript interfaces and Supabase data fetching helpers."
+  },
+  {
+    "id": 3,
+    "title": "Analytics Dashboard UI (MVP)",
+    "status": "todo",
+    "description": "Build summary cards and integrate the tab into AdminLayout."
+  },
+  {
+    "id": 4,
+    "title": "Interactive Charts (Recharts)",
+    "status": "todo",
+    "description": "Install Recharts and implement area charts, heatmaps, and leaderboards."
+  },
+  {
+    "id": 5,
+    "title": "Date Range Filtering & Final Polish",
+    "status": "todo",
+    "description": "Add time-period filters and handle loading/error states."
+  }
+]

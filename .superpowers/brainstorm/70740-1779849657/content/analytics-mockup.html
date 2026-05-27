@@ -1,0 +1,132 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4 flex justify-between items-end">
+      <div>
+        <h1 class="text-3xl font-bold text-blue-400">Admin Analytics Dashboard</h1>
+        <p class="text-slate-400 mt-2">Comprehensive studio performance and growth tracking.</p>
+      </div>
+      <div class="flex gap-2">
+        <span class="px-3 py-1 bg-slate-800 rounded-lg text-xs font-bold text-slate-400 border border-slate-700">Last 30 Days</span>
+      </div>
+    </header>
+
+    <!-- Top Summary Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg">
+        <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Total Revenue</span>
+        <div class="text-2xl font-black text-emerald-400 mt-1">¥42,850</div>
+        <div class="text-[10px] text-emerald-500/80 font-bold mt-1">↑ 12% vs last month</div>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg">
+        <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Avg. Fill Rate</span>
+        <div class="text-2xl font-black text-blue-400 mt-1">78.4%</div>
+        <div class="text-[10px] text-rose-500/80 font-bold mt-1">↓ 3% vs last month</div>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg">
+        <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Active Members</span>
+        <div class="text-2xl font-black text-orange-400 mt-1">248</div>
+        <div class="text-[10px] text-emerald-500/80 font-bold mt-1">↑ 15 new this week</div>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg">
+        <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">No-Show Rate</span>
+        <div class="text-2xl font-black text-rose-500 mt-1">4.2%</div>
+        <div class="text-[10px] text-emerald-500/80 font-bold mt-1">Good (Under 5%)</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Revenue Trend (Chart Mockup) -->
+      <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+        <h3 class="text-sm font-bold text-slate-200 mb-6 flex items-center gap-2">
+          <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+          Revenue Trends (Weekly)
+        </h3>
+        <div class="h-64 flex items-end gap-3 px-2">
+           <div class="flex-1 bg-emerald-500/20 border-t-2 border-emerald-500 rounded-t-lg h-[40%] relative group cursor-pointer hover:bg-emerald-500/30 transition-all">
+             <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-500 text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">¥8,200</div>
+           </div>
+           <div class="flex-1 bg-emerald-500/20 border-t-2 border-emerald-500 rounded-t-lg h-[65%] relative group cursor-pointer hover:bg-emerald-500/30 transition-all">
+             <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-500 text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">¥12,400</div>
+           </div>
+           <div class="flex-1 bg-emerald-500/20 border-t-2 border-emerald-500 rounded-t-lg h-[55%] relative group cursor-pointer hover:bg-emerald-500/30 transition-all">
+             <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-500 text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">¥10,100</div>
+           </div>
+           <div class="flex-1 bg-emerald-500/40 border-t-4 border-emerald-400 rounded-t-lg h-[85%] relative group cursor-pointer hover:bg-emerald-400/50 transition-all">
+             <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-400 text-[10px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">¥15,800</div>
+           </div>
+        </div>
+        <div class="flex justify-between mt-4 text-[10px] font-bold text-slate-500 px-4">
+          <span>WEEK 1</span><span>WEEK 2</span><span>WEEK 3</span><span>WEEK 4</span>
+        </div>
+      </div>
+
+      <!-- Teacher Performance (List Mockup) -->
+      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+        <h3 class="text-sm font-bold text-slate-200 mb-6 flex items-center gap-2">
+          <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+          Top Instructors
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold">S</div>
+              <div>
+                <span class="text-xs font-bold block">Senish</span>
+                <span class="text-[9px] text-slate-500">Hiphop / Jazz</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-black text-emerald-400">94%</span>
+              <span class="text-[8px] block text-slate-500 uppercase font-bold">Avg Fill</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold">拾</div>
+              <div>
+                <span class="text-xs font-bold block">拾柒 (Seventeen)</span>
+                <span class="text-[9px] text-slate-500">Heels Jazz</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-black text-emerald-400">88%</span>
+              <span class="text-[8px] block text-slate-500 uppercase font-bold">Avg Fill</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold">J</div>
+              <div>
+                <span class="text-xs font-bold block">J-Smooth</span>
+                <span class="text-[9px] text-slate-500">Popping</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-black text-blue-400">72%</span>
+              <span class="text-[8px] block text-slate-500 uppercase font-bold">Avg Fill</span>
+            </div>
+          </div>
+        </div>
+        <button class="w-full mt-6 py-2 rounded-xl bg-slate-900 hover:bg-black text-[10px] font-black uppercase tracking-widest text-slate-400 transition-colors">View All Reports</button>
+      </div>
+    </div>
+
+    <!-- Strategy Selection -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+       <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 hover:border-blue-500/50 transition-all cursor-pointer group">
+         <h4 class="font-bold text-blue-400 mb-2">1. MVP Dashboard</h4>
+         <p class="text-[11px] text-slate-400 leading-relaxed">Basic summary cards and simple lists. Fast to build using existing SQL queries.</p>
+       </div>
+       <div class="p-6 bg-slate-800 rounded-2xl border-2 border-blue-500 shadow-xl shadow-blue-500/10 cursor-pointer relative overflow-hidden">
+         <div class="absolute top-0 right-0 bg-blue-500 text-[8px] font-black px-2 py-1 uppercase rounded-bl-lg">Recommended</div>
+         <h4 class="font-bold text-blue-400 mb-2">2. Deep Dive (Pro)</h4>
+         <p class="text-[11px] text-slate-400 leading-relaxed">Full visualization suite with charts, heatmaps, and retention cohorts. Uses Recharts.</p>
+       </div>
+       <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 hover:border-blue-500/50 transition-all cursor-pointer group">
+         <h4 class="font-bold text-blue-400 mb-2">3. Actionable AI</h4>
+         <p class="text-[11px] text-slate-400 leading-relaxed">Proactive suggestions based on data trends (e.g. "Add Jazz classes on Tuesday").</p>
+       </div>
+    </div>
+  </div>
+</div>
