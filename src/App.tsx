@@ -8,9 +8,12 @@ import ProfileView from './components/ProfileView';
 import AdminLayout from './components/admin/AdminLayout';
 import TeacherManager from './components/admin/TeacherManager';
 import ScheduleManager from './components/admin/ScheduleManager';
+import LiveToast from './components/notifications/LiveToast';
+import NotificationCenter from './components/notifications/NotificationCenter';
 import { Home, CalendarDays, ShoppingBag, User, Wifi, Battery, Signal, Bell, XCircle, Info, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './contexts/AuthContext';
+import { useNotifications } from './contexts/NotificationContext';
 import { AuthScreen } from './components/auth/AuthScreen';
 import { supabase } from './lib/supabase';
 
@@ -22,6 +25,7 @@ interface ToastMsg {
 
 export default function App() {
   const { user, profile, signOut, loading: authLoading } = useAuth();
+  const { unreadCount } = useNotifications();
 
   // Tab control states: 'home' | 'schedule' | 'store' | 'profile'
   const [activeTab, setActiveTab] = useState<'home' | 'schedule' | 'store' | 'profile'>('home');
@@ -29,6 +33,9 @@ export default function App() {
   // Admin panel states
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
   const [adminTab, setAdminTab] = useState<'schedule' | 'teachers'>('schedule');
+
+  // Notification center state
+  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
 
   // Active custom visual theme choice: default to high-contrast warm white vibrant mode
   const [currentTheme, setCurrentTheme] = useState<AppTheme>(() => {
@@ -93,7 +100,7 @@ export default function App() {
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
 
   // Fetch classes, user bookings, and user passes from Supabase
-  const fetchClassesAndBookings = async () => {
+  const fetchClassesAndBookings = React.useCallback(async () => {
     if (!user) return;
     try {
       // 1. Fetch class instances
@@ -198,7 +205,7 @@ export default function App() {
     } catch (err) {
       console.error('Error fetching Supabase classes and bookings:', err);
     }
-  };
+  }, [user]);
 
   // Sync state with profile
   useEffect(() => {
@@ -215,16 +222,29 @@ export default function App() {
       setBookedClassIds([]);
       setWaitlistClassIds([]);
     }
-  }, [user]);
+  }, [user, fetchClassesAndBookings]);
 
   // Listen for real-time booking changes from NotificationContext
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    
     const handleBookingsChanged = () => {
-      fetchClassesAndBookings();
+      // Clear existing timer if any
+      clearTimeout(debounceTimer);
+      
+      // Debounce the refresh by 500ms to handle rapid changes
+      debounceTimer = setTimeout(() => {
+        fetchClassesAndBookings();
+      }, 500);
     };
+
     window.addEventListener('supabase:bookings_changed', handleBookingsChanged);
-    return () => window.removeEventListener('supabase:bookings_changed', handleBookingsChanged);
-  }, []);
+    
+    return () => {
+      window.removeEventListener('supabase:bookings_changed', handleBookingsChanged);
+      clearTimeout(debounceTimer);
+    };
+  }, [fetchClassesAndBookings]);
 
   // Handle Stripe success redirect
   useEffect(() => {
@@ -247,7 +267,7 @@ export default function App() {
       const newUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, document.title, newUrl);
     }
-  }, [user]);
+  }, [user, fetchClassesAndBookings]);
 
   // Local storage synchronization triggered upon core state alterations
   useEffect(() => {
@@ -372,6 +392,7 @@ export default function App() {
                 addToast('无管理员权限 (Unauthorized: Admin access required)', 'error');
               }
             }}
+            onOpenNotifications={() => setIsNotificationCenterOpen(true)}
           />
         );
       default:
@@ -468,9 +489,22 @@ export default function App() {
             ? 'bg-white/95 border-slate-200/50 text-slate-800'
             : 'bg-white/95 border-orange-100/30 text-slate-800'
         }`}>
-          <span className="text-[10px] font-black tracking-wide flex items-center">
-            <span className="mr-1">🎨</span> 视觉风格:
-          </span>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsNotificationCenterOpen(true)}
+              className="relative p-1.5 hover:bg-black/5 rounded-xl transition-colors cursor-pointer"
+            >
+              <Bell className={`w-4 h-4 ${unreadCount > 0 ? 'text-rose-500 animate-pulse' : 'text-slate-400'}`} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-rose-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            <span className="text-[10px] font-black tracking-wide flex items-center">
+              <span className="mr-1">🎨</span> 视觉风格:
+            </span>
+          </div>
           <div className="flex space-x-1 p-0.5 bg-black/5 rounded-full">
             <button
               onClick={() => setCurrentTheme('vibrant-light')}
@@ -504,6 +538,14 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {/* Notification Components */}
+        <LiveToast />
+        <NotificationCenter 
+          isOpen={isNotificationCenterOpen} 
+          onClose={() => setIsNotificationCenterOpen(false)} 
+          theme={currentTheme}
+        />
 
         {/* Dynamic sliding alert banner overlays */}
         <div className="absolute top-22 left-4 right-4 z-[999] pointer-events-none space-y-2">

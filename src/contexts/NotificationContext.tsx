@@ -83,32 +83,40 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         )
         .subscribe();
 
-      // Subscribe to global bookings for spot sync
-      const bookingSubscription = supabase
-        .channel('global-bookings')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'bookings',
-          },
-          (payload) => {
-            // Dispatch custom event to notify components that spots might have changed
-            window.dispatchEvent(new CustomEvent('supabase:bookings_changed', { detail: payload }));
-          }
-        )
-        .subscribe();
-
       return () => {
         notificationSubscription.unsubscribe();
-        bookingSubscription.unsubscribe();
       };
     } else {
       setNotifications([]);
       setUnreadCount(0);
     }
   }, [user, fetchNotifications]);
+
+  // Subscribe to global bookings for spot sync
+  useEffect(() => {
+    const bookingSubscription = supabase
+      .channel('global-bookings')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'bookings',
+        },
+        (payload) => {
+          const classId = (payload.new as any)?.classId || (payload.old as any)?.classId;
+          // Dispatch custom event to notify components that spots might have changed
+          window.dispatchEvent(new CustomEvent('supabase:bookings_changed', { 
+            detail: { classId, payload } 
+          }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      bookingSubscription.unsubscribe();
+    };
+  }, []);
 
   const markAsRead = async (id: string) => {
     if (!user) return;
