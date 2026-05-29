@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
-import { Notification } from '../types';
+import { Notification } from '@dance-app/shared';
 
 interface NotificationContextType {
   notifications: Notification[];

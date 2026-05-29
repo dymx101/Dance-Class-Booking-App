@@ -6,8 +6,11 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
     "web:dev": "npm run dev -w @dance-app/web",
     "web:build": "npm run build -w @dance-app/web",
-    "lint": "npm run lint -w @dance-app/web"
+    "shared:build": "npm run build -w @dance-app/shared"
   }
 }

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import { User as Profile } from '../types';
+import { User as Profile } from '@dance-app/shared';
 
 interface AuthContextType {
   user: SupabaseUser | null;

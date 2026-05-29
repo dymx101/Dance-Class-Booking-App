@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DanceClass, PurchaseRecord, AppTheme } from './types';
-import { generateClasses } from './data';
+import { DanceClass, PurchaseRecord, AppTheme, generateClasses } from '@dance-app/shared';
 import HomeView from './components/HomeView';
 import ScheduleView from './components/ScheduleView';
 import StoreView from './components/StoreView';
@@ -40,33 +39,33 @@ export default function App() {
 
   // Active custom visual theme choice: default to high-contrast warm white vibrant mode
   const [currentTheme, setCurrentTheme] = useState<AppTheme>(() => {
-    const saved = localStorage.getItem('plana_theme');
+    const saved = localStorage.getItem('dance_app_theme');
     return (saved as AppTheme) || 'vibrant-light';
   });
 
   useEffect(() => {
-    localStorage.setItem('plana_theme', currentTheme);
+    localStorage.setItem('dance_app_theme', currentTheme);
   }, [currentTheme]);
 
   // Persistence core states with localStorage synchronization fallback
   const [userPasses, setUserPasses] = useState<number>(() => {
-    const saved = localStorage.getItem('plana_userPasses');
+    const saved = localStorage.getItem('dance_app_userPasses');
     return saved ? parseInt(saved, 10) : 12; // Start student with 12 free trial passes
   });
 
   const [bookedClassIds, setBookedClassIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem('plana_bookedClassIds');
+    const saved = localStorage.getItem('dance_app_bookedClassIds');
     // Pre-book one class to give immediate visual feedback on Profile/My page on load
     return saved ? JSON.parse(saved) : ['template_02_jazz_g1_2026-05-25'];
   });
 
   const [waitlistClassIds, setWaitlistClassIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem('plana_waitlistClassIds');
+    const saved = localStorage.getItem('dance_app_waitlistClassIds');
     return saved ? JSON.parse(saved) : [];
   });
 
   const [purchaseHistory, setPurchaseHistory] = useState<PurchaseRecord[]>(() => {
-    const saved = localStorage.getItem('plana_purchaseHistory');
+    const saved = localStorage.getItem('dance_app_purchaseHistory');
     return saved ? JSON.parse(saved) : [
       {
         id: 'rec_pre',
@@ -81,7 +80,7 @@ export default function App() {
   });
 
   const [classes, setClasses] = useState<DanceClass[]>(() => {
-    const saved = localStorage.getItem('plana_classes_db');
+    const saved = localStorage.getItem('dance_app_classes_db');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -93,7 +92,7 @@ export default function App() {
   });
 
   const [bookedSpots, setBookedSpots] = useState<Record<string, string>>(() => {
-    const saved = localStorage.getItem('plana_bookedSpots');
+    const saved = localStorage.getItem('dance_app_bookedSpots');
     return saved ? JSON.parse(saved) : { 'template_02_jazz_g1_2026-05-25': 'A3' };
   });
 
@@ -272,27 +271,27 @@ export default function App() {
 
   // Local storage synchronization triggered upon core state alterations
   useEffect(() => {
-    localStorage.setItem('plana_userPasses', String(userPasses));
+    localStorage.setItem('dance_app_userPasses', String(userPasses));
   }, [userPasses]);
 
   useEffect(() => {
-    localStorage.setItem('plana_bookedClassIds', JSON.stringify(bookedClassIds));
+    localStorage.setItem('dance_app_bookedClassIds', JSON.stringify(bookedClassIds));
   }, [bookedClassIds]);
 
   useEffect(() => {
-    localStorage.setItem('plana_waitlistClassIds', JSON.stringify(waitlistClassIds));
+    localStorage.setItem('dance_app_waitlistClassIds', JSON.stringify(waitlistClassIds));
   }, [waitlistClassIds]);
 
   useEffect(() => {
-    localStorage.setItem('plana_purchaseHistory', JSON.stringify(purchaseHistory));
+    localStorage.setItem('dance_app_purchaseHistory', JSON.stringify(purchaseHistory));
   }, [purchaseHistory]);
 
   useEffect(() => {
-    localStorage.setItem('plana_classes_db', JSON.stringify(classes));
+    localStorage.setItem('dance_app_classes_db', JSON.stringify(classes));
   }, [classes]);
 
   useEffect(() => {
-    localStorage.setItem('plana_bookedSpots', JSON.stringify(bookedSpots));
+    localStorage.setItem('dance_app_bookedSpots', JSON.stringify(bookedSpots));
   }, [bookedSpots]);
 
   // Dispatch Toast notice

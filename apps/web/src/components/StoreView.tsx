@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PAYMENT_CARDS } from '../data';
-import { PaymentCard, PurchaseRecord } from '../types';
+import { PAYMENT_CARDS, PaymentCard, PurchaseRecord } from '@dance-app/shared';
 import { Sparkles, ShieldCheck, Ticket } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';

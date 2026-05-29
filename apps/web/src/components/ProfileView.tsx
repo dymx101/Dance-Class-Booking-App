@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DanceClass, PurchaseRecord } from '../types';
+import { DanceClass, PurchaseRecord } from '@dance-app/shared';
 import { Award, Clock, History, Ban, User, Layers, ShieldCheck, Ticket, BarChart3, HelpCircle, Flame, Bell } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';

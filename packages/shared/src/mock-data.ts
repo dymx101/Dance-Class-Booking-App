@@ -281,7 +281,6 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
   }
 ];
 
-// Let's generate a full list of classes from 2026-05-24 to 2026-06-02
 export const generateClasses = (): DanceClass[] => {
   const result: DanceClass[] = [];
   const dates = [
@@ -298,7 +297,7 @@ export const generateClasses = (): DanceClass[] => {
   ];
 
   dates.forEach((dateStr) => {
-    CLASSES_TEMPLATE.forEach((tmpl, i) => {
+    CLASSES_TEMPLATE.forEach((tmpl) => {
       // Modify bookedCount slightly for variety across days
       let bookedCount = tmpl.bookedCount;
       if (dateStr > '2026-05-25') {

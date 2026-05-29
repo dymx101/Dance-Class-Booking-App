@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MOCK_BANNERS, TEACHERS, MOCK_NOTICES, MOCK_VIDEOS } from '../data';
-import { Teacher } from '../types';
+import { MOCK_BANNERS, TEACHERS, MOCK_NOTICES, MOCK_VIDEOS, Teacher } from '@dance-app/shared';
 import { Volume2, Award, Play, Flame, Star, Heart, Film, MapPin, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 

@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat } from '../types';
+import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat } from '@dance-app/shared';
 
 /**
  * Fetches weekly revenue statistics from the view_revenue_stats view.

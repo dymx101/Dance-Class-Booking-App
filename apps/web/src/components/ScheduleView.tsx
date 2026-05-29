@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { DanceClass, Teacher } from '../types';
-import { TEACHERS } from '../data';
+import { DanceClass, Teacher, TEACHERS } from '@dance-app/shared';
 import { Calendar, Filter, ChevronLeft, ChevronRight, CheckCircle2, Layers, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
