@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { 
   BarChart3, TrendingUp, Users, Percent, DollarSign, UserPlus, XCircle, 
-  Loader2, Calendar, ChevronDown, Filter, Info 
+  Loader2, Calendar, ChevronDown, Filter, Info, Mail 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -10,12 +10,14 @@ import {
 } from 'recharts';
 import { getRevenueStats, getTeacherPerformance, getAttendanceHeatmap, getMemberStats } from '../../lib/analytics';
 import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 type Period = '7d' | '30d' | '90d' | 'all';
 
 export default function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<Period>('30d');
+  const [sending, setSending] = useState(false);
   
   // Master data
   const [rawRevenueData, setRawRevenueData] = useState<RevenueStat[]>([]);
@@ -45,6 +47,22 @@ export default function AnalyticsDashboard() {
     }
     fetchData();
   }, []);
+
+  const handleSendTestReport = async () => {
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke('generate-report', {
+        body: { type: 'weekly' }
+      });
+      if (error) throw error;
+      alert('Report sent successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send report.');
+    } finally {
+      setSending(false);
+    }
+  };
 
   // Filtered data based on period
   const filteredRevenue = useMemo(() => {
@@ -127,20 +145,35 @@ export default function AnalyticsDashboard() {
           <p className="text-xs font-bold text-slate-500 mt-1">实时监控工作室营收与运营情况 Real-time Studio Pulse</p>
         </div>
         
-        <div className="flex items-center space-x-2 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm">
-          {(['7d', '30d', '90d', 'all'] as Period[]).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
-                period === p 
-                  ? 'bg-slate-900 text-white shadow-lg' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {p === 'all' ? '全部' : p.toUpperCase()}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleSendTestReport}
+            disabled={sending}
+            className="flex items-center space-x-2 px-4 py-2 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 rounded-xl text-[10px] font-black uppercase tracking-widest text-rose-600 transition-all border border-rose-100"
+          >
+            {sending ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Mail className="w-3 h-3" />
+            )}
+            <span>发送测试报表 (Send Test Report)</span>
+          </button>
+
+          <div className="flex items-center space-x-2 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm">
+            {(['7d', '30d', '90d', 'all'] as Period[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                  period === p 
+                    ? 'bg-slate-900 text-white shadow-lg' 
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {p === 'all' ? '全部' : p.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
