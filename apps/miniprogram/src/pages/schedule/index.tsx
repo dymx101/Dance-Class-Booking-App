@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { View, Text, Image, ScrollView, Switch } from '@tarojs/components'
 import { useLoad, showToast } from '@tarojs/taro'
-import { DanceClass, Teacher, getSupabase } from '@dance-app/shared'
+import { DanceClass, getSupabase } from '@dance-app/shared'
 import './index.css'
 
 export default function Schedule() {
