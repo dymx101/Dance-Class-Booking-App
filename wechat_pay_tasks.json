@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Mini Program Store Page",
+    "status": "todo",
+    "description": "Create native Taro store page and register in app config."
+  },
+  {
+    "id": 2,
+    "title": "Order Signing Edge Function",
+    "status": "todo",
+    "description": "Implement V3 signing utility and order creation Edge Function."
+  },
+  {
+    "id": 3,
+    "title": "WeChat Pay Webhook Fulfillment",
+    "status": "todo",
+    "description": "Implement decryption and atomic fulfillment in Edge Function."
+  },
+  {
+    "id": 4,
+    "title": "Native Payment Handoff",
+    "status": "todo",
+    "description": "Integrate Taro.requestPayment and handle callbacks."
+  },
+  {
+    "id": 5,
+    "title": "Security & Verification",
+    "status": "todo",
+    "description": "Add credential placeholders to environment files."
+  }
+]

@@ -1,0 +1,56 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 1: Reporting Pipeline</h1>
+      <p class="text-slate-400 mt-2">Automating the data extraction and delivery loop.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Scheduling: Supabase Cron -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-emerald-400">1. Automated Scheduling</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 font-mono text-[10px]">
+          <p class="text-emerald-300">-- Supabase (pg_cron) Setup:</p>
+          <ul class="list-disc list-inside space-y-2 text-slate-300 mt-2">
+            <li><span class="text-blue-300 font-bold">Weekly:</span> <code class="bg-zinc-900 px-1 rounded text-orange-300">0 8 * * 1</code> (Mon 8AM)</li>
+            <li><span class="text-blue-300 font-bold">Monthly:</span> <code class="bg-zinc-900 px-1 rounded text-orange-300">0 9 1 * *</code> (1st of month)</li>
+            <li><span class="text-blue-300 font-bold">Action:</span> Trigger <code class="bg-zinc-900 px-1 rounded text-blue-300">generate-report</code> Edge Function.</li>
+          </ul>
+        </div>
+        <p class="text-xs text-slate-400 italic">This ensures reports are delivered consistently without any manual intervention.</p>
+      </div>
+
+      <!-- Logic: generate-report Edge Function -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-blue-400">2. Processing Logic</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-blue-500"></div>
+          <p class="text-blue-300">// Edge Function Steps:</p>
+          <ol class="list-decimal list-inside space-y-2 text-slate-300 mt-2">
+            <li>Verify internal secret token (security).</li>
+            <li>Execute <code class="bg-zinc-900 px-1 rounded text-emerald-300">view_revenue_stats</code> & <code class="bg-zinc-900 px-1 rounded text-emerald-300">view_teacher_performance</code>.</li>
+            <li>Aggregate data for the specific period (7D or 30D).</li>
+            <li>Format into a clean Markdown/HTML template.</li>
+            <li>Send via <span class="text-rose-400 font-bold">Resend API</span> to studio owner.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Reliability -->
+      <div class="md:col-span-2 mt-4">
+        <div class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-xl flex items-center gap-6">
+          <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-blue-300">Zero-Maintenance Architecture</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              By using standard SQL views for the reports, the logic is "shared" with your Admin Dashboard. If we improve an analytics view, the reports are automatically updated as well.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,16 +32,16 @@ export default function ScheduleManager() {
   const [formData, setFormData] = useState<Omit<ClassTemplate, 'id'>>({
     title: '',
     genre: 'hiphop',
-    dayOfWeek: 1,
-    timeStart: '19:00',
-    timeEnd: '20:30',
-    teacherId: '',
+    dayofweek: 1,
+    timestart: '19:00',
+    timeend: '20:30',
+    teacherid: '',
     difficulty: 3,
     classroom: 'A教室',
-    minPeople: 1,
-    maxCount: 20,
+    minpeople: 1,
+    maxcount: 20,
     type: 'group',
-    isActive: true
+    isactive: true
   });
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function ScheduleManager() {
     try {
       setLoading(true);
       const [templatesRes, teachersRes] = await Promise.all([
-        supabase.from('class_templates').select('*, teacher:teachers(*)').order('dayOfWeek').order('timeStart'),
+        supabase.from('class_templates').select('*, teacher:teachers(*)').order('dayofweek').order('timestart'),
         supabase.from('teachers').select('*').order('name')
       ]);
 
@@ -62,8 +62,8 @@ export default function ScheduleManager() {
       setTemplates(templatesRes.data || []);
       setTeachers(teachersRes.data || []);
       
-      if (teachersRes.data && teachersRes.data.length > 0 && !formData.teacherId) {
-        setFormData(prev => ({ ...prev, teacherId: teachersRes.data[0].id }));
+      if (teachersRes.data && teachersRes.data.length > 0 && !formData.teacherid) {
+        setFormData(prev => ({ ...prev, teacherid: teachersRes.data[0].id }));
       }
     } catch (err: any) {
       setError(err.message);
@@ -78,32 +78,32 @@ export default function ScheduleManager() {
       setFormData({
         title: template.title,
         genre: template.genre,
-        dayOfWeek: template.dayOfWeek,
-        timeStart: template.timeStart.substring(0, 5),
-        timeEnd: template.timeEnd.substring(0, 5),
-        teacherId: template.teacherId,
+        dayofweek: template.dayofweek,
+        timestart: template.timestart.substring(0, 5),
+        timeend: template.timeend.substring(0, 5),
+        teacherid: template.teacherid,
         difficulty: template.difficulty,
         classroom: template.classroom,
-        minPeople: template.minPeople,
-        maxCount: template.maxCount,
+        minpeople: template.minpeople,
+        maxcount: template.maxcount,
         type: template.type,
-        isActive: template.isActive
+        isactive: template.isactive
       });
     } else {
       setEditingTemplate(null);
       setFormData({
         title: '',
         genre: 'hiphop',
-        dayOfWeek: 1,
-        timeStart: '19:00',
-        timeEnd: '20:30',
-        teacherId: teachers[0]?.id || '',
+        dayofweek: 1,
+        timestart: '19:00',
+        timeend: '20:30',
+        teacherid: teachers[0]?.id || '',
         difficulty: 3,
         classroom: 'A教室',
-        minPeople: 1,
-        maxCount: 20,
+        minpeople: 1,
+        maxcount: 20,
         type: 'group',
-        isActive: true
+        isactive: true
       });
     }
     setIsModalOpen(true);
@@ -112,7 +112,7 @@ export default function ScheduleManager() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.timeStart >= formData.timeEnd) {
+    if (formData.timestart >= formData.timeend) {
       setError("开始时间必须早于结束时间。 (Start time must be before end time.)");
       return;
     }
@@ -123,8 +123,8 @@ export default function ScheduleManager() {
       // Format times to HH:MM:SS for Postgres
       const payload = {
         ...formData,
-        timeStart: formData.timeStart.length === 5 ? `${formData.timeStart}:00` : formData.timeStart,
-        timeEnd: formData.timeEnd.length === 5 ? `${formData.timeEnd}:00` : formData.timeEnd
+        timestart: formData.timestart.length === 5 ? `${formData.timestart}:00` : formData.timestart,
+        timeend: formData.timeend.length === 5 ? `${formData.timeend}:00` : formData.timeend
       };
 
       if (editingTemplate) {
@@ -169,7 +169,7 @@ export default function ScheduleManager() {
     try {
       const { error } = await supabase
         .from('class_templates')
-        .update({ isActive: !template.isActive })
+        .update({ isactive: !template.isactive })
         .eq('id', template.id);
       if (error) throw error;
       fetchData();
@@ -194,7 +194,7 @@ export default function ScheduleManager() {
       const endDateStr = getLocalDateString(endDate);
 
       // 2. Fetch active templates
-      const activeTemplates = templates.filter(t => t.isActive);
+      const activeTemplates = templates.filter(t => t.isactive);
       if (activeTemplates.length === 0) {
         throw new Error("No active templates found to sync.");
       }
@@ -202,7 +202,7 @@ export default function ScheduleManager() {
       // 3. Fetch existing instances in range
       const { data: existingInstances, error: fetchError } = await supabase
         .from('class_instances')
-        .select('templateId, date')
+        .select('templateid, date')
         .gte('date', startDateStr)
         .lte('date', endDateStr);
 
@@ -210,30 +210,30 @@ export default function ScheduleManager() {
 
       // 4. Generate missing instances
       const toCreate: any[] = [];
-      const existingMap = new Set(existingInstances?.map(inst => `${inst.templateId}_${inst.date}`));
+      const existingMap = new Set(existingInstances?.map(inst => `${inst.templateid}_${inst.date}`));
 
       for (let i = 0; i < 14; i++) {
         const targetDate = new Date(startDate);
         targetDate.setDate(startDate.getDate() + i);
         const targetDateStr = getLocalDateString(targetDate);
-        const dayOfWeek = targetDate.getDay();
+        const dayofweek = targetDate.getDay();
 
-        const dayTemplates = activeTemplates.filter(t => t.dayOfWeek === dayOfWeek);
+        const dayTemplates = activeTemplates.filter(t => t.dayofweek === dayofweek);
         
         for (const template of dayTemplates) {
           if (!existingMap.has(`${template.id}_${targetDateStr}`)) {
             toCreate.push({
-              templateId: template.id,
+              templateid: template.id,
               date: targetDateStr,
-              teacherId: template.teacherId,
-              timeStart: template.timeStart,
-              timeEnd: template.timeEnd,
+              teacherid: template.teacherid,
+              timestart: template.timestart,
+              timeend: template.timeend,
               title: template.title,
               genre: template.genre,
               classroom: template.classroom,
               difficulty: template.difficulty,
-              maxCount: template.maxCount,
-              minPeople: template.minPeople,
+              maxcount: template.maxcount,
+              minpeople: template.minpeople,
               type: template.type,
               status: 'scheduled'
             });
@@ -263,7 +263,7 @@ export default function ScheduleManager() {
   };
 
   const groupedTemplates = Array.from({ length: 7 }, (_, i) => {
-    return templates.filter(t => t.dayOfWeek === i);
+    return templates.filter(t => t.dayofweek === i);
   });
 
   const getPreviewData = () => {
@@ -273,13 +273,13 @@ export default function ScheduleManager() {
     for (let i = 0; i < 14; i++) {
       const currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
-      const dayOfWeek = currentDate.getDay();
+      const dayofweek = currentDate.getDay();
       const dateStr = getLocalDateString(currentDate);
       
-      const dayTemplates = templates.filter(t => t.dayOfWeek === dayOfWeek && t.isActive);
+      const dayTemplates = templates.filter(t => t.dayofweek === dayofweek && t.isactive);
       preview.push({
         date: dateStr,
-        dayName: DAYS[dayOfWeek],
+        dayName: DAYS[dayofweek],
         classes: dayTemplates
       });
     }
@@ -369,10 +369,10 @@ export default function ScheduleManager() {
                       <div className="flex items-start space-x-6">
                         <div className="pt-1">
                           <div className="text-lg font-black text-slate-900 leading-none mb-1">
-                            {template.timeStart.substring(0, 5)}
+                            {template.timestart.substring(0, 5)}
                           </div>
                           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                            - {template.timeEnd.substring(0, 5)}
+                            - {template.timeend.substring(0, 5)}
                           </div>
                         </div>
                         
@@ -406,12 +406,12 @@ export default function ScheduleManager() {
                         <button 
                           onClick={() => toggleStatus(template)}
                           className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                            template.isActive 
+                            template.isactive 
                               ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100' 
                               : 'bg-slate-100 text-slate-400 border border-slate-200 hover:bg-slate-200'
                           }`}
                         >
-                          {template.isActive ? 'Active' : 'Disabled'}
+                          {template.isactive ? 'Active' : 'Disabled'}
                         </button>
                         <button 
                           onClick={() => handleOpenModal(template)}

@@ -2,6 +2,7 @@ export default defineAppConfig({
   pages: [
     'pages/home/index',
     'pages/schedule/index',
+    'pages/store/index',
     'pages/index/index'
   ],
   window: {
@@ -27,6 +28,12 @@ export default defineAppConfig({
         text: '预约',
         iconPath: 'assets/schedule.png',
         selectedIconPath: 'assets/schedule-active.png'
+      },
+      {
+        pagePath: 'pages/store/index',
+        text: '购卡',
+        iconPath: 'assets/store.png',
+        selectedIconPath: 'assets/store-active.png'
       }
     ]
   }

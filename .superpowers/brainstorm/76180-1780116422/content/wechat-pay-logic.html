@@ -1,0 +1,61 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 2: Order Signing & Native Modal</h1>
+      <p class="text-slate-400 mt-2">The secure handoff between Supabase and the WeChat Pay network.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Edge Function: create-wechat-order -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-[#07C160]">create-wechat-order Edge Function</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-[#07C160]"></div>
+          <p class="text-[#07C160]">// Secure V3 Steps:</p>
+          <ol class="list-decimal list-inside space-y-2 text-slate-300 mt-2">
+            <li>Validate User (OpenID via JWT).</li>
+            <li>Fetch Card price in CNY (¥).</li>
+            <li>Call WeChat <code class="bg-zinc-900 px-1 rounded text-blue-300">/v3/pay/transactions/jsapi</code>.</li>
+            <li>Receive <code class="bg-zinc-900 px-1 rounded text-orange-300">prepay_id</code>.</li>
+            <li><strong>Sign Pay Parameters:</strong>
+              <br/>&nbsp;&nbsp; - timestamp, nonce, package
+              <br/>&nbsp;&nbsp; - Sign with Studio Private Key (.pem)
+            </li>
+            <li>Return signed object to Client.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Frontend Trigger -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-blue-300">Native Fulfillment</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden font-mono text-[10px]">
+          <div class="absolute left-0 top-0 w-1 h-full bg-blue-500"></div>
+          <p class="text-blue-300">// Taro / Mini Program Call:</p>
+          <div class="bg-zinc-900 p-3 rounded mt-2 text-slate-400 leading-relaxed">
+            Taro.requestPayment({<br/>
+            &nbsp;&nbsp;...signedParams,<br/>
+            &nbsp;&nbsp;success: () => {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;showToast('支付成功');<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;fetchProfile();<br/>
+            &nbsp;&nbsp;}<br/>
+            })
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 italic">This triggers the native WeChat "Face ID" or "Fingerprint" payment modal for a zero-friction experience.</p>
+      </div>
+
+      <!-- Verification Section -->
+      <div class="md:col-span-2 mt-4 p-6 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+        <h3 class="font-bold text-rose-400 mb-2 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+          Verification Webhook (Async)
+        </h3>
+        <p class="text-xs text-slate-300">
+          The <code>wechat-pay-webhook</code> Edge Function will listen for the final confirmation from WeChat. It uses the <strong>Studio Public Certificate</strong> to verify the signature, then calls <code>fulfill_purchase</code> in Postgres to add the passes. This prevents the "I paid but didn't get my passes" problem if the user's phone dies during the transaction.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

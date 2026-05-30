@@ -150,10 +150,10 @@ export default function ScheduleView({
         if (isPassed) return false;
 
         // If booking not open yet
-        if (item.openBookingTime) return false;
+        if (item.openbookingtime) return false;
 
         // If fully booked & no spots and user is not already booked
-        if (item.bookedCount >= item.maxCount && !bookedClassIds.includes(item.id)) {
+        if (item.bookedcount >= item.maxcount && !bookedClassIds.includes(item.id)) {
           return false;
         }
       }
@@ -179,7 +179,7 @@ export default function ScheduleView({
     if (cls.date > todayStr) return false;
 
     // Same day: 2026-05-25, check time
-    const [startH, startM] = cls.timeStart.split(':').map(Number);
+    const [startH, startM] = cls.timestart.split(':').map(Number);
     if (startH < CURRENT_HOUR) return true;
     if (startH === CURRENT_HOUR && startM < CURRENT_MINUTE) return true;
     return false;
@@ -247,7 +247,7 @@ export default function ScheduleView({
         }
       } else {
         // 2. Intercept unbooked class - Open Confirmation & Spot selector instead of booking immediately
-        if (cls.bookedCount >= cls.maxCount) {
+        if (cls.bookedcount >= cls.maxcount) {
           addToast('抱歉，该课程名额已满。您可以选择"排队"进行预约。', 'error');
           return;
         }
@@ -691,7 +691,7 @@ export default function ScheduleView({
                 const ended = isClassPassed(cls);
                 const isBooked = bookedClassIds.includes(cls.id);
                 const isWaiting = waitlistClassIds.includes(cls.id);
-                const isFull = cls.bookedCount >= cls.maxCount;
+                const isFull = cls.bookedcount >= cls.maxcount;
 
                 return (
                   <div
@@ -709,7 +709,7 @@ export default function ScheduleView({
                     {/* Top cyan hour panel tag */}
                     <div className={`px-4 py-1.5 border-b flex items-center justify-between ${isDark ? 'bg-[#181926]/90 border-white/5' : 'bg-slate-100/70 border-slate-200/55'}`}>
                       <span className={`text-xs font-black font-mono ${highlightText}`}>
-                        {cls.timeStart} ~ {cls.timeEnd}
+                        {cls.timestart} ~ {cls.timeend}
                       </span>
                       <span className={`text-[9px] uppercase font-black tracking-widest font-mono ${isDark ? 'text-rose-300' : 'text-slate-650 text-slate-500'}`}>
                         {cls.genre} Style
@@ -751,14 +751,14 @@ export default function ScheduleView({
 
                         {/* Booking classroom and capacity ratios */}
                         <div className={`text-[11px] mt-1 font-mono space-y-0.5 font-bold ${textSecondary}`}>
-                          <div>{cls.classroom} • 满{cls.minPeople}人开课</div>
+                          <div>{cls.classroom} • 满{cls.minpeople}人开课</div>
                           <div className="flex items-center mt-1">
                             <span className="mr-1.5">已预约:</span>
                             <span className={`font-black ${isFull ? highlightText : (isDark ? 'text-zinc-200' : 'text-slate-800')}`}>
-                              {cls.bookedCount}
+                              {cls.bookedcount}
                             </span>
                             <span className={`${isDark ? 'text-zinc-650 text-zinc-600' : 'text-slate-400'} mx-0.5`}>/</span>
-                            <span>{cls.maxCount}人</span>
+                            <span>{cls.maxcount}人</span>
 
                             {isFull && (
                               <span className={`ml-2 text-[8px] font-black tracking-wider px-1.5 py-0.5 rounded leading-none ${badgeClass}`}>
@@ -777,12 +777,12 @@ export default function ScheduleView({
                           }`}>
                             已结束
                           </div>
-                        ) : cls.openBookingTime ? (
+                        ) : cls.openbookingtime ? (
                           <div className="flex flex-col items-end">
                             <span className={`text-[8px] font-extrabold mb-1 font-mono px-1.5 py-0.5 rounded ${
                               isMint ? 'bg-teal-500/10 text-teal-605 text-teal-500 border border-teal-500/20' : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
                             }`}>
-                              {cls.openBookingTime}
+                              {cls.openbookingtime}
                             </span>
                             <button
                               disabled
@@ -990,7 +990,7 @@ export default function ScheduleView({
                     <div key={colIdx} className={`col-span-1 divide-y min-h-[500px] ${isDark ? 'divide-white/5' : 'divide-slate-200'}`}>
                       {['10:30', '13:00', '14:00', '15:00', '16:30', '18:30'].map((timeSlot) => {
                         // Find if any class matches this general time starting slot index
-                        const classMatch = dayClasses.find(c => c.timeStart === timeSlot);
+                        const classMatch = dayClasses.find(c => c.timestart === timeSlot);
                         const isBooked = classMatch ? bookedClassIds.includes(classMatch.id) : false;
 
                         return (
@@ -1002,7 +1002,7 @@ export default function ScheduleView({
                                 onClick={() => {
                                   setSelectedDateStr(col.dateStr);
                                   setViewMode('day'); // Direct go to detail on click
-                                  addToast(`您点击了 ${classMatch.title}，进入单日模式管理预约`, 'info');
+                                  addToast(`您点击了 ${classMatch.title}，进入单日模式 management 预约`, 'info');
                                 }}
                                 className={`w-full h-full rounded-xl p-1.5 text-left text-white leading-none cursor-pointer overflow-hidden transition-all hover:brightness-110 hover:scale-[1.02] flex flex-col justify-between border border-white/5 ${
                                   isBooked
@@ -1023,7 +1023,7 @@ export default function ScheduleView({
                                     {classMatch.title}
                                   </div>
                                   <div className="text-[8px] text-zinc-350 text-zinc-300 truncate leading-none mt-1">
-                                    {classMatch.timeStart}~{classMatch.timeEnd}
+                                    {classMatch.timestart}~{classMatch.timeend}
                                   </div>
                                   <div className="text-[8px] font-black text-rose-300 tracking-wide truncate mt-1">
                                     {classMatch.teacher.name}
@@ -1037,7 +1037,7 @@ export default function ScheduleView({
                                     </span>
                                   ) : (
                                     <span className="bg-black/25 text-zinc-350 text-zinc-300 text-[8px] font-bold px-1 rounded truncate leading-none scale-[0.9] origin-left">
-                                      {classMatch.bookedCount}/{classMatch.maxCount}人
+                                      {classMatch.bookedcount}/{classMatch.maxcount}人
                                     </span>
                                   )}
                                 </div>
@@ -1376,7 +1376,7 @@ export default function ScheduleView({
                       </h3>
                     </div>
                     <p className={`text-[10px] font-bold font-mono ${highlightText}`}>
-                      {selectedClassForBooking.date} • {selectedClassForBooking.timeStart} ~ {selectedClassForBooking.timeEnd}
+                      {selectedClassForBooking.date} • {selectedClassForBooking.timestart} ~ {selectedClassForBooking.timeend}
                     </p>
                     <p className={`text-[9px] font-bold ${textSecondary}`}>
                       导师: {selectedClassForBooking.teacher.name} • 课室: {selectedClassForBooking.classroom}
@@ -1396,7 +1396,7 @@ export default function ScheduleView({
                 {/* Spot selector */}
                 <SpotSelector
                   classId={selectedClassForBooking.id}
-                  reservedSpots={selectedClassForBooking.reservedSpots || []}
+                  reservedspots={selectedClassForBooking.reservedspots || []}
                   selectedSpot={selectedSpot}
                   onSelectSpot={(spot) => {
                     setSelectedSpot(spot);

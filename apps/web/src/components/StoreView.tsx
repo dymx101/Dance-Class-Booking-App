@@ -174,8 +174,8 @@ export default function StoreView({
         </h3>
 
         {(dbCards.length > 0 ? dbCards : PAYMENT_CARDS).map((card) => {
-          const discountLabel = card.originalPrice
-            ? `省 ¥${card.originalPrice - card.price}`
+          const discountLabel = card.originalprice
+            ? `省 ¥${card.originalprice - card.price}`
             : null;
 
           return (
@@ -198,7 +198,7 @@ export default function StoreView({
                   {card.title}
                 </h4>
                 <p className={`text-[9px] font-mono font-bold mt-1 tracking-tight ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                  有效期: {card.validDays} 天 • {' '}
+                  有效期: {card.validdays} 天 • {' '}
                   {card.passes === -1 ? '不限期/上课次数限制' : `大课共 ${card.passes} 课时`}
                 </p>
                 <p className={`text-[11px] mt-2 leading-relaxed font-sans font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
@@ -214,9 +214,9 @@ export default function StoreView({
                     {card.price}
                   </span>
 
-                  {card.originalPrice && (
+                  {card.originalprice && (
                     <span className={`text-xs font-bold line-through ml-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                      ¥{card.originalPrice}
+                      ¥{card.originalprice}
                     </span>
                   )}
 
@@ -290,7 +290,7 @@ export default function StoreView({
                   <div>
                     <span className={`font-sans font-extrabold text-xs block ${textWhite}`}>{selectedCard.title}</span>
                     <span className={`text-[9px] mt-1.5 block font-bold font-mono ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                      课点增加: {selectedCard.passes === -1 ? '无限次通卡' : `${selectedCard.passes} 次`} • 效期 {selectedCard.validDays} 天
+                      课点增加: {selectedCard.passes === -1 ? '无限次通卡' : `${selectedCard.passes} 次`} • 效期 {selectedCard.validdays} 天
                     </span>
                   </div>
                   <span className={`font-mono font-black text-base ${textWhite}`}>¥{selectedCard.price}</span>

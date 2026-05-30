@@ -1,0 +1,66 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-[#07C160]">WeChat Pay Integration Strategy</h1>
+      <p class="text-slate-400 mt-2">Connecting the Mini Program store to the WeChat Pay network.</p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Approach 1 -->
+      <div class="p-6 bg-slate-800 rounded-xl border-2 border-[#07C160] shadow-xl shadow-[#07C160]/10">
+        <div class="flex justify-between items-start">
+          <h2 class="text-xl font-bold text-slate-100 mb-2">1. Native WeChat Pay (Standard)</h2>
+          <span class="px-2 py-1 bg-[#07C160] text-white text-[10px] font-black rounded uppercase tracking-widest">Recommended</span>
+        </div>
+        <p class="text-slate-300 mb-4">Users pay directly inside the Mini Program using the native <code>wx.requestPayment</code> modal. No redirects or browser tabs.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-[#07C160]">✓ 1-Tap Payment Experience</div>
+          <div class="text-[#07C160]">✓ Highest conversion rate</div>
+          <div class="text-[#07C160]">✓ Reuses <code>fulfill_purchase</code> RPC</div>
+          <div class="text-rose-400">✗ Requires WeChat Merchant ID</div>
+        </div>
+      </div>
+
+      <!-- Approach 2 -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700 opacity-60">
+        <h2 class="text-xl font-bold text-slate-100 mb-2">2. WebView H5 Bridge</h2>
+        <p class="text-slate-300 mb-4">Redirect user to a secure H5 page to pay via Stripe. This is essentially "loading the website" inside the app.</p>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="text-emerald-400">✓ Reuse Stripe logic completely</div>
+          <div class="text-rose-400">✗ Friction-heavy UX</div>
+          <div class="text-rose-400">✗ Poor mobile performance</div>
+          <div class="text-rose-400">✗ Restricted by WeChat Policies</div>
+        </div>
+      </div>
+
+      <!-- Logic Diagram -->
+      <div class="mt-12 p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h3 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#07C160]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          The Native WeChat Payment Flow
+        </h3>
+        
+        <div class="flex items-center justify-between gap-4 text-center">
+          <div class="flex-1 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+            <span class="text-[10px] font-black block text-zinc-500 uppercase">Step 1</span>
+            <span class="text-[10px] font-bold">Sign Prepay ID</span>
+            <p class="text-[8px] text-zinc-500">Edge Function signs the order</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-[#07C160]/10 border border-[#07C160]/30 rounded-lg">
+            <span class="text-[10px] font-black block text-[#07C160] uppercase">Step 2</span>
+            <span class="text-[10px] font-bold">Native Dialog</span>
+            <p class="text-[8px] text-[#07C160]">User pays with Face ID / Pin</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          <div class="flex-1 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+            <span class="text-[10px] font-black block text-blue-400 uppercase text-[8px]">Step 3</span>
+            <span class="text-[10px] font-bold">Atomic Sync</span>
+            <p class="text-[8px] text-blue-400">Passes added via Webhook</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

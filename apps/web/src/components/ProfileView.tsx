@@ -52,7 +52,7 @@ export default function ProfileView({
   // Compute real user data
   const displayName = profile?.name || user?.phone?.replace(/^\+86/, '') || '新同学';
   const accountInfo = user?.phone || user?.email || '未绑定账户';
-  const currentPasses = profile?.remainingPasses ?? userPasses;
+  const currentPasses = profile?.remainingpasses ?? userPasses;
 
   // Compute theme dependent layout classes
   const bgClass = isDark ? 'bg-[#0c0d14]' : isMint ? 'bg-[#F0F2FA]' : 'bg-[#FAF8F5]';
@@ -81,13 +81,13 @@ export default function ProfileView({
     setClasses((prev) =>
       prev.map((c) => {
         if (c.id === clsId) {
-          // If class has reservedSpots, free it
+          // If class has reservedspots, free it
           const spot = bookedSpots[clsId];
-          const newReserved = c.reservedSpots ? c.reservedSpots.filter(s => s !== spot) : [];
+          const newReserved = c.reservedspots ? c.reservedspots.filter(s => s !== spot) : [];
           return { 
             ...c, 
-            bookedCount: Math.max(0, c.bookedCount - 1),
-            reservedSpots: newReserved
+            bookedcount: Math.max(0, c.bookedcount - 1),
+            reservedspots: newReserved
           };
         }
         return c;
@@ -400,7 +400,7 @@ export default function ProfileView({
                       {cls.title}
                     </h4>
                     <p className={`text-[10px] font-bold font-mono mt-1.5 ${highlightText}`}>
-                      {cls.date} • {cls.timeStart}~{cls.timeEnd}
+                      {cls.date} • {cls.timestart}~{cls.timeend}
                     </p>
                     <p className={`text-[9px] mt-1 font-bold ${textSecondary}`}>
                       导师: {cls.teacher.name} • {cls.classroom}
@@ -456,7 +456,7 @@ export default function ProfileView({
                       {cls.title}
                     </h4>
                     <p className={`text-[10px] font-bold font-mono mt-1 ${textSecondary}`}>
-                      {cls.date} • {cls.timeStart}~{cls.timeEnd}
+                      {cls.date} • {cls.timestart}~{cls.timeend}
                     </p>
                     <p className={`text-[9px] font-bold mt-1 ${textSecondary}`}>
                       导师: {cls.teacher.name} • 已行使1点冻结锁定数

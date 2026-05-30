@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Report Generation Logic",
+    "status": "completed",
+    "description": "Create generate-report Edge Function and HTML template."
+  },
+  {
+    "id": 2,
+    "title": "Resend Email Integration",
+    "status": "completed",
+    "description": "Connect to Resend API and add environment placeholders."
+  },
+  {
+    "id": 3,
+    "title": "Supabase Cron Scheduling",
+    "status": "completed",
+    "description": "Set up pg_cron schedules for weekly and monthly reports."
+  },
+  {
+    "id": 4,
+    "title": "Final Verification & Test Trigger",
+    "status": "completed",
+    "description": "Implement manual trigger for testing reports."
+  }
+]

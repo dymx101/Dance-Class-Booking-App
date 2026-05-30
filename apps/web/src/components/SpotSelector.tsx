@@ -3,7 +3,7 @@ import { Lock, Check } from 'lucide-react';
 
 interface SpotSelectorProps {
   classId: string;
-  reservedSpots: string[];
+  reservedspots: string[];
   selectedSpot: string | null;
   onSelectSpot: (spot: string) => void;
   theme: string;
@@ -11,7 +11,7 @@ interface SpotSelectorProps {
 
 export default function SpotSelector({
   classId,
-  reservedSpots = [],
+  reservedspots = [],
   selectedSpot,
   onSelectSpot,
   theme
@@ -101,7 +101,7 @@ export default function SpotSelector({
             {rows.map((row) =>
               cols.map((col) => {
                 const spotCode = `${row}${col}`;
-                const isReserved = reservedSpots.includes(spotCode);
+                const isReserved = reservedspots.includes(spotCode);
                 const isSelected = selectedSpot === spotCode;
                 const zone = getSpotZone(row);
 

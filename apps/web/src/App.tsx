@@ -108,7 +108,7 @@ export default function App() {
         .from('class_instances')
         .select('*, teacher:teachers(*)')
         .order('date', { ascending: true })
-        .order('timeStart', { ascending: true });
+        .order('timestart', { ascending: true });
 
       if (classesError) throw classesError;
 
@@ -116,7 +116,7 @@ export default function App() {
       const { data: bookingsData, error: bookingsError } = await supabase
         .from('bookings')
         .select('*')
-        .eq('userId', user.id)
+        .eq('userid', user.id)
         .in('status', ['booked', 'waiting']);
 
       if (bookingsError) throw bookingsError;
@@ -124,12 +124,12 @@ export default function App() {
       // 3. Fetch user's remaining passes
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('remainingPasses')
+        .select('remainingpasses')
         .eq('id', user.id)
         .single();
 
       if (!userError && userData) {
-        setUserPasses(userData.remainingPasses);
+        setUserPasses(userData.remainingpasses);
       }
 
       // 4. Fetch user's purchase records
@@ -142,59 +142,59 @@ export default function App() {
       if (!purchaseError && purchaseData) {
         setPurchaseHistory(purchaseData.map(rec => ({
           id: rec.id,
-          cardId: rec.cardid,
-          cardName: rec.cardname,
+          cardid: rec.cardid,
+          cardname: rec.cardname,
           price: rec.price,
-          passesAdded: rec.passesadded,
+          passesadded: rec.passesadded,
           date: rec.date ? rec.date.split('T')[0] : new Date().toISOString().split('T')[0],
-          stripePaymentId: rec.stripepaymentid
+          stripepaymentid: rec.stripepaymentid
         })));
       }
 
-      // 5. Fetch bookings count for each class instance to calculate bookedCount and reservedSpots
+      // 5. Fetch bookings count for each class instance to calculate bookedcount and reservedspots
       const { data: allBookingsData, error: allBookingsError } = await supabase
         .from('bookings')
-        .select('classId, status, spotNumber');
+        .select('classid, status, spotnumber');
 
       const bookedCounts: Record<string, number> = {};
       const reservedSpots: Record<string, string[]> = {};
       if (!allBookingsError && allBookingsData) {
         allBookingsData.forEach((b) => {
           if (b.status === 'booked') {
-            bookedCounts[b.classId] = (bookedCounts[b.classId] || 0) + 1;
-            if (b.spotNumber) {
-              if (!reservedSpots[b.classId]) reservedSpots[b.classId] = [];
-              reservedSpots[b.classId].push(b.spotNumber);
+            bookedCounts[b.classid] = (bookedCounts[b.classid] || 0) + 1;
+            if (b.spotnumber) {
+              if (!reservedSpots[b.classid]) reservedSpots[b.classid] = [];
+              reservedSpots[b.classid].push(b.spotnumber);
             }
           }
         });
       }
 
-      // Format timeStart and timeEnd from 'HH:MM:SS' to 'HH:MM'
+      // Format timestart and timeend from 'HH:MM:SS' to 'HH:MM'
       const formattedClasses = (classesData || []).map((cls) => {
         const countFromDB = bookedCounts[cls.id] || 0;
         return {
           ...cls,
-          timeStart: cls.timeStart ? cls.timeStart.substring(0, 5) : '',
-          timeEnd: cls.timeEnd ? cls.timeEnd.substring(0, 5) : '',
-          bookedCount: countFromDB,
-          reservedSpots: reservedSpots[cls.id] || []
+          timestart: cls.timestart ? cls.timestart.substring(0, 5) : '',
+          timeend: cls.timeend ? cls.timeend.substring(0, 5) : '',
+          bookedcount: countFromDB,
+          reservedspots: reservedSpots[cls.id] || []
         };
       });
 
-      // Extract booked and waiting classIds and spots
+      // Extract booked and waiting classids and spots
       const bookedIds = (bookingsData || [])
         .filter((b) => b.status === 'booked')
-        .map((b) => b.classId);
+        .map((b) => b.classid);
 
       const waitlistIds = (bookingsData || [])
         .filter((b) => b.status === 'waiting')
-        .map((b) => b.classId);
+        .map((b) => b.classid);
 
       const spots: Record<string, string> = {};
       (bookingsData || []).forEach(b => {
-        if (b.status === 'booked' && b.spotNumber) {
-          spots[b.classId] = b.spotNumber;
+        if (b.status === 'booked' && b.spotnumber) {
+          spots[b.classid] = b.spotnumber;
         }
       });
 
@@ -210,7 +210,7 @@ export default function App() {
   // Sync state with profile
   useEffect(() => {
     if (profile) {
-      setUserPasses(profile.remainingPasses);
+      setUserPasses(profile.remainingpasses);
     }
   }, [profile]);
 

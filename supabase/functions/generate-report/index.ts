@@ -16,7 +16,28 @@ serve(async (req) => {
   try {
     // 0. Authorization Check
     const authHeader = req.headers.get('Authorization');
-    if (authHeader !== `Bearer ${Deno.env.get('REPORT_SECRET')}`) {
+    let isAuthorized = false;
+
+    // A. Check for Secret (Cron/Internal)
+    if (authHeader === `Bearer ${Deno.env.get('REPORT_SECRET')}`) {
+      isAuthorized = true;
+    } 
+    // B. Check for valid Supabase user JWT (Manual trigger)
+    else if (authHeader) {
+      const supabaseClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      
+      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+      
+      if (!userError && user && user.email === Deno.env.get('OWNER_EMAIL')) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 401,
@@ -25,7 +46,8 @@ serve(async (req) => {
 
     // Get request body
     const body = await req.json().catch(() => ({}));
-    const { type = 'Weekly' } = body;
+    const rawType = body.type || 'Weekly';
+    const type = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
 
     // Initialize Supabase Admin Client
     const supabaseAdmin = createClient(

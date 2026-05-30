@@ -1,0 +1,33 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-[#07C160]">Native WeChat Pay Details</h1>
+      <p class="text-slate-400 mt-2">Securing the transaction with modern standards.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- API V3 Card -->
+      <div class="p-6 bg-slate-800 rounded-xl border-2 border-emerald-500/30 shadow-xl">
+        <h2 class="text-xl font-bold text-emerald-400 mb-2">WeChat Pay API V3</h2>
+        <p class="text-slate-300 text-sm mb-4">The modern standard. Uses JSON payloads and RSA signatures. More secure and developer-friendly.</p>
+        <div class="space-y-2 text-[10px] font-mono">
+          <div class="text-emerald-500">✓ Industry Standard Security</div>
+          <div class="text-emerald-500">✓ Better Error Messages</div>
+          <div class="text-emerald-500">✓ Works perfectly with Deno (Edge Functions)</div>
+        </div>
+      </div>
+
+      <!-- Fulfillment Card -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+        <h2 class="text-xl font-bold text-blue-400 mb-2">Guaranteed Delivery</h2>
+        <p class="text-slate-300 text-sm mb-4">We will use <strong>WeChat Pay Webhooks</strong> to fulfill passes. This ensures the user gets their passes even if the app crashes or they lose signal mid-payment.</p>
+        <div class="space-y-2 text-[10px] font-mono text-slate-400">
+          <li>1. WeChat notifies Supabase</li>
+          <li>2. RPC <code>fulfill_purchase</code> executes</li>
+          <li>3. Pass balance updates</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

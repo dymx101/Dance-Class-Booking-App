@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS class_instances (
     difficulty INT DEFAULT 3,
     maxcount INT DEFAULT 20,
     minpeople INT DEFAULT 1,
+    bookedcount INTEGER DEFAULT 0,
     type TEXT DEFAULT 'group', -- Matches DanceClass.type
     status TEXT DEFAULT 'scheduled',
     created_at TIMESTAMPTZ DEFAULT NOW()
