@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build --workspace=@dance-app/web",
+  "outputDirectory": "apps/web/dist",
+  "framework": "vite"
+}
