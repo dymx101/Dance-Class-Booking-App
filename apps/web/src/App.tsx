@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './contexts/AuthContext';
 import { useNotifications } from './contexts/NotificationContext';
 import { AuthScreen } from './components/auth/AuthScreen';
+import { Navigation, Sidebar, TabBar } from './components/Navigation';
 import { supabase } from './lib/supabase';
 
 interface ToastMsg {
@@ -426,65 +427,26 @@ export default function App() {
     );
   }
 
-  // Dynamic style calculations based on selected theme
-  const getOuterBg = () => {
-    if (currentTheme === 'midnight-cyber') return 'bg-[#06070a]';
-    if (currentTheme === 'cool-mint') return 'bg-[#e2e4ef]';
-    return 'bg-[#eeded5]'; // warm sand
-  };
-
-  const getBezelBg = () => {
-    if (currentTheme === 'midnight-cyber') return 'border-[#181a24] bg-[#0c0d14]';
-    if (currentTheme === 'cool-mint') return 'border-[#cbd2e6] bg-[#F0F2FA]';
-    return 'border-[#e0d6cb] bg-[#FAF8F5]';
-  };
-
-  const getNotchColor = () => {
-    if (currentTheme === 'midnight-cyber') return 'bg-[#0c0d14] text-[#94a3b8] border-b border-white/5';
-    if (currentTheme === 'cool-mint') return 'bg-[#F0F2FA] text-slate-600 border-b border-slate-200/50';
-    return 'bg-[#FAF8F5] text-slate-600 border-b border-orange-100/30';
+  const getAppBg = () => {
+    if (currentTheme === 'midnight-cyber') return 'bg-[#0c0d14]';
+    if (currentTheme === 'cool-mint') return 'bg-[#F0F2FA]';
+    return 'bg-[#FAF8F5]';
   };
 
   return (
-    <div className={`min-h-screen ${getOuterBg()} relative flex items-center justify-center p-0 md:p-6 font-sans antialiased overflow-hidden transition-colors duration-500`}>
-      {/* Glow Backlights */}
-      {currentTheme === 'midnight-cyber' ? (
-        <>
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-rose-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-        </>
-      ) : currentTheme === 'cool-mint' ? (
-        <>
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal-500/15 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-        </>
-      ) : (
-        <>
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-pink-550/10 bg-pink-550/5 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-        </>
-      )}
+    <div className={`w-full h-screen relative overflow-hidden ${getAppBg()} flex flex-col md:flex-row transition-all duration-500 font-sans antialiased`}>
+      
+      <Sidebar 
+        activeTab={activeTab}
+        setActiveTab={handleTabSuggestion}
+        unreadCount={unreadCount}
+        onOpenNotifications={() => setIsNotificationCenterOpen(true)}
+        theme={currentTheme}
+      />
 
-      {/* Mobile emulator framing overlay */}
-      <div className={`w-full max-w-[412px] h-screen md:h-[860px] md:rounded-[48px] md:shadow-[0_24px_70px_rgba(0,0,0,0.15)] relative overflow-hidden border-0 md:border-[12px] ${getBezelBg()} flex flex-col transition-all duration-500`}>
-        
-        {/* Mock Simulated Smartphone Notch bar */}
-        <div className={`text-xs px-6 py-2 flex items-center justify-between font-mono font-bold leading-none select-none shrink-0 ${getNotchColor()}`} id="emulator-notching-bar">
-          <span>11:40</span>
-          {/* Circular speaker camera notch */}
-          <div className={`hidden md:block w-24 h-4 absolute top-0 left-1/2 transform -translate-x-1/2 rounded-b-2xl z-40 ${
-            currentTheme === 'midnight-cyber' ? 'bg-[#181a24]' : currentTheme === 'cool-mint' ? 'bg-[#cbd2e6]' : 'bg-[#e0d6cb]'
-          }`}></div>
-          <div className="flex items-center space-x-1.5 z-10 opacity-70">
-            <Signal className="w-3.5 h-3.5" />
-            <span className="text-[9px] font-black">5G</span>
-            <Wifi className="w-3.5 h-3.5" />
-            <Battery className="w-4 h-4 ml-0.5" />
-          </div>
-        </div>
-
-        {/* Live Interactive Theme / Style Switcher under the notch */}
-        <div className={`px-4 py-2 flex items-center justify-between border-b shrink-0 ${
+      <div className="flex-1 flex flex-col min-w-0 relative h-full">
+        {/* Live Interactive Theme / Style Switcher */}
+      <div className={`px-4 py-2 flex items-center justify-between border-b shrink-0 ${
           currentTheme === 'midnight-cyber' 
             ? 'bg-[#13141f]/95 border-white/5 text-zinc-300' 
             : currentTheme === 'cool-mint'
@@ -494,7 +456,7 @@ export default function App() {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsNotificationCenterOpen(true)}
-              className="relative p-1.5 hover:bg-black/5 rounded-xl transition-colors cursor-pointer"
+              className="relative p-1.5 hover:bg-black/5 rounded-xl transition-colors cursor-pointer md:hidden"
             >
               <Bell className={`w-4 h-4 ${unreadCount > 0 ? 'text-rose-500 animate-pulse' : 'text-slate-400'}`} />
               {unreadCount > 0 && (
@@ -598,84 +560,14 @@ export default function App() {
           {renderViewContent()}
         </div>
 
-        {/* Bottom micro-interactive navigation bar */}
-        <div className={`px-3 py-2 flex items-center justify-around select-none z-30 shrink-0 shadow-2xl backdrop-blur-md border-t transition-colors duration-500 ${
-          currentTheme === 'midnight-cyber' 
-            ? 'bg-[#0f111a]/95 border-white/5' 
-            : currentTheme === 'cool-mint'
-            ? 'bg-white/95 border-slate-200/60'
-            : 'bg-white/95 border-[#EBE6DD]'
-        }`} id="footer-navigation">
-          <button
-            onClick={() => handleTabSuggestion('home')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer ${
-              activeTab === 'home' 
-                ? (currentTheme === 'cool-mint' ? 'text-teal-600 font-black' : 'text-rose-500 font-black') 
-                : 'text-slate-400 hover:text-slate-650'
-            }`}
-          >
-            <Home className={`w-4.5 h-4.5 transition-transform ${
-              activeTab === 'home' 
-                ? `scale-110 ${currentTheme === 'cool-mint' ? 'text-teal-600' : 'text-rose-500'}` 
-                : 'text-slate-400'
-            }`} />
-            <span className="text-[9px] mt-1 font-sans font-black uppercase tracking-wider">首页</span>
-          </button>
-
-          <button
-            onClick={() => handleTabSuggestion('schedule')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer ${
-              activeTab === 'schedule' 
-                ? (currentTheme === 'cool-mint' ? 'text-teal-600 font-black' : 'text-rose-500 font-black') 
-                : 'text-slate-400 hover:text-slate-650'
-            }`}
-            id="tab-schedule"
-          >
-            <CalendarDays className={`w-4.5 h-4.5 transition-transform ${
-              activeTab === 'schedule' 
-                ? `scale-110 ${currentTheme === 'cool-mint' ? 'text-teal-600' : 'text-rose-500'}` 
-                : 'text-slate-400'
-            }`} />
-            <span className="text-[9px] mt-1 font-sans font-black uppercase tracking-wider">课表</span>
-          </button>
-
-          <button
-            onClick={() => handleTabSuggestion('store')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer ${
-              activeTab === 'store' 
-                ? (currentTheme === 'cool-mint' ? 'text-teal-600 font-black' : 'text-rose-500 font-black') 
-                : 'text-slate-400 hover:text-slate-650'
-            }`}
-            id="tab-store"
-          >
-            <ShoppingBag className={`w-4.5 h-4.5 transition-transform ${
-              activeTab === 'store' 
-                ? `scale-110 ${currentTheme === 'cool-mint' ? 'text-teal-600' : 'text-rose-500'}` 
-                : 'text-slate-400'
-            }`} />
-            <span className="text-[9px] mt-1 font-sans font-black uppercase tracking-wider">商城</span>
-          </button>
-
-          <button
-            onClick={() => handleTabSuggestion('profile')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer ${
-              activeTab === 'profile' 
-                ? (currentTheme === 'cool-mint' ? 'text-teal-600 font-black' : 'text-rose-500 font-black') 
-                : 'text-slate-400 hover:text-slate-650'
-            }`}
-            id="tab-profile"
-          >
-            <User className={`w-4.5 h-4.5 transition-transform ${
-              activeTab === 'profile' 
-                ? `scale-110 ${currentTheme === 'cool-mint' ? 'text-teal-600' : 'text-rose-500'}` 
-                : 'text-slate-400'
-            }`} />
-            <span className="text-[9px] mt-1 font-sans font-black uppercase tracking-wider">我的</span>
-          </button>
-        </div>
-
+        <TabBar 
+          activeTab={activeTab}
+          setActiveTab={handleTabSuggestion}
+          unreadCount={unreadCount}
+          onOpenNotifications={() => setIsNotificationCenterOpen(true)}
+          theme={currentTheme}
+        />
       </div>
-
     </div>
   );
 }
