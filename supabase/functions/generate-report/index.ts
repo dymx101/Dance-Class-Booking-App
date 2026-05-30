@@ -76,6 +76,11 @@ serve(async (req) => {
 
     // Aggregate performance by teacher
     const teacherStats = new Map();
+    const bookingsByClass = new Map();
+    bookings.forEach(b => {
+      bookingsByClass.set(b.classid, (bookingsByClass.get(b.classid) || 0) + 1);
+    });
+
     instances?.forEach(inst => {
       const teacherId = inst.teacherid;
       const teacherName = inst.teachers?.name || "Unknown";
@@ -90,7 +95,7 @@ serve(async (req) => {
       
       const stats = teacherStats.get(teacherId);
       stats.total_capacity += inst.maxcount || 0;
-      stats.total_bookings += bookings.filter(b => b.classid === inst.id).length;
+      stats.total_bookings += bookingsByClass.get(inst.id) || 0;
     });
 
     const teacherData = Array.from(teacherStats.values()).map(stats => ({
