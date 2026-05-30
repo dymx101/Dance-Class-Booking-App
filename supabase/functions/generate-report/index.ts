@@ -40,6 +40,7 @@ serve(async (req) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     const startDateStr = startDate.toISOString().split('T')[0];
+    const todayStr = new Date().toISOString().split('T')[0];
 
     // Fetch instances in the period
     const { data: instances, error: instError } = await supabaseAdmin
@@ -50,7 +51,8 @@ serve(async (req) => {
         maxcount,
         teachers (name)
       `)
-      .gte('date', startDateStr);
+      .gte('date', startDateStr)
+      .lte('date', todayStr);
 
     if (instError) {
       console.error("Instances Fetch Error:", instError);
@@ -65,7 +67,8 @@ serve(async (req) => {
         .from("bookings")
         .select("classid, status")
         .in("classid", instanceIds)
-        .in("status", ["booked", "attended"]);
+        .in("status", ["booked", "attended"])
+        .lte('created_at', todayStr + 'T23:59:59Z');
       
       if (bookError) {
         console.error("Bookings Fetch Error:", bookError);
