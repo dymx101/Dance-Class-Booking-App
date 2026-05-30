@@ -89,6 +89,7 @@ serve(async (req) => {
       description: `Purchase: ${card.title}`,
       out_trade_no: outTradeNo,
       notify_url: notifyUrl,
+      attach: `${user.id}:${card_id}`,
       amount: {
         total: amountInCents,
         currency: "CNY",
