@@ -12,6 +12,25 @@ export default function Store() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  const fetchUserPasses = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('remainingpasses')
+          .eq('id', user.id)
+          .single()
+        
+        if (!userError && userData) {
+          setUserPasses(userData.remainingpasses || 0)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching user passes:', err)
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -32,18 +51,7 @@ export default function Store() {
         }
 
         // Fetch User Passes
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('remainingpasses')
-            .eq('id', user.id)
-            .single()
-          
-          if (!userError && userData) {
-            setUserPasses(userData.remainingpasses || 0)
-          }
-        }
+        await fetchUserPasses()
       } catch (err) {
         console.error('Fetch data exception:', err)
         setDbCards(PAYMENT_CARDS)
@@ -62,12 +70,54 @@ export default function Store() {
     if (!selectedCard) return
     setIsProcessing(true)
     
-    // Simulate payment process
-    setTimeout(() => {
-      setIsProcessing(false)
+    try {
+      // 1. Create order and get signed parameters from Edge Function
+      const { data, error } = await supabase.functions.invoke('create-wechat-order', {
+        body: { card_id: selectedCard.id }
+      })
+
+      if (error) throw error
+      if (!data || !data.timeStamp) {
+        throw new Error('支付参数获取失败')
+      }
+
+      // 2. Invoke native WeChat Pay
+      const paymentParams = {
+        timeStamp: data.timeStamp,
+        nonceStr: data.nonceStr,
+        package: data.package,
+        signType: data.signType,
+        paySign: data.paySign,
+      }
+      await Taro.requestPayment(paymentParams)
+
+      // 3. Handle Success
+      Taro.showToast({
+        title: '支付成功',
+        icon: 'success',
+        duration: 2000
+      })
+      
       setSelectedCard(null)
-      Taro.showToast({ title: '支付功能开发中', icon: 'none' })
-    }, 1500)
+      // Sync balance after successful payment
+      await fetchUserPasses()
+
+    } catch (err: any) {
+      console.error('Payment error:', err)
+      
+      // Handle User Cancel or specific error
+      const errorMsg = err.errMsg && err.errMsg.includes('cancel') 
+        ? '支付取消' 
+        : (err.message || '支付失败')
+
+      Taro.showToast({
+        title: errorMsg,
+        icon: 'none',
+        duration: 2000
+      })
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (isLoading) {
