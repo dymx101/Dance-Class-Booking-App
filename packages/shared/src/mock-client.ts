@@ -71,13 +71,13 @@ export const createMockSupabaseClient = () => {
             error: null
           }),
           single: () => Promise.resolve({
-            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingPasses: 10 } : null,
+            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
             error: null
           }),
           eq: () => ({
             in: () => Promise.resolve({ data: [], error: null }),
             single: () => Promise.resolve({
-              data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingPasses: 10 } : null,
+              data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
               error: null
             }),
           })
@@ -85,13 +85,13 @@ export const createMockSupabaseClient = () => {
         eq: () => ({
           in: () => Promise.resolve({ data: [], error: null }),
           single: () => Promise.resolve({
-            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingPasses: 10 } : null,
+            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
             error: null
           }),
           eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) })
         }),
         single: () => Promise.resolve({
-          data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingPasses: 10 } : null,
+          data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
           error: null
         })
       }),

@@ -99,12 +99,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'hiphop',
     difficulty: 2,
     teacher: TEACHERS[0], // Senish
-    timeStart: '13:00',
-    timeEnd: '14:00',
+    timestart: '13:00',
+    timeend: '14:00',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 25,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 25,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -113,12 +113,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 2,
     teacher: TEACHERS[1], // 拾柒
-    timeStart: '14:00',
-    timeEnd: '15:00',
+    timestart: '14:00',
+    timeend: '15:00',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 18,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 18,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -127,12 +127,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 1,
     teacher: TEACHERS[1], // 拾柒
-    timeStart: '15:00',
-    timeEnd: '16:20',
+    timestart: '15:00',
+    timeend: '16:20',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 22,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 22,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -141,12 +141,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'hiphop',
     difficulty: 1,
     teacher: TEACHERS[4], // 馒头
-    timeStart: '16:30',
-    timeEnd: '17:50',
+    timestart: '16:30',
+    timeend: '17:50',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 14,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 14,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -155,12 +155,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 1,
     teacher: TEACHERS[3], // 小樱
-    timeStart: '15:00',
-    timeEnd: '16:20',
+    timestart: '15:00',
+    timeend: '16:20',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 1,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 1,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -169,12 +169,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'hiphop',
     difficulty: 1,
     teacher: TEACHERS[4], // 馒头
-    timeStart: '15:00',
-    timeEnd: '16:20',
+    timestart: '15:00',
+    timeend: '16:20',
     classroom: 'A教室',
-    minPeople: 5,
-    bookedCount: 2,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 2,
+    maxcount: 30,
     type: 'group'
   },
   {
@@ -183,12 +183,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'urban',
     difficulty: 3,
     teacher: TEACHERS[6], // 顺顺
-    timeStart: '16:30',
-    timeEnd: '17:50',
+    timestart: '16:30',
+    timeend: '17:50',
     classroom: 'B教室',
-    minPeople: 5,
-    bookedCount: 29,
-    maxCount: 30,
+    minpeople: 5,
+    bookedcount: 29,
+    maxcount: 30,
     type: 'group'
   },
   
@@ -199,12 +199,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 2,
     teacher: TEACHERS[2], // MORNI
-    timeStart: '10:30',
-    timeEnd: '12:00',
+    timestart: '10:30',
+    timeend: '12:00',
     classroom: '少儿爵士1班',
-    minPeople: 3,
-    bookedCount: 6,
-    maxCount: 15,
+    minpeople: 3,
+    bookedcount: 6,
+    maxcount: 15,
     type: 'series'
   },
   {
@@ -213,12 +213,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 2,
     teacher: TEACHERS[2], // MORNI
-    timeStart: '14:00',
-    timeEnd: '15:30',
+    timestart: '14:00',
+    timeend: '15:30',
     classroom: '少儿爵士1班',
-    minPeople: 3,
-    bookedCount: 8,
-    maxCount: 15,
+    minpeople: 3,
+    bookedcount: 8,
+    maxcount: 15,
     type: 'series'
   },
   {
@@ -227,12 +227,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 3,
     teacher: TEACHERS[3], // 小樱
-    timeStart: '18:30',
-    timeEnd: '20:00',
+    timestart: '18:30',
+    timeend: '20:00',
     classroom: '少儿爵士B班',
-    minPeople: 3,
-    bookedCount: 12,
-    maxCount: 15,
+    minpeople: 3,
+    bookedcount: 12,
+    maxcount: 15,
     type: 'series'
   },
   {
@@ -241,12 +241,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'jazz',
     difficulty: 4,
     teacher: TEACHERS[0], // Senish
-    timeStart: '13:00',
-    timeEnd: '15:00',
+    timestart: '13:00',
+    timeend: '15:00',
     classroom: 'B教室',
-    minPeople: 4,
-    bookedCount: 8,
-    maxCount: 8, // Fully booked! Standard queue button
+    minpeople: 4,
+    bookedcount: 8,
+    maxcount: 8, // Fully booked! Standard queue button
     type: 'series'
   },
 
@@ -257,12 +257,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'contemporary',
     difficulty: 3,
     teacher: TEACHERS[5], // Sewli (we will represent her)
-    timeStart: '16:00',
-    timeEnd: '18:00',
+    timestart: '16:00',
+    timeend: '18:00',
     classroom: 'C教室',
-    minPeople: 1,
-    bookedCount: 0,
-    maxCount: 1,
+    minpeople: 1,
+    bookedcount: 0,
+    maxcount: 1,
     type: 'private'
   },
   {
@@ -271,12 +271,12 @@ export const CLASSES_TEMPLATE: Omit<DanceClass, 'date'>[] = [
     genre: 'contemporary',
     difficulty: 4,
     teacher: TEACHERS[9], // Liu
-    timeStart: '18:30',
-    timeEnd: '20:30',
+    timestart: '18:30',
+    timeend: '20:30',
     classroom: 'C教室',
-    minPeople: 1,
-    bookedCount: 1,
-    maxCount: 1, // Booked out
+    minpeople: 1,
+    bookedcount: 1,
+    maxcount: 1, // Booked out
     type: 'private'
   }
 ];
@@ -298,13 +298,13 @@ export const generateClasses = (): DanceClass[] => {
 
   dates.forEach((dateStr) => {
     CLASSES_TEMPLATE.forEach((tmpl) => {
-      // Modify bookedCount slightly for variety across days
-      let bookedCount = tmpl.bookedCount;
+      // Modify bookedcount slightly for variety across days
+      let bookedcount = tmpl.bookedcount;
       if (dateStr > '2026-05-25') {
-        bookedCount = Math.floor(Math.random() * (tmpl.maxCount - 1));
+        bookedcount = Math.floor(Math.random() * (tmpl.maxcount - 1));
       }
 
-      // Generate randomized pre-populated reservedSpots based on bookedCount
+      // Generate randomized pre-populated reservedspots based on bookedcount
       const allSpots = [];
       const rows = ['A', 'B', 'C', 'D', 'E'];
       for (const row of rows) {
@@ -313,21 +313,21 @@ export const generateClasses = (): DanceClass[] => {
         }
       }
       const shuffledSpots = [...allSpots].sort(() => 0.5 - Math.random());
-      const reservedSpots = shuffledSpots.slice(0, bookedCount);
+      const reservedspots = shuffledSpots.slice(0, bookedcount);
 
       // Future bookings on May 26/27 onwards might display opening time rules in the screenshots, e.g., "05月24日 00:00可约"
-      let openBookingTime: string | undefined = undefined;
+      let openbookingtime: string | undefined = undefined;
       if (dateStr > '2026-05-27') {
-        openBookingTime = '05月26日 00:00可约';
+        openbookingtime = '05月26日 00:00可约';
       }
 
       result.push({
         ...tmpl,
         id: `${tmpl.id}_${dateStr}`,
-        bookedCount,
-        openBookingTime,
+        bookedcount,
+        openbookingtime,
         date: dateStr,
-        reservedSpots
+        reservedspots
       });
     });
   });
@@ -340,9 +340,9 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     id: 'c1',
     title: '体验课单次卡 (Single Pass)',
     price: 39,
-    originalPrice: 120,
+    originalprice: 120,
     passes: 1,
-    validDays: 15,
+    validdays: 15,
     description: '限首次到店新学员体验。任意团课全场可用，开启你的舞蹈旅程！',
     badge: '新人福利'
   },
@@ -350,9 +350,9 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     id: 'c2',
     title: '10次团课周卡 (10 Classes Pack)',
     price: 399,
-    originalPrice: 800,
+    originalprice: 800,
     passes: 10,
-    validDays: 60,
+    validdays: 60,
     description: '老学员高性价比自修卡，高自由度，2个月有效期。',
     badge: '热销推荐'
   },
@@ -360,9 +360,9 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     id: 'c3',
     title: '30次精英通卡 (30 Classes Elite)',
     price: 999,
-    originalPrice: 1800,
+    originalprice: 1800,
     passes: 30,
-    validDays: 120,
+    validdays: 120,
     description: '中高级舞者进阶卡，适用于所有通卡团课与进阶集训营。',
     badge: '中阶必备'
   },
@@ -371,7 +371,7 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     title: '无限尊享月卡 (Unlimited Month)',
     price: 699,
     passes: -1, // -1 means unlimited
-    validDays: 30,
+    validdays: 30,
     description: 'PLANA无限次狂舞卡！30天内所有通卡团课无限次预约上课。',
     badge: '无限狂舞'
   },
@@ -380,7 +380,7 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     title: '少儿尊享季卡 (Kids Special Quarter)',
     price: 1599,
     passes: 24,
-    validDays: 90,
+    validdays: 90,
     description: '少儿专属培优班课，共24次精品定制教学课时，打牢宝贝体型。',
     badge: '少儿班专享'
   }
