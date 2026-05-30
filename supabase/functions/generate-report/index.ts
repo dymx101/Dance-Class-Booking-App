@@ -14,6 +14,15 @@ serve(async (req) => {
   }
 
   try {
+    // 0. Authorization Check
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader !== `Bearer ${Deno.env.get('REPORT_SECRET')}`) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
+
     // Get request body
     const body = await req.json().catch(() => ({}));
     const { type = 'Weekly' } = body;
@@ -116,7 +125,28 @@ serve(async (req) => {
       teacherData: teacherData,
     });
 
-    return new Response(JSON.stringify({ html }), {
+    // 4. Deliver via Resend
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("RESEND_API_KEY")}`,
+      },
+      body: JSON.stringify({
+        from: "Studio Reports <onboarding@resend.dev>",
+        to: [Deno.env.get("OWNER_EMAIL")],
+        subject: `${type} Performance Report | ${new Date().toLocaleDateString()}`,
+        html: html,
+      }),
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      console.error("Resend API Error:", error);
+      throw new Error(`Failed to deliver email: ${error}`);
+    }
+
+    return new Response(JSON.stringify({ message: "Report generated and delivered" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
