@@ -38,3 +38,27 @@ export const getSupabase = (config?: SupabaseConfig): SupabaseClient => {
   }
   return supabaseInstance;
 };
+
+/**
+ * Performs a silent WeChat login by exchanging a code for an openid.
+ * Note: This requires a Supabase Edge Function to handle the exchange.
+ */
+export const wechatLogin = async (code: string) => {
+  const supabase = getSupabase();
+  try {
+    const { data, error } = await supabase.functions.invoke('wechat-login', {
+      body: { code }
+    });
+    
+    if (error) throw error;
+    
+    if (data?.session) {
+      await supabase.auth.setSession(data.session);
+    }
+    
+    return { data, error: null };
+  } catch (err: any) {
+    console.error('WeChat login failed:', err);
+    return { data: null, error: err };
+  }
+};
