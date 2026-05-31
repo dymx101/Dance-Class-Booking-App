@@ -145,3 +145,23 @@ export interface AtRiskMember {
   last_active_date: string | null;
   days_inactive: number | null;
 }
+
+export interface TeacherAvailability {
+  id: string;
+  teacherid: string;
+  dayofweek: number;
+  timestart: string;
+  timeend: string;
+  createdat: string;
+}
+
+export interface PrivateBooking {
+  id: string;
+  userid: string;
+  teacherid: string;
+  scheduledat: string;
+  status: 'requested' | 'confirmed' | 'completed' | 'cancelled';
+  notes: string;
+  duration_minutes: number;
+  createdat: string;
+}

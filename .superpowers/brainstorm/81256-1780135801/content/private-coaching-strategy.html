@@ -1,0 +1,63 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Private Coaching Strategy</h1>
+      <p class="text-slate-400 mt-2">How should members book 1-on-1 sessions with instructors?</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Strategy 1: Fixed Slot (Simple) -->
+      <div class="p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 transition-colors cursor-pointer group">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          </div>
+          <h2 class="text-xl font-bold text-slate-100">1. Admin-Defined Slots</h2>
+        </div>
+        <p class="text-slate-400 text-sm mb-4">
+          Admin creates specific 1-on-1 time slots (e.g. "Private w/ Senish, Mon 10AM"). Users simply book the slot like a normal class.
+        </p>
+        <div class="space-y-2 text-xs font-mono">
+          <div class="text-emerald-400">✓ Reuses existing ScheduleView</div>
+          <div class="text-emerald-400">✓ Zero new DB tables</div>
+          <div class="text-rose-400">✗ Low flexibility for custom times</div>
+        </div>
+      </div>
+
+      <!-- Strategy 2: On-Demand (Advanced) -->
+      <div class="p-6 bg-slate-800 rounded-xl border-2 border-blue-500 shadow-xl shadow-blue-500/10 cursor-pointer group relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-blue-500 text-white text-[8px] font-black px-2 py-1 uppercase rounded-bl-lg">Most Flexible</div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-blue-500 text-white rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <h2 class="text-xl font-bold text-slate-100">2. Request-Based Flow</h2>
+        </div>
+        <p class="text-slate-400 text-sm mb-4">
+          Users choose a Teacher first, then select a custom time from the teacher's available window.
+        </p>
+        <div class="space-y-2 text-xs font-mono">
+          <div class="text-emerald-400">✓ Premium member experience</div>
+          <div class="text-emerald-400">✓ Supports teacher-specific pricing</div>
+          <div class="text-rose-400">✗ Requires new "Availability" logic</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Strategy -->
+    <div class="mt-12 p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+      <h3 class="text-xl font-bold text-blue-400 mb-4">Pricing & Passes</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-bold text-slate-200 text-sm">Pass Multiplier</h4>
+          <p class="text-xs text-slate-400 mt-1">Deduct multiple "Standard" passes for a private session (e.g. 1 Private = 3 Passes).</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 text-sm">Dedicated Private Card</h4>
+          <p class="text-xs text-slate-400 mt-1">Users must buy specific "Private Coaching" cards (stored as a separate count in the DB).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

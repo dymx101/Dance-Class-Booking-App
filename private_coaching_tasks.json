@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Database Schema & Atomic RPC",
+    "status": "todo",
+    "description": "Add privatepasses to users, create availability and booking tables, and implement request_private_session RPC."
+  },
+  {
+    "id": 2,
+    "title": "Data Service & Shared Types",
+    "status": "todo",
+    "description": "Update shared types and implement coaching data service helpers."
+  },
+  {
+    "id": 3,
+    "title": "Teacher-First Booking UI",
+    "status": "todo",
+    "description": "Build PrivateCoachingView and AvailabilityGrid component."
+  },
+  {
+    "id": 4,
+    "title": "Request Modal & State Sync",
+    "status": "todo",
+    "description": "Implement BookingRequestModal and integrate with user profile."
+  }
+]

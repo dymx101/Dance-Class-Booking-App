@@ -1,0 +1,90 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 2: Teacher-First Booking UI</h1>
+      <p class="text-slate-400 mt-2">Crafting a premium, personalized 1-on-1 booking experience.</p>
+    </header>
+
+    <div class="flex flex-col md:flex-row gap-12 items-start">
+      <!-- UI Mockup -->
+      <div class="w-full md:w-80 bg-black rounded-[3rem] p-4 border-8 border-slate-800 shadow-2xl overflow-hidden relative" style="height: 600px;">
+        <!-- App Content -->
+        <div class="h-full bg-[#FAF8F5] flex flex-col text-slate-900">
+          <div class="p-6 pt-12 bg-white border-b border-orange-100/30">
+            <h2 class="text-xs font-black uppercase tracking-tight">私教预约 (Private Coaching)</h2>
+            <p class="text-[8px] text-slate-400 font-bold uppercase mt-1">Select your instructor</p>
+          </div>
+
+          <div class="flex-1 overflow-y-auto p-4 space-y-4">
+             <!-- Teacher Card -->
+             <div class="bg-white rounded-3xl p-4 border border-orange-100/50 shadow-sm flex items-center gap-4 group hover:border-rose-500/30 transition-all cursor-pointer">
+                <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md">
+                   <div class="w-full h-full bg-slate-200"></div> <!-- Mock Image -->
+                </div>
+                <div class="flex-1">
+                   <h3 class="text-xs font-black">Senish</h3>
+                   <p class="text-[8px] text-slate-400 font-bold">Hiphop / Choreography</p>
+                   <div class="flex gap-1 mt-2">
+                      <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                      <span class="text-[7px] font-black text-emerald-600 uppercase">Available Today</span>
+                   </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+             </div>
+
+             <!-- Time Slot Picker (Overlay State) -->
+             <div class="bg-slate-900 rounded-3xl p-6 text-white space-y-6">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Available Slots / 可约时间</h4>
+                <div class="grid grid-cols-2 gap-3">
+                   <div class="p-3 bg-white/5 border border-white/10 rounded-2xl text-center hover:bg-rose-500 hover:border-rose-400 transition-all cursor-pointer group">
+                      <span class="text-xs font-black block">10:00</span>
+                      <span class="text-[7px] font-bold text-slate-500 group-hover:text-rose-100 uppercase">Morning</span>
+                   </div>
+                   <div class="p-3 bg-white/5 border border-white/10 rounded-2xl text-center hover:bg-rose-500 hover:border-rose-400 transition-all cursor-pointer group">
+                      <span class="text-xs font-black block">14:00</span>
+                      <span class="text-[7px] font-bold text-slate-500 group-hover:text-rose-100 uppercase">Afternoon</span>
+                   </div>
+                </div>
+                <button class="w-full bg-rose-600 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-600/20">Confirm Request</button>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logic Description -->
+      <div class="flex-1 space-y-6">
+        <div class="p-6 bg-slate-800 rounded-xl border border-slate-700">
+          <h2 class="text-xl font-bold text-blue-300 mb-4">Core Components</h2>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">PrivateCoachingView</span>
+                <span class="text-sm text-slate-400">A new main tab/view specifically for 1-on-1 bookings, accessible via a secondary toggle in the Schedule or a dedicated Home shortcut.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">AvailabilityGrid</span>
+                <span class="text-sm text-slate-400">An interactive time-slot picker that intelligently hides occupied slots and respects the instructor's work hours.</span>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
+              <div>
+                <span class="font-semibold block text-slate-100">BookingRequestModal</span>
+                <span class="text-sm text-slate-400">Allows users to add a note (e.g. "I want to work on my popping foundation") before confirming the request.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-blue-500/10 border border-blue-500/30 p-4 rounded-lg">
+          <p class="text-blue-200 text-sm"><strong>Theme Support:</strong> The private booking flow will maintain the "Premium" feel across all themes, using subtle gradients and high-performance animations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
