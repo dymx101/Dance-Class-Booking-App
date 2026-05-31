@@ -1,0 +1,80 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Responsive Layout Evolution</h1>
+      <p class="text-slate-400 mt-2">Moving from a simulated phone container to a fluid, cross-platform experience.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <!-- Current State -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-rose-400 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+          Current: Fixed Emulator
+        </h2>
+        <div class="bg-black/40 border-4 border-slate-800 rounded-[2rem] p-4 h-80 flex flex-col">
+          <div class="w-20 h-3 bg-slate-800 rounded-full mx-auto mb-4"></div>
+          <div class="flex-1 bg-slate-900 rounded-xl flex items-center justify-center text-[10px] text-slate-500 uppercase tracking-widest">
+            Fixed 412px Width
+          </div>
+          <div class="h-8 bg-slate-800 rounded-lg mt-4"></div>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed italic">The app is currently "trapped" inside a fixed-width bezel with large outer margins on desktop.</p>
+      </div>
+
+      <!-- Proposed State -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+          Proposed: Fluid Response
+        </h2>
+        <div class="flex gap-4">
+          <!-- Desktop Mock -->
+          <div class="flex-1 bg-slate-800 border-2 border-emerald-500/30 rounded-xl p-3 h-40">
+             <div class="flex gap-2 h-full">
+               <div class="w-8 bg-emerald-500/10 rounded-lg border border-emerald-500/20"></div>
+               <div class="flex-1 space-y-2">
+                 <div class="h-3 w-1/3 bg-slate-700 rounded"></div>
+                 <div class="grid grid-cols-3 gap-2">
+                    <div class="h-12 bg-slate-700/50 rounded-lg"></div>
+                    <div class="h-12 bg-slate-700/50 rounded-lg"></div>
+                    <div class="h-12 bg-slate-700/50 rounded-lg"></div>
+                 </div>
+               </div>
+             </div>
+          </div>
+          <!-- Mobile Mock -->
+          <div class="w-20 bg-slate-800 border-2 border-emerald-500/30 rounded-lg p-2 h-40 flex flex-col">
+             <div class="h-2 w-full bg-slate-700 rounded mb-2"></div>
+             <div class="flex-1 bg-slate-700/30 rounded-md"></div>
+             <div class="h-4 w-full bg-slate-700 rounded mt-2"></div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed italic">On Desktop, the bottom tabs become a sidebar. On Mobile, the full screen is utilized without borders.</p>
+      </div>
+    </div>
+
+    <!-- Layout Logic -->
+    <div class="mt-12 p-6 bg-blue-500/10 border border-blue-500/30 rounded-2xl">
+      <h3 class="text-lg font-bold text-blue-400 mb-4">Responsive Breakpoints</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+          <span class="text-[10px] font-black uppercase text-slate-500 block mb-1">Mobile (&lt; 768px)</span>
+          <span class="text-xs font-bold">Bottom TabBar</span>
+          <p class="text-[9px] text-slate-500 mt-1">Single column grid. Edge-to-edge content.</p>
+        </div>
+        <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+          <span class="text-[10px] font-black uppercase text-slate-500 block mb-1">Tablet (&gt; 768px)</span>
+          <span class="text-xs font-bold">2-Column Layout</span>
+          <p class="text-[9px] text-slate-500 mt-1">Sidebar navigation. Content cards in grid.</p>
+        </div>
+        <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+          <span class="text-[10px] font-black uppercase text-slate-500 block mb-1">Desktop (&gt; 1280px)</span>
+          <span class="text-xs font-bold">Max-Width Container</span>
+          <p class="text-[9px] text-slate-500 mt-1">Multi-column dashboard. Richer data density.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

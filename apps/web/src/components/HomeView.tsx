@@ -43,7 +43,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
     ? 'from-[#1b192e] to-[#12111d] border-white/5 text-white shadow-lg' 
     : isMint 
     ? 'from-emerald-50/90 to-teal-50/40 border border-teal-100 text-slate-800 shadow-sm' 
-    : 'from-orange-50/60 to-rose-50/40 border border-orange-105 border-orange-100/30 text-slate-800 shadow-sm';
+    : 'from-orange-50/60 to-rose-50/40 border border-orange-100 border-orange-100/30 text-slate-800 shadow-sm';
 
   const billboardBtn = isMint
     ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white'
@@ -80,7 +80,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
   }, []);
 
   return (
-    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass} max-w-7xl mx-auto w-full`} id="home-view-container">
+    <div className={`flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 pb-20 pt-4 transition-colors duration-500 ${bgClass} max-w-7xl mx-auto w-full`} id="home-view-container">
       {/* Studio Header Brand */}
       <div className={`flex items-center justify-between pb-3 mb-3 border-b ${headerBorder}`}>
         <div className="flex items-center gap-2.5">
@@ -255,7 +255,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
         
         <div className="relative z-10">
           <span className={`px-2.5 py-0.5 rounded-full text-[8px] md:text-sm font-black tracking-widest uppercase mb-2 md:mb-4 inline-block ${
-            isDark ? 'bg-rose-550/10 bg-rose-500/10 border border-rose-500/20 text-rose-455' : isMint ? 'bg-teal-100 text-teal-800' : 'bg-rose-100 text-rose-800'
+            isDark ? 'bg-rose-500/10 border border-rose-500/20 text-rose-500' : isMint ? 'bg-teal-100 text-teal-800' : 'bg-rose-100 text-rose-800'
           }`}>
             FEATURED ACADEMY
           </span>
@@ -349,7 +349,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] font-black uppercase text-zinc-400 tracking-wider block mb-0.5">舞蹈房地址 / ADDRESS</span>
-                <p className={`font-semibold leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-705 text-slate-700'}`}>
+                <p className={`font-semibold leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                   北京市朝阳区三里屯世茂工三 A座3层302室 (PLAN A 舞蹈旗舰店)
                 </p>
                 <span className="text-[9px] text-zinc-500 font-medium block mt-1 tracking-tight">三里屯核心商圈 • 导航定位PLAN A 舞蹈工作室直达</span>

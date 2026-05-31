@@ -117,7 +117,7 @@ export default function ProfileView({
   ];
 
   return (
-    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="profile-view-container">
+    <div className={`flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="profile-view-container">
       {/* Upper header */}
       <div className={`flex items-center justify-between pb-3 border-b ${headerBorder} mb-3`}>
         <div className="flex items-center space-x-4">

@@ -444,9 +444,9 @@ export default function App() {
         theme={currentTheme}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 relative h-full">
+      <div className={`flex-1 flex flex-col min-w-0 relative h-full`}>
         {/* Live Interactive Theme / Style Switcher */}
-      <div className={`px-4 py-2 flex items-center justify-between border-b shrink-0 ${
+      <div className={`px-4 md:px-8 lg:px-12 py-2 flex items-center justify-between border-b shrink-0 ${
           currentTheme === 'midnight-cyber' 
             ? 'bg-[#13141f]/95 border-white/5 text-zinc-300' 
             : currentTheme === 'cool-mint'

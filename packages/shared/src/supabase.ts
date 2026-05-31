@@ -18,7 +18,16 @@ const isValidUrl = (url: string) => {
 export const createSupabaseClient = (config: SupabaseConfig): SupabaseClient => {
   const { url, anonKey } = config;
 
-  if (!url || !anonKey || !isValidUrl(url) || url.includes('your_supabase_url')) {
+  // Robust check for placeholder credentials
+  const isPlaceholder = 
+    !url || 
+    !anonKey || 
+    !isValidUrl(url) || 
+    url.includes('your-project') || 
+    url.includes('your_supabase_url') || 
+    anonKey.includes('your_anon_key');
+
+  if (isPlaceholder) {
     console.warn('Supabase URL/Key is missing or invalid. Falling back to Mock Supabase Client.');
     return createMockSupabaseClient() as unknown as SupabaseClient;
   }

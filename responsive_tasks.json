@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Bezel Removal & App Container Cleanup",
+    "status": "done",
+    "description": "Strip away the simulated mobile bezel, notch, and fixed dimensions from the main App container."
+  },
+  {
+    "id": 2,
+    "title": "Responsive Sidebar Navigation",
+    "status": "done",
+    "description": "Implement a responsive navigation system with a Sidebar for desktop and TabBar for mobile."
+  },
+  {
+    "id": 3,
+    "title": "Fluid Grid Refactoring",
+    "status": "in-progress",
+    "description": "Update core views to use responsive grids for class cards and sections."
+  },
+  {
+    "id": 4,
+    "title": "Final Polish & Breakpoint Testing",
+    "status": "todo",
+    "description": "Clean up global paddings and verify all responsive breakpoints."
+  }
+]

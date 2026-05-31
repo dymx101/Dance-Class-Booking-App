@@ -59,12 +59,12 @@ export default function ScheduleView({
   const badgeClass = isDark
     ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
     : isMint
-    ? 'bg-teal-500/10 border border-teal-555 border-teal-500/20 text-teal-600'
-    : 'bg-rose-50 border border-rose-100 text-rose-605 text-rose-600';
+    ? 'bg-teal-500/10 border border-teal-500/20 text-teal-600'
+    : 'bg-rose-50 border border-rose-100 text-rose-600';
 
   const defaultButtonClass = isMint
-    ? 'bg-teal-600 hover:bg-teal-750 hover:bg-teal-750 text-white shadow shadow-teal-550/10'
-    : 'bg-rose-500 hover:bg-rose-600 text-white shadow shadow-rose-550/10';
+    ? 'bg-teal-600 hover:bg-teal-700 text-white shadow shadow-teal-500/10'
+    : 'bg-rose-500 hover:bg-rose-600 text-white shadow shadow-rose-500/10';
 
   const ctaBtnColor = isMint
     ? 'bg-teal-600 hover:bg-teal-700 text-white'
@@ -495,7 +495,7 @@ export default function ScheduleView({
   };
 
   return (
-    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="schedule-container">
+    <div className={`flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="schedule-container">
       {/* Header section with PLANA selection and Tab slider */}
       <div className={`flex items-center justify-between pb-3 border-b ${headerBorder} mb-3`}>
         <div className="flex items-center space-x-2" id="studio-selector">
@@ -512,7 +512,7 @@ export default function ScheduleView({
             className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
               viewMode === 'day'
                 ? activeToggleColor
-                : isDark ? 'text-zinc-405 text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                : isDark ? 'text-zinc-400 text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             日课表
@@ -522,7 +522,7 @@ export default function ScheduleView({
             className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
               viewMode === 'week'
                 ? activeToggleColor
-                : isDark ? 'text-zinc-405 text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                : isDark ? 'text-zinc-400 text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             周课表
@@ -595,8 +595,8 @@ export default function ScheduleView({
                 onClick={() => setIsCalendarOpen(true)}
                 className={`w-8 h-8 rounded-full border flex items-center justify-center cursor-pointer transition-colors ${
                   isDark 
-                    ? 'border-white/5 bg-white/5 text-zinc-300 hover:text-rose-455 hover:bg-white/10' 
-                    : 'border-slate-200 bg-white text-slate-750 text-slate-700 hover:text-rose-500 hover:bg-slate-50'
+                    ? 'border-white/5 bg-white/5 text-zinc-300 hover:text-rose-400 hover:bg-white/10' 
+                    : 'border-slate-200 bg-white text-slate-700 hover:text-rose-500 hover:bg-slate-50'
                 }`}
                 title="选择日期"
                 id="btn-open-calendar"
@@ -640,7 +640,7 @@ export default function ScheduleView({
             <div className={`text-[10px] font-bold tracking-wide ${textSecondary}`}>
               {(filterRoom !== '全部教室' || filterTeacherId !== '全部老师') ? (
                 <span className={`${badgeClass} flex items-center px-2.5 py-0.5 rounded-full`}>
-                  <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 animate-ping ${isMint ? 'bg-teal-550' : 'bg-rose-500'}`}></span>
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 animate-ping ${isMint ? 'bg-teal-500' : 'bg-rose-500'}`}></span>
                   已筛选: {filterRoom} • {filterTeacherId !== '全部老师' ? TEACHERS.find(t=>t.id===filterTeacherId)?.name : '全部老师'}
                 </span>
               ) : (
@@ -652,7 +652,7 @@ export default function ScheduleView({
               onClick={openFilterDrawer}
               className={`flex items-center text-[11px] px-3 py-1 border rounded-full font-black shadow-sm cursor-pointer transition-colors ${
                 isDark 
-                  ? 'text-zinc-300 hover:text-rose-455 hover:bg-white/10 bg-[#13141f] border-white/5' 
+                  ? 'text-zinc-300 hover:text-rose-400 hover:bg-white/10 bg-[#13141f] border-white/5' 
                   : isMint 
                   ? 'text-teal-700 bg-teal-50 hover:bg-teal-100/55 border-teal-200/50' 
                   : 'text-slate-700 bg-white hover:bg-slate-50 border-slate-200'
@@ -711,7 +711,7 @@ export default function ScheduleView({
                       <span className={`text-xs font-black font-mono ${highlightText}`}>
                         {cls.timestart} ~ {cls.timeend}
                       </span>
-                      <span className={`text-[9px] uppercase font-black tracking-widest font-mono ${isDark ? 'text-rose-300' : 'text-slate-650 text-slate-500'}`}>
+                      <span className={`text-[9px] uppercase font-black tracking-widest font-mono ${isDark ? 'text-rose-300' : 'text-slate-500'}`}>
                         {cls.genre} Style
                       </span>
                     </div>
@@ -773,21 +773,21 @@ export default function ScheduleView({
                       <div className="shrink-0 flex flex-col justify-center items-end h-full self-center">
                         {ended ? (
                           <div className={`text-[11px] px-4 py-2 rounded-full font-bold select-none cursor-not-allowed border ${
-                            isDark ? 'bg-zinc-800 text-zinc-500 border-white/5' : 'bg-slate-205 bg-slate-200 text-slate-400 border-slate-300/30'
+                            isDark ? 'bg-zinc-800 text-zinc-500 border-white/5' : 'bg-slate-200 text-slate-400 border-slate-300/30'
                           }`}>
                             已结束
                           </div>
                         ) : cls.openbookingtime ? (
                           <div className="flex flex-col items-end">
                             <span className={`text-[8px] font-extrabold mb-1 font-mono px-1.5 py-0.5 rounded ${
-                              isMint ? 'bg-teal-500/10 text-teal-605 text-teal-500 border border-teal-500/20' : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
+                              isMint ? 'bg-teal-500/10 text-teal-600 text-teal-500 border border-teal-500/20' : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
                             }`}>
                               {cls.openbookingtime}
                             </span>
                             <button
                               disabled
                               className={`text-xs px-4 py-2 rounded-full font-black opacity-70 cursor-not-allowed border ${
-                                isDark ? 'bg-zinc-800/50 text-zinc-600 border-white/5' : 'bg-slate-100 text-slate-400 border-slate-205 border-slate-200'
+                                isDark ? 'bg-zinc-800/50 text-zinc-600 border-white/5' : 'bg-slate-100 text-slate-400 border-slate-200 border-slate-200'
                               }`}
                             >
                               待开启
@@ -809,7 +809,7 @@ export default function ScheduleView({
                               <span>处理中...</span>
                             ) : (
                               <>
-                                <CheckCircle2 className={`w-3.5 h-3.5 ${isMint ? 'text-teal-600' : 'text-rose-455 text-rose-400'}`} />
+                                <CheckCircle2 className={`w-3.5 h-3.5 ${isMint ? 'text-teal-600' : 'text-rose-400 text-rose-400'}`} />
                                 <span>退约</span>
                               </>
                             )}
@@ -826,7 +826,7 @@ export default function ScheduleView({
                                   isWaiting
                                     ? isMint 
                                       ? 'bg-teal-500/10 border border-teal-500/20 text-teal-600' 
-                                      : 'bg-rose-500/10 border border-rose-500/20 text-rose-500 text-rose-405'
+                                      : 'bg-rose-500/10 border border-rose-500/20 text-rose-500 text-rose-400'
                                     : defaultButtonClass
                                 }`}
                               >
@@ -975,7 +975,7 @@ export default function ScheduleView({
                 <div className="col-span-1 divide-y divide-white/5">
                   {['10:30', '13:00', '14:00', '15:00', '16:30', '18:30'].map((time) => (
                     <div key={time} className={`h-28 p-2 text-center flex items-center justify-center text-[10px] font-black border-b ${
-                      isDark ? 'text-zinc-500 bg-white/5 border-white/5' : 'text-slate-505 text-slate-500 bg-slate-100/50 border-slate-200/50'
+                      isDark ? 'text-zinc-500 bg-white/5 border-white/5' : 'text-slate-500 bg-slate-100/50 border-slate-200/50'
                     }`}>
                       {time}
                     </div>
@@ -999,15 +999,10 @@ export default function ScheduleView({
                           }`}>
                             {classMatch ? (
                               <div
-                                onClick={() => {
-                                  setSelectedDateStr(col.dateStr);
-                                  setViewMode('day'); // Direct go to detail on click
-                                  addToast(`您点击了 ${classMatch.title}，进入单日模式 management 预约`, 'info');
-                                }}
                                 className={`w-full h-full rounded-xl p-1.5 text-left text-white leading-none cursor-pointer overflow-hidden transition-all hover:brightness-110 hover:scale-[1.02] flex flex-col justify-between border border-white/5 ${
                                   isBooked
                                     ? isMint 
-                                      ? 'bg-teal-550 bg-teal-605 bg-teal-600 shadow-md shadow-teal-500/10 text-white' 
+                                      ? 'bg-teal-600 shadow-md shadow-teal-500/10 text-white' 
                                       : 'bg-rose-500 shadow-md shadow-rose-500/10 text-white'
                                     : classMatch.genre === 'hiphop'
                                     ? 'bg-indigo-950/90 border border-indigo-500/30 text-white'
@@ -1022,7 +1017,7 @@ export default function ScheduleView({
                                   <div className="text-[9px] truncate font-extrabold tracking-tight">
                                     {classMatch.title}
                                   </div>
-                                  <div className="text-[8px] text-zinc-350 text-zinc-300 truncate leading-none mt-1">
+                                  <div className="text-[8px] text-zinc-300 truncate leading-none mt-1">
                                     {classMatch.timestart}~{classMatch.timeend}
                                   </div>
                                   <div className="text-[8px] font-black text-rose-300 tracking-wide truncate mt-1">
@@ -1032,11 +1027,11 @@ export default function ScheduleView({
 
                                 <div className="flex items-center justify-between mt-1 pt-1 border-t border-white/5">
                                   {isBooked ? (
-                                    <span className={`bg-white text-[8px] font-black px-1 rounded truncate leading-none scale-[0.9] origin-left ${isMint ? 'text-teal-600' : 'text-rose-550 text-rose-500'}`}>
+                                    <span className={`bg-white text-[8px] font-black px-1 rounded truncate leading-none scale-[0.9] origin-left ${isMint ? 'text-teal-600' : 'text-rose-500'}`}>
                                       已预约
                                     </span>
                                   ) : (
-                                    <span className="bg-black/25 text-zinc-350 text-zinc-300 text-[8px] font-bold px-1 rounded truncate leading-none scale-[0.9] origin-left">
+                                    <span className="bg-black/25 text-zinc-300 text-[8px] font-bold px-1 rounded truncate leading-none scale-[0.9] origin-left">
                                       {classMatch.bookedcount}/{classMatch.maxcount}人
                                     </span>
                                   )}
@@ -1082,7 +1077,7 @@ export default function ScheduleView({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 15 }}
               className={`rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl relative z-10 border text-white ${
-                isDark ? 'bg-[#13141f] border-white/10 text-white' : 'bg-white border-slate-205 border-slate-200 text-slate-800'
+                isDark ? 'bg-[#13141f] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-800'
               }`}
             >
               {/* Month selector header */}
@@ -1125,15 +1120,15 @@ export default function ScheduleView({
                         className={`text-xs py-1.5 font-bold rounded-xl transition relative cursor-pointer ${
                           isCurrentSelected
                             ? isMint 
-                              ? 'bg-teal-550 bg-teal-600 text-white shadow shadow-teal-500/30'
+                              ? 'bg-teal-600 text-white shadow shadow-teal-500/30'
                               : 'bg-rose-500 text-white shadow shadow-rose-500/30'
                             : isToday
                             ? isMint
-                              ? 'border border-teal-555 border-teal-500 text-teal-600 bg-teal-50'
+                              ? 'border border-teal-500 text-teal-600 bg-teal-50'
                               : 'border border-rose-500 text-rose-500 bg-rose-50'
                             : isBookableRange
                             ? isDark
-                              ? 'text-zinc-305 text-zinc-300 hover:bg-white/5 hover:text-white'
+                              ? 'text-zinc-300 hover:bg-white/5 hover:text-white'
                               : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                             : isDark 
                             ? 'text-zinc-800 cursor-not-allowed'
@@ -1161,7 +1156,7 @@ export default function ScheduleView({
                 <button
                   onClick={() => setIsCalendarOpen(false)}
                   className={`px-4 py-1.5 border text-xs font-semibold rounded-full transition cursor-pointer ${
-                    isDark ? 'bg-white/5 border-white/5 text-zinc-350 text-zinc-300 hover:text-white' : 'bg-white hover:bg-slate-100/55 border-slate-205 border-slate-200 text-slate-700'
+                    isDark ? 'bg-white/5 border-white/5 text-zinc-300 hover:text-white' : 'bg-white hover:bg-slate-100/55 border-slate-200 text-slate-700'
                   }`}
                 >
                   关闭

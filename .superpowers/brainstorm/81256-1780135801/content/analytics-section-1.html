@@ -1,0 +1,47 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 1: Financial & Retention Logic</h1>
+      <p class="text-slate-400 mt-2">Server-side calculation of growth trends and member loyalty.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Comparative Logic -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-emerald-400">1. Comparative Trends</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 font-mono text-[10px]">
+          <p class="text-emerald-300">// SQL Aggregation Pattern:</p>
+          <ul class="list-disc list-inside space-y-2 text-slate-300 mt-2">
+            <li><span class="text-blue-300 font-bold">current_period:</span> sum(price) last 30 days</li>
+            <li><span class="text-blue-300 font-bold">previous_period:</span> sum(price) 31-60 days ago</li>
+            <li><span class="text-blue-300 font-bold">delta:</span> ((curr - prev) / prev) * 100</li>
+          </ul>
+        </div>
+        <p class="text-xs text-slate-400 italic">This replaces the hardcoded "+12%" with real, dynamic percentage growth indicators.</p>
+      </div>
+
+      <!-- Retention: At-Risk Users -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-rose-400">2. Member Retention View</h2>
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 relative overflow-hidden">
+          <div class="absolute left-0 top-0 w-1 h-full bg-rose-500"></div>
+          <h3 class="font-bold text-slate-100 text-sm mb-1">view_at_risk_members</h3>
+          <p class="text-xs text-slate-400 mb-3">Identifies members who haven't booked in 30+ days despite having remaining passes.</p>
+          <ul class="text-[10px] text-slate-500 space-y-1">
+            <li>• last_booking_date > 30 days</li>
+            <li>• remainingpasses > 0</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Logic: The "Health" Score -->
+      <div class="md:col-span-2 mt-4 p-6 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+        <h3 class="text-lg font-bold text-blue-300 mb-2 italic">The "Growth Coefficient"</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          We will implement a new RPC <code>get_studio_health()</code> that returns a single JSON object containing these deltas and retention counts. This allows the dashboard to load all top-row stats in a <strong>single fast request</strong> instead of multiple complex queries.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

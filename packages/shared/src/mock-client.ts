@@ -22,13 +22,22 @@ export const createMockSupabaseClient = () => {
     listeners.forEach(l => l(session ? 'SIGNED_IN' : 'SIGNED_OUT', session));
   };
 
+  const mockChannel = {
+    on: () => mockChannel,
+    subscribe: () => ({ 
+      unsubscribe: () => {} 
+    }),
+    send: () => Promise.resolve('ok'),
+  };
+
   return {
     auth: {
       getSession: async () => ({ data: { session: getMockSession() }, error: null }),
       onAuthStateChange: (callback: (event: string, session: any) => void) => {
         listeners.push(callback);
         const currentSession = getMockSession();
-        callback(currentSession ? 'SIGNED_IN' : 'SIGNED_OUT', currentSession);
+        // Delay callback to avoid synchronous state updates in some contexts
+        setTimeout(() => callback(currentSession ? 'SIGNED_IN' : 'SIGNED_OUT', currentSession), 0);
         return { data: { subscription: { unsubscribe: () => {
           const index = listeners.indexOf(callback);
           if (index !== -1) listeners.splice(index, 1);
@@ -45,8 +54,8 @@ export const createMockSupabaseClient = () => {
             id: 'mock_user_id', 
             phone, 
             email,
-            user_metadata: {},
-            app_metadata: {},
+            user_metadata: { full_name: 'Demo User' },
+            app_metadata: { role: email.includes('admin') ? 'admin' : 'user' },
             aud: 'authenticated', 
             created_at: new Date().toISOString() 
           },
@@ -62,51 +71,62 @@ export const createMockSupabaseClient = () => {
         setMockSession(null);
         return { error: null };
       },
+      getUser: async () => ({ data: { user: getMockSession()?.user ?? null }, error: null }),
     },
     from: (table: string) => ({
-      select: () => ({
-        order: () => ({
-          order: () => Promise.resolve({
-            data: table === 'class_instances' ? generateClasses() : [],
-            error: null
-          }),
-          single: () => Promise.resolve({
-            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
-            error: null
-          }),
-          eq: () => ({
-            in: () => Promise.resolve({ data: [], error: null }),
+      select: (columns: string = '*') => {
+        const query = {
+          eq: (col: string, val: any) => ({
             single: () => Promise.resolve({
-              data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
+              data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, experiencepoints: 450 } : null,
               error: null
             }),
-          })
-        }),
-        eq: () => ({
-          in: () => Promise.resolve({ data: [], error: null }),
+            in: () => Promise.resolve({ data: [], error: null }),
+            order: () => Promise.resolve({ data: [], error: null }),
+            select: () => query
+          }),
+          order: () => ({
+            order: () => Promise.resolve({
+              data: table === 'class_instances' ? generateClasses() : [],
+              error: null
+            }),
+            single: () => Promise.resolve({ data: null, error: null }),
+            eq: () => query
+          }),
           single: () => Promise.resolve({
-            data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
+            data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, experiencepoints: 450 } : null,
             error: null
           }),
-          eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) })
-        }),
-        single: () => Promise.resolve({
-          data: table === 'users' ? { id: 'mock_user_id', name: 'Admin', remainingpasses: 10 } : null,
-          error: null
-        })
-      }),
+          limit: () => query,
+          range: () => query,
+          abortSignal: () => query
+        };
+        return query;
+      },
       update: () => ({ eq: () => Promise.resolve({ data: null, error: null }) }),
-      insert: () => ({ returning: () => Promise.resolve({ data: [], error: null }) })
+      insert: () => ({ returning: () => Promise.resolve({ data: [], error: null }) }),
+      upsert: () => Promise.resolve({ data: null, error: null }),
+      delete: () => ({ eq: () => Promise.resolve({ data: null, error: null }) }),
     }),
     rpc: async (fn: string, params: any) => {
       console.log('[MOCK RPC] Calling', fn, 'with', params);
       if (fn === 'book_class') {
-        return { data: [{ success: true, status: 'booked' }], error: null };
+        return { data: { success: true, status: 'booked' }, error: null };
       }
       if (fn === 'cancel_booking') {
-        return { data: [{ success: true, refunded: true }], error: null };
+        return { data: { success: true, refunded: true }, error: null };
       }
       return { data: { success: true }, error: null };
+    },
+    channel: () => mockChannel,
+    functions: {
+      invoke: async (fn: string, options: any) => {
+        console.log('[MOCK FUNCTION] Invoking', fn, 'with', options);
+        if (fn === 'create-checkout') {
+          return { data: { url: window.location.href + '?session_id=mock_session' }, error: null };
+        }
+        return { data: { success: true }, error: null };
+      }
     }
   } as any;
 };

@@ -1,0 +1,75 @@
+
+<div class="p-6 bg-slate-900 text-white font-sans min-h-screen">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-4">
+      <h1 class="text-3xl font-bold text-blue-400">Design Section 2: Comparative UI</h1>
+      <p class="text-slate-400 mt-2">Visualizing studio growth through real trend indicators.</p>
+    </header>
+
+    <div class="space-y-12">
+      <!-- 1. Real Trend Indicators -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div class="bg-slate-800 p-6 rounded-[2.5rem] border border-slate-700 shadow-xl space-y-4">
+           <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Total Revenue / 总营收</span>
+           <div class="flex items-end gap-3">
+             <div class="text-3xl font-black text-slate-100 tracking-tight">¥42,850</div>
+             <div class="flex items-center gap-1 mb-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+               <span class="text-[10px] font-black italic">12.4%</span>
+             </div>
+           </div>
+           <p class="text-[9px] text-slate-500 font-bold">VS PREVIOUS 30 DAYS</p>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold text-emerald-400">1. Real Growth Deltas</h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            The summary cards now show real growth percentages calculated by the server. If the studio is growing, the indicators turn <strong>Emerald</strong>; if revenue or attendance is declining, they turn <strong>Rose</strong> to alert the owner immediately.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Retention Monitoring -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold text-blue-400">2. Retention List (At-Risk)</h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            A new dashboard section that identifies members who haven't booked a class in 30+ days. This gives the studio owner an actionable list of people to reach out to for "Welcome back" offers.
+          </p>
+          <div class="flex gap-2">
+            <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold rounded">CRM INTEGRATION</span>
+            <span class="px-2 py-0.5 bg-rose-500/10 text-rose-400 text-[10px] font-bold rounded">CHURN PREVENTION</span>
+          </div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-[2.5rem] border border-slate-700 shadow-xl">
+           <h3 class="text-xs font-black text-slate-100 uppercase tracking-widest mb-6">At-Risk Members / 待激活会员</h3>
+           <div class="space-y-4">
+              <div class="flex items-center justify-between p-3 bg-zinc-900/50 rounded-2xl border border-white/5">
+                 <div class="flex items-center gap-3">
+                   <div class="w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-[10px] font-bold">L</div>
+                   <div>
+                     <span class="text-[11px] font-bold block">Lucy Wang</span>
+                     <span class="text-[8px] text-slate-500">Last: 38 Days ago</span>
+                   </div>
+                 </div>
+                 <div class="text-right">
+                    <span class="text-[10px] font-black text-rose-500">8 Passes Left</span>
+                 </div>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-zinc-900/50 rounded-2xl border border-white/5 opacity-80">
+                 <div class="flex items-center gap-3">
+                   <div class="w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-[10px] font-bold">K</div>
+                   <div>
+                     <span class="text-[11px] font-bold block">Ken Smith</span>
+                     <span class="text-[8px] text-slate-500">Last: 42 Days ago</span>
+                   </div>
+                 </div>
+                 <div class="text-right">
+                    <span class="text-[10px] font-black text-rose-500">12 Passes Left</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
