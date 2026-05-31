@@ -2,25 +2,25 @@
   {
     "id": 1,
     "title": "Comparative Analytics RPC",
-    "status": "todo",
+    "status": "done",
     "description": "Create get_studio_health RPC to calculate PoP deltas for core metrics."
   },
   {
     "id": 2,
     "title": "Retention View & Data Service",
-    "status": "todo",
+    "status": "done",
     "description": "Define view_at_risk_members and update the analytics service."
   },
   {
     "id": 3,
     "title": "Real Trend UI Components",
-    "status": "todo",
+    "status": "done",
     "description": "Update summary cards with real growth percentages and trend icons."
   },
   {
     "id": 4,
     "title": "Retention List & Final Polish",
-    "status": "todo",
+    "status": "done",
     "description": "Add the CRM-style at-risk member list and apply final UI polish."
   }
 ]

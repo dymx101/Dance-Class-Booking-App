@@ -38,24 +38,19 @@ BEGIN
 
     -- 3. Fill Rate: Last 30 days
     -- Ratio of (booked + attended) / maxcount for instances in last 30 days
-    WITH instance_data AS (
+    WITH target_instances AS (
         SELECT id, maxcount 
         FROM public.class_instances 
         WHERE date >= (CURRENT_DATE - INTERVAL '30 days')
           AND date <= CURRENT_DATE
-    ),
-    booking_counts AS (
-        SELECT classid, COUNT(*) as booked_count
-        FROM public.bookings
-        WHERE status IN ('booked', 'attended')
-        GROUP BY classid
+          AND status != 'cancelled'
     )
     SELECT 
-        COALESCE(SUM(id_data.maxcount), 0),
-        COALESCE(SUM(bc.booked_count), 0)
+        COALESCE(SUM(ti.maxcount), 0),
+        COUNT(b.id)
     INTO v_total_capacity, v_total_booked
-    FROM instance_data id_data
-    LEFT JOIN booking_counts bc ON id_data.id = bc.classid;
+    FROM target_instances ti
+    LEFT JOIN public.bookings b ON ti.id = b.classid AND b.status IN ('booked', 'attended');
 
     IF v_total_capacity > 0 THEN
         v_fill_rate := (v_total_booked::DECIMAL / v_total_capacity::DECIMAL) * 100;
@@ -65,12 +60,20 @@ BEGIN
 
     -- 4. No-Show Rate: Last 30 days
     -- Ratio of 'no_show' vs ('booked' + 'attended' + 'no_show')
+    -- Only for classes that ALREADY OCCURRED in the last 30 days
+    WITH past_instances AS (
+        SELECT id 
+        FROM public.class_instances 
+        WHERE date >= (CURRENT_DATE - INTERVAL '30 days')
+          AND date <= CURRENT_DATE
+          AND status != 'cancelled'
+    )
     SELECT 
         COUNT(*) FILTER (WHERE status = 'no_show'),
         COUNT(*) FILTER (WHERE status IN ('booked', 'attended', 'no_show'))
     INTO v_total_no_show, v_total_booked_attended
     FROM public.bookings
-    WHERE created_at >= (CURRENT_TIMESTAMP - INTERVAL '30 days');
+    WHERE classid IN (SELECT id FROM past_instances);
 
     IF v_total_booked_attended > 0 THEN
         v_no_show_rate := (v_total_no_show::DECIMAL / v_total_booked_attended::DECIMAL) * 100;
@@ -82,12 +85,12 @@ BEGIN
         'revenue', jsonb_build_object(
             'current', v_revenue_current,
             'previous', v_revenue_previous,
-            'growth', CASE WHEN v_revenue_previous > 0 THEN ((v_revenue_current - v_revenue_previous) / v_revenue_previous) * 100 ELSE 0 END
+            'growth', ROUND(CASE WHEN v_revenue_previous > 0 THEN ((v_revenue_current - v_revenue_previous) / v_revenue_previous) * 100 ELSE 0 END, 2)
         ),
         'signups', jsonb_build_object(
             'current', v_signups_current,
             'previous', v_signups_previous,
-            'growth', CASE WHEN v_signups_previous > 0 THEN ((v_signups_current - v_signups_previous)::DECIMAL / v_signups_previous::DECIMAL) * 100 ELSE 0 END
+            'growth', ROUND(CASE WHEN v_signups_previous > 0 THEN ((v_signups_current - v_signups_previous)::DECIMAL / v_signups_previous::DECIMAL) * 100 ELSE 0 END, 2)
         ),
         'fillrate', ROUND(v_fill_rate, 2),
         'noshowrate', ROUND(v_no_show_rate, 2)

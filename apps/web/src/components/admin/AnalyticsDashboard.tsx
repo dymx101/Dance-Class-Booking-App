@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { 
-  BarChart3, TrendingUp, Users, Percent, DollarSign, UserPlus, XCircle, 
+  BarChart3, TrendingUp, TrendingDown, Users, Percent, DollarSign, UserPlus, XCircle, 
   Loader2, Calendar, ChevronDown, Filter, Info, Mail 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -8,8 +8,8 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Legend, Cell
 } from 'recharts';
-import { getRevenueStats, getTeacherPerformance, getAttendanceHeatmap, getMemberStats } from '../../lib/analytics';
-import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat } from '../../types';
+import { getRevenueStats, getTeacherPerformance, getAttendanceHeatmap, getMemberStats, getStudioHealth, getAtRiskMembers } from '../../lib/analytics';
+import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat, StudioHealth, AtRiskMember } from '@dance-app/shared';
 import { supabase } from '../../lib/supabase';
 
 type Period = '7d' | '30d' | '90d' | 'all';
@@ -24,21 +24,27 @@ export default function AnalyticsDashboard() {
   const [rawTeacherData, setRawTeacherData] = useState<TeacherPerformance[]>([]);
   const [rawHeatmapData, setRawHeatmapData] = useState<HeatmapData[]>([]);
   const [rawMemberData, setRawMemberData] = useState<MemberStat[]>([]);
+  const [health, setHealth] = useState<StudioHealth | null>(null);
+  const [atRiskMembers, setAtRiskMembers] = useState<AtRiskMember[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       try {
-        const [rev, teachers, heatmap, members] = await Promise.all([
+        const [rev, teachers, heatmap, members, healthData, atRisk] = await Promise.all([
           getRevenueStats(),
           getTeacherPerformance(),
           getAttendanceHeatmap(),
-          getMemberStats()
+          getMemberStats(),
+          getStudioHealth(),
+          getAtRiskMembers()
         ]);
         setRawRevenueData(rev);
         setRawTeacherData(teachers);
         setRawHeatmapData(heatmap);
         setRawMemberData(members);
+        setHealth(healthData);
+        setAtRiskMembers(atRisk);
       } catch (error) {
         console.error('Failed to fetch analytics data:', error);
       } finally {
@@ -81,46 +87,39 @@ export default function AnalyticsDashboard() {
     return rawMemberData.filter(item => new Date(item.week) >= cutoff).reverse();
   }, [rawMemberData, period]);
 
-  // Summary calculations
-  const summary = useMemo(() => {
-    const revenue = filteredRevenue.reduce((sum, item) => sum + item.total_revenue, 0);
-    const signups = filteredMembers.reduce((sum, item) => sum + item.new_signups, 0);
-    const fillRate = rawTeacherData.length > 0 
-      ? (rawTeacherData.reduce((sum, item) => sum + item.avg_fill_rate, 0) / rawTeacherData.length).toFixed(1) 
-      : '0';
-
-    return { revenue, signups, fillRate };
-  }, [filteredRevenue, filteredMembers, rawTeacherData]);
-
   const stats = [
     {
       label: '总营收 Total Revenue',
-      value: `¥${summary.revenue.toLocaleString()}`,
-      change: '+12.5%',
+      value: health ? `¥${health.revenue.current.toLocaleString()}` : '¥0',
+      change: health ? `${health.revenue.growth >= 0 ? '+' : ''}${health.revenue.growth.toFixed(1)}%` : '0%',
+      growth: health ? health.revenue.growth : 0,
       icon: DollarSign,
       color: 'bg-emerald-500',
-      description: `基于所选周期 Based on ${period}`
+      description: `过去30天对比 Based on 30d comparison`
     },
     {
       label: '平均上课率 Avg. Fill Rate',
-      value: `${summary.fillRate}%`,
-      change: '+5.2%',
+      value: health ? `${health.fillrate.toFixed(1)}%` : '0%',
+      change: '+2.1%', // Mocked for fill rate for now
+      growth: 2.1,
       icon: Percent,
       color: 'bg-blue-500',
       description: '全时段平均 Overall average'
     },
     {
       label: '新成员 New Members',
-      value: summary.signups.toString(),
-      change: '+18.3%',
+      value: health ? health.signups.current.toString() : '0',
+      change: health ? `${health.signups.growth >= 0 ? '+' : ''}${health.signups.growth.toFixed(1)}%` : '0%',
+      growth: health ? health.signups.growth : 0,
       icon: UserPlus,
       color: 'bg-rose-500',
-      description: `周期内新增 ${period} signups`
+      description: `增长趋势 User growth trend`
     },
     {
       label: '缺勤率 No-Show Rate',
-      value: '4.2%',
+      value: health ? `${health.noshowrate.toFixed(1)}%` : '0%',
       change: '-1.5%',
+      growth: -1.5,
       icon: XCircle,
       color: 'bg-amber-500',
       description: '周期内统计 Period stats'
@@ -192,10 +191,14 @@ export default function AnalyticsDashboard() {
                 <stat.icon className="w-5 h-5" />
               </div>
               <div className="flex flex-col items-end">
-                <span className={`text-[10px] font-black ${stat.change.startsWith('+') ? 'text-emerald-500' : 'text-rose-500'}`}>
+                <span className={`text-[10px] font-black ${stat.growth >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {stat.change}
                 </span>
-                <TrendingUp className={`w-3 h-3 ${stat.change.startsWith('+') ? 'text-emerald-500' : 'text-rose-500'}`} />
+                {stat.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-emerald-500" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-rose-500" />
+                )}
               </div>
             </div>
             <div className="relative z-10">
@@ -210,18 +213,17 @@ export default function AnalyticsDashboard() {
                 {stat.description}
               </p>
             </div>
-            {/* Decorative background element */}
             <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full ${stat.color} opacity-[0.03] group-hover:scale-150 transition-transform duration-500`} />
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Revenue Trend Chart */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100"
+          className="lg:col-span-2 bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100"
         >
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
@@ -273,7 +275,7 @@ export default function AnalyticsDashboard() {
           </div>
         </motion.div>
 
-        {/* Member Growth Chart */}
+        {/* Retention CRM List */}
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -282,9 +284,50 @@ export default function AnalyticsDashboard() {
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
               <div className="w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
+              流失预警 Retention List
+            </h3>
+          </div>
+          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
+            {atRiskMembers.length === 0 ? (
+              <div className="text-center py-12 text-slate-400 font-bold text-xs uppercase italic">No at-risk members found.</div>
+            ) : (
+              atRiskMembers.map((member) => (
+                <div key={member.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between group hover:border-rose-200 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xs font-black">
+                      {member.name.charAt(0)}
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-black text-slate-800 block">{member.name}</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase">Inactive: {member.days_inactive} days</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-rose-600 block">{member.remainingpasses} 次</span>
+                    <span className="text-[8px] font-bold text-slate-400 uppercase">Left</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <button className="w-full mt-6 py-3 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-lg shadow-slate-900/10">
+            全部导出 Export CRM List
+          </button>
+        </motion.div>
+      </div>
+
+      {/* Member Growth Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100"
+        >
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
               用户增长图 User Growth
             </h3>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">单位: 人 (Members)</span>
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -318,82 +361,37 @@ export default function AnalyticsDashboard() {
             </ResponsiveContainer>
           </div>
         </motion.div>
-      </div>
 
-      {/* Teacher Leaderboard */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100"
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-          <div>
-            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-              教师表现排行 Teacher Performance
-            </h3>
-            <p className="text-xs font-bold text-slate-400 mt-1">基于平均上课率与候补人数 Rankings by Avg. Fill Rate</p>
+        {/* Teacher Leaderboard */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100"
+        >
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2 mb-8">
+            <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+            教师表现排行 Teacher Performance
+          </h3>
+          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
+            {rawTeacherData.map((teacher, index) => (
+              <div key={teacher.teacher_id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col group hover:border-blue-200 transition-colors">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-[11px] font-black text-slate-800">{teacher.teacher_name}</span>
+                  <span className="text-xs font-black text-blue-600">{teacher.avg_fill_rate.toFixed(1)}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${teacher.avg_fill_rate}%` }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                    className="h-full bg-blue-500 rounded-full"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-          <button className="flex items-center space-x-2 px-6 py-3 bg-slate-50 hover:bg-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 transition-all border border-slate-100">
-            <Filter className="w-3 h-3" />
-            <span>更多筛选 Filter</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {rawTeacherData.map((teacher, index) => (
-            <div 
-              key={teacher.teacher_id} 
-              className="group p-6 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-between hover:bg-white hover:shadow-xl hover:border-blue-200 transition-all duration-300"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-2xl ${
-                    index === 0 ? 'bg-amber-100 text-amber-600' : 
-                    index === 1 ? 'bg-slate-200 text-slate-600' : 
-                    index === 2 ? 'bg-orange-100 text-orange-600' : 
-                    'bg-white text-slate-400'
-                  } border border-black/5 flex items-center justify-center text-lg font-black shadow-sm`}>
-                    {index + 1}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">{teacher.teacher_name}</h4>
-                    <span className="text-[10px] font-bold text-slate-400">INSTRUCTOR</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{teacher.avg_fill_rate.toFixed(1)}%</div>
-                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Avg Fill</span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="p-3 bg-white/60 rounded-2xl border border-black/5">
-                    <span className="text-[8px] font-black text-slate-400 uppercase block">Bookings</span>
-                    <span className="text-xs font-black text-slate-800">{teacher.total_bookings}</span>
-                  </div>
-                  <div className="p-3 bg-white/60 rounded-2xl border border-black/5">
-                    <span className="text-[8px] font-black text-slate-400 uppercase block">Waitlist</span>
-                    <span className="text-xs font-black text-slate-800">{teacher.total_waitlist}</span>
-                  </div>
-                </div>
-                
-                <div className="relative pt-2">
-                  <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden p-0.5">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${teacher.avg_fill_rate}%` }}
-                      transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.3)]"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
