@@ -31,6 +31,7 @@ export interface User {
   phone: string;
   avatar: string;
   remainingpasses: number;
+  privatepasses: number;
   experiencepoints: number;
   totalclassesjoined: number;
   favoritestyle: string;

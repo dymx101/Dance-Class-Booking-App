@@ -1,18 +1,18 @@
 import React from 'react';
-import { Home, CalendarDays, ShoppingBag, User, Bell } from 'lucide-react';
+import { Home, CalendarDays, ShoppingBag, User, Bell, Sparkles } from 'lucide-react';
 import { AppTheme } from '@dance-app/shared';
 
 interface NavigationProps {
-  activeTab: 'home' | 'schedule' | 'store' | 'profile';
-  setActiveTab: (tab: 'home' | 'schedule' | 'store' | 'profile') => void;
+  activeTab: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile';
+  setActiveTab: (tab: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile') => void;
   unreadCount: number;
   onOpenNotifications: () => void;
   theme: AppTheme;
 }
 
 interface SidebarProps {
-  activeTab: 'home' | 'schedule' | 'store' | 'profile';
-  setActiveTab: (tab: 'home' | 'schedule' | 'store' | 'profile') => void;
+  activeTab: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile';
+  setActiveTab: (tab: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile') => void;
   unreadCount: number;
   onOpenNotifications: () => void;
   theme: AppTheme;
@@ -67,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {[
           { id: 'home', label: '首页 / Home', icon: Home },
           { id: 'schedule', label: '课表 / Schedule', icon: CalendarDays },
+          { id: 'private-coaching', label: '私教 / Private', icon: Sparkles },
           { id: 'store', label: '商城 / Store', icon: ShoppingBag },
           { id: 'profile', label: '我的 / Profile', icon: User },
         ].map((item) => (
@@ -120,6 +121,7 @@ export const TabBar: React.FC<NavigationProps> = ({
     {[
       { id: 'home', label: '首页', icon: Home },
       { id: 'schedule', label: '课表', icon: CalendarDays },
+      { id: 'private-coaching', label: '私教', icon: Sparkles },
       { id: 'store', label: '商城', icon: ShoppingBag },
       { id: 'profile', label: '我的', icon: User },
     ].map((item) => (

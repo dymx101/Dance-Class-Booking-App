@@ -67,3 +67,23 @@ export async function getUserPrivateBookings(): Promise<PrivateBooking[]> {
 
   return data || [];
 }
+
+/**
+ * Cancel a private session
+ */
+export async function cancelPrivateSession(bookingId: string): Promise<{ success: boolean; refunded?: boolean; error?: string }> {
+  const { data, error: rpcError } = await supabase.rpc('cancel_private_session', {
+    p_booking_id: bookingId
+  });
+
+  if (rpcError) {
+    console.error('Error cancelling private session:', rpcError);
+    return { success: false, error: rpcError.message };
+  }
+
+  if (data && typeof data === 'object' && !data.success) {
+    return { success: false, error: data.error || 'Failed to cancel session' };
+  }
+
+  return { success: true, refunded: data.refunded };
+}

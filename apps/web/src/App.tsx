@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DanceClass, PurchaseRecord, AppTheme, generateClasses } from '@dance-app/shared';
 import HomeView from './components/HomeView';
 import ScheduleView from './components/ScheduleView';
+import PrivateCoachingView from './components/PrivateCoachingView';
 import StoreView from './components/StoreView';
 import ProfileView from './components/ProfileView';
 import AdminLayout from './components/admin/AdminLayout';
@@ -28,8 +29,8 @@ export default function App() {
   const { user, profile, signOut, loading: authLoading } = useAuth();
   const { unreadCount } = useNotifications();
 
-  // Tab control states: 'home' | 'schedule' | 'store' | 'profile'
-  const [activeTab, setActiveTab] = useState<'home' | 'schedule' | 'store' | 'profile'>('home');
+  // Tab control states: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile'
+  const [activeTab, setActiveTab] = useState<'home' | 'schedule' | 'private-coaching' | 'store' | 'profile'>('home');
 
   // Admin panel states
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
@@ -311,7 +312,7 @@ export default function App() {
   };
 
   // Switch to another tab on request
-  const handleTabSuggestion = (tab: 'home' | 'schedule' | 'store' | 'profile') => {
+  const handleTabSuggestion = (tab: 'home' | 'schedule' | 'private-coaching' | 'store' | 'profile') => {
     setActiveTab(tab);
     // Smooth scrolling to top of page container inside components
     const el = document.getElementById('main-viewport-body');
@@ -352,6 +353,14 @@ export default function App() {
             addToast={addToast}
             onRefresh={fetchClassesAndBookings}
             bookedSpots={bookedSpots}
+          />
+        );
+      case 'private-coaching':
+        return (
+          <PrivateCoachingView
+            theme={currentTheme}
+            addToast={addToast}
+            userPasses={userPasses}
           />
         );
       case 'store':

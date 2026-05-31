@@ -1,4 +1,4 @@
-import { Teacher, DanceClass, PaymentCard } from './types';
+import { Teacher, DanceClass, PaymentCard, TeacherAvailability } from './types';
 
 export const TEACHERS: Teacher[] = [
   {
@@ -385,6 +385,29 @@ export const PAYMENT_CARDS: PaymentCard[] = [
     badge: '少儿班专享'
   }
 ];
+
+export const TEACHER_AVAILABILITY: TeacherAvailability[] = TEACHERS.flatMap(teacher => {
+  // Generate 2-3 availability slots for each teacher
+  const slots: TeacherAvailability[] = [];
+  const days = [1, 2, 3, 4, 5]; // Mon to Fri
+  
+  // Pick 2 random days
+  const shuffledDays = [...days].sort(() => 0.5 - Math.random());
+  const teacherDays = shuffledDays.slice(0, 2);
+  
+  teacherDays.forEach((day, idx) => {
+    slots.push({
+      id: `avail_${teacher.id}_${idx}`,
+      teacherid: teacher.id,
+      dayofweek: day,
+      timestart: '10:00',
+      timeend: '18:00',
+      createdat: new Date().toISOString()
+    });
+  });
+  
+  return slots;
+});
 
 export const MOCK_NOTICES = [
   '📣 5月26日 20:00 特邀韩舞导师小樱进行 K-Pop 经典回归单曲教学速成课！',

@@ -36,7 +36,6 @@ export const createMockSupabaseClient = () => {
       onAuthStateChange: (callback: (event: string, session: any) => void) => {
         listeners.push(callback);
         const currentSession = getMockSession();
-        // Delay callback to avoid synchronous state updates in some contexts
         setTimeout(() => callback(currentSession ? 'SIGNED_IN' : 'SIGNED_OUT', currentSession), 0);
         return { data: { subscription: { unsubscribe: () => {
           const index = listeners.indexOf(callback);
@@ -78,23 +77,25 @@ export const createMockSupabaseClient = () => {
         const query = {
           eq: (col: string, val: any) => ({
             single: () => Promise.resolve({
-              data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, experiencepoints: 450 } : null,
+              data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, privatepasses: 4, experiencepoints: 450 } : null,
               error: null
             }),
             in: () => Promise.resolve({ data: [], error: null }),
             order: () => Promise.resolve({ data: [], error: null }),
-            select: () => query
+            select: () => query,
+            single_or_empty: () => Promise.resolve({ data: null, error: null })
           }),
-          order: () => ({
+          order: (col: string, options: any) => ({
             order: () => Promise.resolve({
               data: table === 'class_instances' ? generateClasses() : [],
               error: null
             }),
             single: () => Promise.resolve({ data: null, error: null }),
-            eq: () => query
+            eq: () => query,
+            select: () => query
           }),
           single: () => Promise.resolve({
-            data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, experiencepoints: 450 } : null,
+            data: table === 'users' ? { id: 'mock_user_id', name: 'Demo User', remainingpasses: 12, privatepasses: 4, experiencepoints: 450 } : null,
             error: null
           }),
           limit: () => query,
@@ -113,8 +114,11 @@ export const createMockSupabaseClient = () => {
       if (fn === 'book_class') {
         return { data: { success: true, status: 'booked' }, error: null };
       }
-      if (fn === 'cancel_booking') {
+      if (fn === 'cancel_booking' || fn === 'cancel_private_session') {
         return { data: { success: true, refunded: true }, error: null };
+      }
+      if (fn === 'request_private_session') {
+        return { data: { success: true, booking_id: 'mock_b1' }, error: null };
       }
       return { data: { success: true }, error: null };
     },
