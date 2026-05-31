@@ -13,7 +13,7 @@ export default function AdminLayout({ children, activeTab, setActiveTab, onExit 
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans">
       {/* Sidebar */}
-      <aside className="w-72 bg-slate-900 text-white flex flex-col shrink-0 shadow-2xl z-20">
+      <aside className="hidden md:flex w-64 lg:w-72 bg-slate-900 text-white flex-col shrink-0 shadow-2xl z-20 transition-all duration-300">
         <div className="p-8 border-b border-slate-800/50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20">
@@ -85,15 +85,23 @@ export default function AdminLayout({ children, activeTab, setActiveTab, onExit 
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-10">
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
-              {activeTab === 'schedule' ? '排课管理' : activeTab === 'teachers' ? '教师库管理' : '数据中心'}
-            </h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-              {activeTab === 'schedule' ? 'Manage your studio class schedule' : activeTab === 'teachers' ? 'Maintain the list of professional instructors' : 'Business insights and performance metrics'}
-            </p>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 md:px-8 lg:px-12 shrink-0 z-10">
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={onExit}
+              className="md:hidden p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase">
+                {activeTab === 'schedule' ? '排课管理' : activeTab === 'teachers' ? '教师库管理' : '数据中心'}
+              </h1>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                {activeTab === 'schedule' ? 'Manage your studio class schedule' : activeTab === 'teachers' ? 'Maintain the list of professional instructors' : 'Business insights and performance metrics'}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -101,13 +109,13 @@ export default function AdminLayout({ children, activeTab, setActiveTab, onExit 
               <div className="text-xs font-black text-slate-900">Administrator</div>
               <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-wider">Online & Active</div>
             </div>
-            <div className="w-12 h-12 bg-slate-100 rounded-2xl border-2 border-white shadow-sm overflow-hidden">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-100 rounded-2xl border-2 border-white shadow-sm overflow-hidden">
               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin" className="w-full h-full object-cover" />
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-10 bg-[#F8FAFC]">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 pb-24 md:pb-8 lg:pb-12 bg-[#F8FAFC]">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,6 +124,33 @@ export default function AdminLayout({ children, activeTab, setActiveTab, onExit 
             {children}
           </motion.div>
         </main>
+
+        {/* Mobile Navigation */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${activeTab === 'analytics' ? 'text-rose-500' : 'text-slate-400'}`}
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-tighter">数据 Analytics</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('schedule')}
+            className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${activeTab === 'schedule' ? 'text-rose-500' : 'text-slate-400'}`}
+          >
+            <Calendar className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-tighter">排课 Schedule</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('teachers')}
+            className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${activeTab === 'teachers' ? 'text-rose-500' : 'text-slate-400'}`}
+          >
+            <Users className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-tighter">教师 Teachers</span>
+          </button>
+        </nav>
 
         {/* Decorative corner */}
         <div className="absolute bottom-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mb-32"></div>
