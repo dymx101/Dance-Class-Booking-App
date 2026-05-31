@@ -80,7 +80,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
   }, []);
 
   return (
-    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="home-view-container">
+    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass} max-w-7xl mx-auto w-full`} id="home-view-container">
       {/* Studio Header Brand */}
       <div className={`flex items-center justify-between pb-3 mb-3 border-b ${headerBorder}`}>
         <div className="flex items-center gap-2.5">
@@ -105,7 +105,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
 
 
       {/* 1. Animated Promotional Banners Hero */}
-      <div className="mt-3 relative h-40 rounded-[28px] overflow-hidden shadow-2xl bg-[#141521] border border-white/5" id="banner-carousel">
+      <div className="mt-3 relative h-40 md:h-64 lg:h-80 rounded-[28px] overflow-hidden shadow-2xl bg-[#141521] border border-white/5" id="banner-carousel">
         <AnimatePresence mode="wait">
           <motion.div
             key={bannerIndex}
@@ -124,14 +124,14 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d14] via-transparent to-transparent"></div>
             {/* Banner Meta Specs */}
-            <div className="absolute bottom-4 left-4 right-4 text-white">
-              <span className="bg-pink-500/20 border border-pink-500/30 text-pink-400 px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase mb-1.5 inline-block">
+            <div className="absolute bottom-6 left-6 right-6 text-white md:bottom-10 md:left-10 md:right-10">
+              <span className="bg-pink-500/20 border border-pink-500/30 text-pink-400 px-2.5 py-1 rounded-full text-[9px] md:text-[11px] font-black tracking-widest uppercase mb-2 inline-block">
                 STUDIO CAMPUS
               </span>
-              <h2 className="font-extrabold text-sm tracking-tight text-white drop-shadow-md truncate">
+              <h2 className="font-extrabold text-sm md:text-2xl tracking-tight text-white drop-shadow-md truncate">
                 {MOCK_BANNERS[bannerIndex].title}
               </h2>
-              <p className="text-[10px] text-zinc-400 truncate mt-1 opacity-90 font-medium">
+              <p className="text-[10px] md:text-sm text-zinc-400 truncate mt-1.5 opacity-90 font-medium">
                 {MOCK_BANNERS[bannerIndex].subtitle}
               </p>
             </div>
@@ -173,74 +173,74 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
       </div>
 
       {/* 3. Class Quick Action Navigator Grid */}
-      <div className="grid grid-cols-3 gap-3 mt-4" id="home-shortcuts">
+      <div className="grid grid-cols-3 gap-3 md:gap-6 mt-4 md:mt-8" id="home-shortcuts">
         <button
           onClick={() => onSuggestTab('schedule')}
-          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 rounded-2xl text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
+          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 md:p-8 rounded-2xl md:rounded-[32px] text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
         >
-          <div className={`w-10 h-10 rounded-xl ${isMint ? 'bg-teal-500/10 text-teal-600' : 'bg-rose-500/10 text-rose-500'} flex items-center justify-center mb-2 group-hover:scale-105 transition-transform`}>
-            <Award className="w-5 h-5" />
+          <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[24px] ${isMint ? 'bg-teal-500/10 text-teal-600' : 'bg-rose-500/10 text-rose-500'} flex items-center justify-center mb-2 md:mb-4 group-hover:scale-105 transition-transform`}>
+            <Award className="w-5 h-5 md:w-8 md:h-8" />
           </div>
-          <span className={`text-xs font-black ${textWhite}`}>预约排课</span>
-          <span className={`text-[8px] font-extrabold mt-1 ${textSecondary}`}>每日精品大课</span>
+          <span className={`text-xs md:text-lg font-black ${textWhite}`}>预约排课</span>
+          <span className={`text-[8px] md:text-sm font-extrabold mt-1 ${textSecondary}`}>每日精品大课</span>
         </button>
 
         <button
           onClick={() => onSuggestTab('store')}
-          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 rounded-2xl text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
+          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 md:p-8 rounded-2xl md:rounded-[32px] text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
         >
-          <div className={`w-10 h-10 rounded-xl ${isMint ? 'bg-emerald-500/10 text-emerald-600' : 'bg-violet-500/10 text-violet-500'} flex items-center justify-center mb-2 group-hover:scale-105 transition-transform`}>
-            <Flame className="w-5 h-5" />
+          <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[24px] ${isMint ? 'bg-emerald-500/10 text-emerald-600' : 'bg-violet-500/10 text-violet-500'} flex items-center justify-center mb-2 md:mb-4 group-hover:scale-105 transition-transform`}>
+            <Flame className="w-5 h-5 md:w-8 md:h-8" />
           </div>
-          <span className={`text-xs font-black ${textWhite}`}>特惠商城</span>
-          <span className={`text-[8px] font-extrabold mt-1 ${textSecondary}`}>超值次卡通卡</span>
+          <span className={`text-xs md:text-lg font-black ${textWhite}`}>特惠商城</span>
+          <span className={`text-[8px] md:text-sm font-extrabold mt-1 ${textSecondary}`}>超值次卡通卡</span>
         </button>
 
         <button
           onClick={() => onSuggestTab('profile')}
-          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 rounded-2xl text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
+          className={`${cardBgClass} hover:-translate-y-0.5 active:translate-y-0 p-3.5 md:p-8 rounded-2xl md:rounded-[32px] text-center transition-all flex flex-col items-center justify-center cursor-pointer group`}
         >
-          <div className={`w-10 h-10 rounded-xl ${isMint ? 'bg-teal-500/10 text-teal-600' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center mb-2 group-hover:scale-105 transition-transform`}>
-            <Play className="w-5 h-5" />
+          <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[24px] ${isMint ? 'bg-teal-500/10 text-teal-600' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center mb-2 md:mb-4 group-hover:scale-105 transition-transform`}>
+            <Play className="w-5 h-5 md:w-8 md:h-8" />
           </div>
-          <span className={`text-xs font-black ${textWhite}`}>我的课表</span>
-          <span className={`text-[8px] font-extrabold mt-1 ${textSecondary}`}>剩余课点进度</span>
+          <span className={`text-xs md:text-lg font-black ${textWhite}`}>我的课表</span>
+          <span className={`text-[8px] md:text-sm font-extrabold mt-1 ${textSecondary}`}>剩余课点进度</span>
         </button>
       </div>
 
       {/* 4. Popular Instructors Section */}
-      <div className="mt-5" id="home-teachers-list">
-        <div className="flex items-center justify-between mb-2 px-1">
-          <h3 className={`text-xs font-extrabold uppercase tracking-widest flex items-center ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
-            <Star className={`w-3.5 h-3.5 mr-1.5 fill-current ${iconColor}`} />
+      <div className="mt-5 md:mt-10" id="home-teachers-list">
+        <div className="flex items-center justify-between mb-2 md:mb-6 px-1">
+          <h3 className={`text-xs md:text-lg font-extrabold uppercase tracking-widest flex items-center ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
+            <Star className={`w-3.5 h-3.5 md:w-5 md:h-5 mr-1.5 md:mr-3 fill-current ${iconColor}`} />
             明星舞者导师 / TEAM
           </h3>
-          <span className={`text-[9px] font-black ${textSecondary}`}>头像查看简介</span>
+          <span className={`text-[9px] md:text-sm font-black ${textSecondary}`}>头像查看简介</span>
         </div>
 
         {/* Horizontal rolling instructors avatars */}
-        <div className="flex space-x-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-none">
+        <div className="flex space-x-3 md:space-x-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-none">
           {TEACHERS.map((teacher) => (
             <button
               key={teacher.id}
               onClick={() => setSelectedTeacher(teacher)}
-              className="flex flex-col items-center shrink-0 w-16 group cursor-pointer"
+              className="flex flex-col items-center shrink-0 w-16 md:w-28 group cursor-pointer"
             >
               <div className="relative">
                 <img
                   src={teacher.avatar}
                   alt={teacher.name}
-                  className={`w-12 h-12 rounded-full object-cover border-2 ${isDark ? 'border-[#13141f]' : 'border-white'} ring-2 ring-black/5 group-hover:ring-rose-500 transition-all duration-200`}
+                  className={`w-12 h-12 md:w-24 md:h-24 rounded-full object-cover border-2 ${isDark ? 'border-[#13141f]' : 'border-white'} ring-2 ring-black/5 group-hover:ring-rose-500 transition-all duration-200`}
                   referrerPolicy="no-referrer"
                 />
-                <span className={`absolute bottom-0 right-0 ${isMint ? 'bg-teal-600' : 'bg-rose-500'} text-white rounded-full p-0.5 text-[7px] leading-none text-center font-black`}>
+                <span className={`absolute bottom-0 right-0 ${isMint ? 'bg-teal-600' : 'bg-rose-500'} text-white rounded-full p-0.5 md:p-1.5 text-[7px] md:text-xs leading-none text-center font-black`}>
                   ✓
                 </span>
               </div>
-              <span className={`text-[11px] font-black mt-1.5 pb-0.5 truncate max-w-full ${textWhite}`}>
+              <span className={`text-[11px] md:text-base font-black mt-1.5 md:mt-3 pb-0.5 truncate max-w-full ${textWhite}`}>
                 {teacher.name}
               </span>
-              <span className="text-[8px] text-zinc-500 font-bold leading-none truncate max-w-full">
+              <span className="text-[8px] md:text-xs text-zinc-500 font-bold leading-none truncate max-w-full">
                 {teacher.tags[0].split(' ')[0]}
               </span>
             </button>
@@ -249,18 +249,18 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
       </div>
 
       {/* About PLANA branding message block with Sleek Street aesthetic */}
-      <div className={`mt-5 p-5 rounded-[24px] bg-gradient-to-br ${billboardBg} border relative overflow-hidden`}>
+      <div className={`mt-5 md:mt-10 p-5 md:p-10 rounded-[24px] md:rounded-[48px] bg-gradient-to-br ${billboardBg} border relative overflow-hidden`}>
         {/* Dynamic ambient orb overlay inside */}
-        <div className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 w-36 h-36 bg-pink-500/10 rounded-full blur-[40px] pointer-events-none"></div>
+        <div className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 w-36 h-36 md:w-72 md:h-72 bg-pink-500/10 rounded-full blur-[40px] md:blur-[80px] pointer-events-none"></div>
         
         <div className="relative z-10">
-          <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase mb-2 inline-block ${
+          <span className={`px-2.5 py-0.5 rounded-full text-[8px] md:text-sm font-black tracking-widest uppercase mb-2 md:mb-4 inline-block ${
             isDark ? 'bg-rose-550/10 bg-rose-500/10 border border-rose-500/20 text-rose-455' : isMint ? 'bg-teal-100 text-teal-800' : 'bg-rose-100 text-rose-800'
           }`}>
             FEATURED ACADEMY
           </span>
-          <h4 className={`font-extrabold text-sm tracking-tight mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>为什么选择 PLANA 街舞学院？</h4>
-          <p className={`text-[10px] leading-relaxed font-sans max-w-[92%] ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+          <h4 className={`font-extrabold text-sm md:text-3xl tracking-tight mb-1.5 md:mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>为什么选择 PLANA 街舞学院？</h4>
+          <p className={`text-[10px] md:text-lg leading-relaxed font-sans max-w-[92%] ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
             作为高端连锁街舞排课排头潮牌，PLANA 汇聚全国顶尖战队核心舞者。覆盖 JAZZ (爵士)、HIPHOP (街舞)、URBAN (都市编舞)等热门门类。这里不仅是汗水挥洒地，更是时尚街舞文化社区。
           </p>
           <button
@@ -268,7 +268,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
               onSuggestTab('schedule');
               addToast('现在预订第一堂免费体验课吧！', 'success');
             }}
-            className={`mt-3.5 px-4_5 py-2 ${billboardBtn} rounded-full text-[10px] font-black tracking-wide transition shadow-md cursor-pointer`}
+            className={`mt-3.5 md:mt-8 px-4_5 md:px-8 py-2 md:py-4 ${billboardBtn} rounded-full text-[10px] md:text-base font-black tracking-wide transition shadow-md cursor-pointer`}
           >
             开启体验课 &rarr;
           </button>
@@ -276,17 +276,17 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
       </div>
 
       {/* 5. Featured wraps feedback videos */}
-      <div className="mt-5 pb-4" id="home-featured-videos">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className={`text-xs font-extrabold uppercase tracking-widest flex items-center ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
-            <Film className={`w-3.5 h-3.5 mr-1.5 ${iconColor}`} />
+      <div className="mt-5 md:mt-10 pb-4" id="home-featured-videos">
+        <div className="flex items-center justify-between mb-2 md:mb-6">
+          <h3 className={`text-xs md:text-lg font-extrabold uppercase tracking-widest flex items-center ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
+            <Film className={`w-3.5 h-3.5 md:w-5 md:h-5 mr-1.5 md:mr-3 ${iconColor}`} />
             前沿课堂結課反馈 / Video Showcase
           </h3>
-          <span className={`text-[9px] font-bold ${textSecondary}`}>视频教学</span>
+          <span className={`text-[9px] md:text-sm font-black ${textSecondary}`}>视频教学</span>
         </div>
 
         {/* Video grids cards */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {MOCK_VIDEOS.map((video) => (
             <div
               key={video.id}
@@ -297,7 +297,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
               className={`border rounded-2xl overflow-hidden cursor-pointer group hover:border-[#ed4d8c]/30 transition duration-300 ${cardBgClass}`}
             >
               {/* Cover cover ratio */}
-              <div className="relative h-24 bg-slate-900 overflow-hidden">
+              <div className="relative h-24 md:h-48 bg-slate-900 overflow-hidden">
                 <img
                   src={video.cover}
                   alt={video.title}
@@ -305,24 +305,24 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={`w-8 h-8 rounded-full ${isMint ? 'bg-teal-600' : 'bg-rose-500'} flex items-center justify-center text-white scale-95 group-hover:scale-105 transition shadow-lg`}>
-                    <Play className="w-4 h-4 fill-white ml-0.5" />
+                  <span className={`w-8 h-8 md:w-16 md:h-16 rounded-full ${isMint ? 'bg-teal-600' : 'bg-rose-500'} flex items-center justify-center text-white scale-95 group-hover:scale-105 transition shadow-lg`}>
+                    <Play className="w-4 h-4 md:w-8 md:h-8 fill-white ml-0.5" />
                   </span>
                 </div>
-                <span className="absolute bottom-1 right-1.5 bg-[#0c0d14]/90 text-white text-[8px] px-1.5 py-0.5 rounded-md font-mono font-black">
+                <span className="absolute bottom-1 right-1.5 bg-[#0c0d14]/90 text-white text-[8px] md:text-xs px-1.5 py-0.5 rounded-md font-mono font-black">
                   {video.duration}
                 </span>
               </div>
 
               {/* Title description bar */}
-              <div className="p-2 leading-tight">
-                <p className={`text-[11px] font-black line-clamp-2 h-8 leading-snug ${textWhite}`}>
+              <div className="p-2 md:p-4 leading-tight">
+                <p className={`text-[11px] md:text-base font-black line-clamp-2 h-8 md:h-12 leading-snug ${textWhite}`}>
                   {video.title}
                 </p>
-                <div className="flex items-center justify-between text-[8px] font-black mt-2">
+                <div className="flex items-center justify-between text-[8px] md:text-xs font-black mt-2 md:mt-4">
                   <span className={textSecondary}>{video.plays} 播放</span>
                   <span className={`flex items-center ${highlightText}`}>
-                    <Heart className="w-2.5 h-2.5 fill-current mr-0.5" />
+                    <Heart className="w-2.5 h-2.5 md:w-4 md:h-4 fill-current mr-0.5" />
                     {video.likes}
                   </span>
                 </div>
@@ -577,7 +577,7 @@ export default function HomeView({ theme = 'vibrant-light', onSuggestTab, addToa
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className={`relative rounded-t-[36px] w-[375px] max-h-[85vh] overflow-y-auto p-6 border-t z-10 shadow-2xl ${
+              className={`relative rounded-t-[36px] w-full max-w-md max-h-[85vh] overflow-y-auto p-6 border-t z-10 shadow-2xl ${
                 isDark ? 'bg-[#13141f] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-800'
               }`}
             >
