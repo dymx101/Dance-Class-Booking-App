@@ -133,7 +133,7 @@ export default function StoreView({
   };
 
   return (
-    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass}`} id="store-view-container">
+    <div className={`flex-1 overflow-y-auto px-4 pb-20 pt-4 transition-colors duration-500 ${bgClass} max-w-7xl mx-auto w-full`} id="store-view-container">
       {/* Studio Banner section */}
       <div className={`flex items-center justify-between pb-3 border-b ${headerBorder} mb-3`}>
         <div>
@@ -168,79 +168,81 @@ export default function StoreView({
       </div>
 
       {/* Main cards lists Grid */}
-      <div className="mt-5 space-y-4" id="passes-catalog">
-        <h3 className={`text-[10px] font-black uppercase tracking-widest pl-2 border-l-2 ${highlightText} ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+      <div className="mt-5" id="passes-catalog">
+        <h3 className={`text-[10px] font-black uppercase tracking-widest pl-2 border-l-2 ${highlightText} ${isDark ? 'text-zinc-400' : 'text-slate-600'} mb-4`}>
           自修团课次卡/会员通卡 / Memberships Package
         </h3>
 
-        {(dbCards.length > 0 ? dbCards : PAYMENT_CARDS).map((card) => {
-          const discountLabel = card.originalprice
-            ? `省 ¥${card.originalprice - card.price}`
-            : null;
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {(dbCards.length > 0 ? dbCards : PAYMENT_CARDS).map((card) => {
+            const discountLabel = card.originalprice
+              ? `省 ¥${card.originalprice - card.price}`
+              : null;
 
-          return (
-            <div
-              key={card.id}
-              className={`rounded-[24px] border p-4.5 relative overflow-hidden flex flex-col justify-between shadow-lg transition-all duration-300 ${cardBgClass} ${cardBorder}`}
-            >
-              {/* Badge upper-right */}
-              {card.badge && (
-                <span className={`absolute top-0 right-0 text-white font-black text-[8px] px-3.5 py-1 rounded-bl-xl tracking-wider uppercase border-l border-b ${
-                  isMint ? 'bg-teal-600 border-teal-500/10' : 'bg-rose-500 border-rose-550 border-rose-500/10'
-                }`}>
-                  {card.badge}
-                </span>
-              )}
-
-              {/* Card specs top row */}
-              <div>
-                <h4 className={`font-extrabold text-sm pr-14 leading-tight ${textWhite}`}>
-                  {card.title}
-                </h4>
-                <p className={`text-[9px] font-mono font-bold mt-1 tracking-tight ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
-                  有效期: {card.validdays} 天 • {' '}
-                  {card.passes === -1 ? '不限期/上课次数限制' : `大课共 ${card.passes} 课时`}
-                </p>
-                <p className={`text-[11px] mt-2 leading-relaxed font-sans font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                  {card.description}
-                </p>
-              </div>
-
-              {/* Price elements & Purchase trigger controls */}
-              <div className={`mt-4 pt-3.5 border-t border-dashed flex items-center justify-between ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                <div className="flex items-baseline space-x-1 font-mono">
-                  <span className={`text-[10px] font-black ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>¥</span>
-                  <span className={`text-xl font-black leading-none ${textWhite}`}>
-                    {card.price}
+            return (
+              <div
+                key={card.id}
+                className={`rounded-[24px] border p-4.5 relative overflow-hidden flex flex-col justify-between shadow-lg transition-all duration-300 ${cardBgClass} ${cardBorder}`}
+              >
+                {/* Badge upper-right */}
+                {card.badge && (
+                  <span className={`absolute top-0 right-0 text-white font-black text-[8px] px-3.5 py-1 rounded-bl-xl tracking-wider uppercase border-l border-b ${
+                    isMint ? 'bg-teal-600 border-teal-500/10' : 'bg-rose-500 border-rose-550 border-rose-500/10'
+                  }`}>
+                    {card.badge}
                   </span>
+                )}
 
-                  {card.originalprice && (
-                    <span className={`text-xs font-bold line-through ml-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
-                      ¥{card.originalprice}
-                    </span>
-                  )}
-
-                  {discountLabel && (
-                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-2.5 leading-none ${badgeClass}`}>
-                      {discountLabel}
-                    </span>
-                  )}
+                {/* Card specs top row */}
+                <div>
+                  <h4 className={`font-extrabold text-sm pr-14 leading-tight ${textWhite}`}>
+                    {card.title}
+                  </h4>
+                  <p className={`text-[9px] font-mono font-bold mt-1 tracking-tight ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                    有效期: {card.validdays} 天 • {' '}
+                    {card.passes === -1 ? '不限期/上课次数限制' : `大课共 ${card.passes} 课时`}
+                  </p>
+                  <p className={`text-[11px] mt-2 leading-relaxed font-sans font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                    {card.description}
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => setSelectedCard(card)}
-                  className={`font-black text-xs px-5 py-2.5 rounded-full cursor-pointer hover:scale-103 active:scale-95 transition-all shadow-lg ${
-                    isDark 
-                      ? 'bg-white hover:bg-zinc-100 text-[#0c0d14]'
-                      : 'bg-slate-900 hover:bg-black text-white'
-                  }`}
-                >
-                  去充值
-                </button>
+                {/* Price elements & Purchase trigger controls */}
+                <div className={`mt-4 pt-3.5 border-t border-dashed flex items-center justify-between ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                  <div className="flex items-baseline space-x-1 font-mono">
+                    <span className={`text-[10px] font-black ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>¥</span>
+                    <span className={`text-xl font-black leading-none ${textWhite}`}>
+                      {card.price}
+                    </span>
+
+                    {card.originalprice && (
+                      <span className={`text-xs font-bold line-through ml-1.5 ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
+                        ¥{card.originalprice}
+                      </span>
+                    )}
+
+                    {discountLabel && (
+                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-2.5 leading-none ${badgeClass}`}>
+                        {discountLabel}
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedCard(card)}
+                    className={`font-black text-xs px-5 py-2.5 rounded-full cursor-pointer hover:scale-103 active:scale-95 transition-all shadow-lg ${
+                      isDark 
+                        ? 'bg-white hover:bg-zinc-100 text-[#0c0d14]'
+                        : 'bg-slate-900 hover:bg-black text-white'
+                    }`}
+                  >
+                    去充值
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Safety notes details */}
