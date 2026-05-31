@@ -4,6 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- 1. Teachers table
 CREATE TABLE IF NOT EXISTS teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    userid UUID REFERENCES auth.users(id), -- Link to auth user
     name TEXT NOT NULL,
     avatar TEXT, -- Matches Teacher.avatar
     tags TEXT[] DEFAULT '{}',
