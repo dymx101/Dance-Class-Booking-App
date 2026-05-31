@@ -665,9 +665,9 @@ export default function ScheduleView({
           </div>
 
           {/* Cards List container with Empty Stage conditions */}
-          <div className="space-y-3 mt-2" id="daily-classes-list">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-2" id="daily-classes-list">
             {finalFilteredClasses.length === 0 ? (
-              <div className={`${cardBgClass} rounded-[32px] p-8 border text-center flex flex-col items-center justify-center shadow-lg`} id="empty-state">
+              <div className={`${cardBgClass} rounded-[32px] p-8 border text-center flex flex-col items-center justify-center shadow-lg md:col-span-2 lg:col-span-3 xl:col-span-4`} id="empty-state">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 border ${isDark ? 'bg-white/5 border-white/5' : 'bg-slate-100 border-slate-200'}`}>
                   <Layers className={`w-6 h-6 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`} />
                 </div>
