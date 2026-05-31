@@ -121,3 +121,27 @@ export interface MemberStat {
   new_signups: number;
   active_users: number;
 }
+
+export interface StudioHealth {
+  revenue: {
+    current: number;
+    previous: number;
+    growth: number;
+  };
+  signups: {
+    current: number;
+    previous: number;
+    growth: number;
+  };
+  fillrate: number;
+  noshowrate: number;
+}
+
+export interface AtRiskMember {
+  user_id: string;
+  name: string;
+  avatar: string;
+  remainingpasses: number;
+  last_active_date: string | null;
+  days_inactive: number | null;
+}

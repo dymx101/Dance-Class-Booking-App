@@ -101,3 +101,30 @@ CREATE INDEX IF NOT EXISTS idx_bookings_timestamp ON bookings(timestamp);
 CREATE INDEX IF NOT EXISTS idx_bookings_status_timestamp ON bookings(status, timestamp);
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
 CREATE INDEX IF NOT EXISTS idx_class_instances_teacher_date ON class_instances(teacherid, date);
+
+-- 6. At-Risk Members View
+-- Users with remaining passes who haven't booked in 30+ days, or never booked.
+CREATE OR REPLACE VIEW view_at_risk_members AS
+WITH last_bookings AS (
+    SELECT 
+        userid, 
+        max(timestamp) as last_active_date
+    FROM bookings
+    WHERE status IN ('booked', 'attended')
+    GROUP BY userid
+)
+SELECT 
+    u.id as user_id,
+    u.name,
+    u.avatar,
+    u.remainingpasses,
+    lb.last_active_date,
+    EXTRACT(DAY FROM (now() - lb.last_active_date))::int as days_inactive
+FROM users u
+LEFT JOIN last_bookings lb ON u.id = lb.userid
+WHERE u.remainingpasses > 0
+  AND (
+    lb.last_active_date IS NULL -- Never booked
+    OR lb.last_active_date < (now() - interval '30 days') -- Inactive for 30+ days
+  )
+ORDER BY lb.last_active_date ASC NULLS FIRST;

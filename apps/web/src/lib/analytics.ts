@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat } from '@dance-app/shared';
+import { RevenueStat, TeacherPerformance, HeatmapData, MemberStat, StudioHealth, AtRiskMember } from '@dance-app/shared';
 
 /**
  * Fetches weekly revenue statistics from the view_revenue_stats view.
@@ -84,4 +84,35 @@ export const getMemberStats = async (): Promise<MemberStat[]> => {
     new_signups: item.new_signups,
     active_users: item.active_users
   }));
+};
+
+/**
+ * Fetches overall studio health metrics via RPC.
+ */
+export const getStudioHealth = async (): Promise<StudioHealth> => {
+  const { data, error } = await supabase.rpc('get_studio_health');
+  
+  if (error) {
+    console.error('Error fetching studio health:', error);
+    throw error;
+  }
+  
+  return data as StudioHealth;
+};
+
+/**
+ * Fetches members at risk of churning from the view_at_risk_members view.
+ */
+export const getAtRiskMembers = async (): Promise<AtRiskMember[]> => {
+  const { data, error } = await supabase
+    .from('view_at_risk_members')
+    .select('*')
+    .order('last_active_date', { ascending: true, nullsFirst: true });
+  
+  if (error) {
+    console.error('Error fetching at-risk members:', error);
+    throw error;
+  }
+  
+  return data || [];
 };
